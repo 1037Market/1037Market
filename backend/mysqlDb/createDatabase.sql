@@ -1,9 +1,7 @@
 use market;
 create table USERS(
     userId       char(10) primary key not null,
-    pswHash      char(128) not null,
-    avatar       varchar(255),
-    contact      varchar(31) not null
+    pswHash      char(128) not null
 );
 
 create table PRODUCTS(
