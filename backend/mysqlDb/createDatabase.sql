@@ -4,6 +4,11 @@ create table USERS(
     pswHash      char(128) not null
 );
 
+create table COOKIES(
+    userId      char(10) primary key not null,
+    cookie      char(16)
+);
+
 create table PRODUCTS(
     productId   int primary key not null,
     userId      char(10) not null,

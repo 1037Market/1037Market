@@ -12,7 +12,6 @@ import (
 )
 
 var studentId2Captcha = make(map[string]string)
-var studentId2Cookie = make(map[string]string)
 
 func generateRandomDigits(length int) string {
 	rand.Seed(time.Now().UnixNano())
@@ -35,7 +34,7 @@ func registerEmail() gin.HandlerFunc {
 		e.Subject = "1037Market 注册"
 		captcha := generateRandomDigits(6)
 		e.Text = []byte("1037Market\n您的验证码是：" + captcha)
-		err := e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", "replace it with your password", "smtp.qq.com"))
+		err := e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", "", "smtp.qq.com"))
 
 		if err != nil {
 			c.String(400, err.Error())
@@ -132,7 +131,6 @@ func login() gin.HandlerFunc {
 			return
 		}
 		cookieString := generateRandomDigits(16)
-		studentId2Cookie[user.StudentId] = cookieString
 		cookie := &http.Cookie{
 			Name:     "user",
 			Value:    cookieString,
@@ -141,6 +139,24 @@ func login() gin.HandlerFunc {
 			Expires:  time.Now().Add(24 * time.Hour), // 设置 cookie 的过期时间
 		}
 		http.SetCookie(c.Writer, cookie)
+
+		// check whether already has a cookie
+		rows, err = db.Query("select cookie from COOKIES where userId = ?", user.StudentId)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		defer rows.Close()
+		if rows.Next() { // already has a cookie in DB
+			_, err = db.Exec("update COOKIES set cookie = ? where userId = ?", cookieString, user.StudentId)
+		} else { // no cookie
+			_, err = db.Exec("insert into COOKIES values(?, ?)", user.StudentId, cookieString)
+		}
+
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
 
 		c.String(http.StatusOK, "Cookie has been set!")
 	}
