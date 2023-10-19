@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"1037Market/mysqlDb"
@@ -23,7 +23,7 @@ func generateRandomDigits(length int) string {
 	return string(result)
 }
 
-func registerEmail() gin.HandlerFunc {
+func RegisterEmail() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		e := email.NewEmail()
 		e.From = "Franky <1255411561@qq.com>"
@@ -45,7 +45,7 @@ func registerEmail() gin.HandlerFunc {
 	}
 }
 
-func register() gin.HandlerFunc {
+func Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		type RegisterUser struct {
@@ -64,7 +64,8 @@ func register() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetDefault()
+		db, err := mysqlDb.GetNewDb()
+		defer db.Close()
 		if err != nil {
 			c.String(500, err.Error())
 			return
@@ -90,7 +91,7 @@ func register() gin.HandlerFunc {
 	}
 }
 
-func login() gin.HandlerFunc {
+func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		type LoginUser struct {
 			StudentId      string `json:"studentId"`
@@ -102,7 +103,8 @@ func login() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetDefault()
+		db, err := mysqlDb.GetNewDb()
+		defer db.Close()
 		if err != nil {
 			c.String(500, err.Error())
 			return

@@ -23,16 +23,6 @@ func newDB() (*DataBase, error) {
 	}, nil
 }
 
-var d *DataBase
-
-func GetDefault() (*DataBase, error) {
-	if nil == d {
-		var err error
-		d, err = newDB()
-		if err != nil {
-			return nil, err
-		}
-	}
-	return d, nil
-
+func GetNewDb() (*DataBase, error) {
+	return newDB()
 }

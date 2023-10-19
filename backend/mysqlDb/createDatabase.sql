@@ -21,7 +21,14 @@ create table PRODUCTS(
 
 create table PRODUCT_IMAGES(
     productId   int not null,
-    imagePath   varchar(127) not null
+    imagePath   varchar(127) not null,
+    foreign key(productId) references PRODUCTS(productId)
+);
+
+create table PRODUCT_CATEGORIES(
+    productId int not null,
+    category  char(30),
+    foreign key(productId) references PRODUCTS(productId)
 );
 
 create table COMMENTS(

@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"1037Market/mysqlDb"
@@ -9,7 +9,7 @@ import (
 	"path"
 )
 
-func uploadImage() gin.HandlerFunc {
+func UploadImage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// identity verify
@@ -18,7 +18,8 @@ func uploadImage() gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "no cookie is set")
 			return
 		}
-		db, err := mysqlDb.GetDefault()
+		db, err := mysqlDb.GetNewDb()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error")
 		}
@@ -52,7 +53,7 @@ func uploadImage() gin.HandlerFunc {
 	}
 }
 
-func downloadImage() gin.HandlerFunc {
+func DownloadImage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		uri := c.Query("imageURI")
 		filePath := path.Join("./uploads", uri)

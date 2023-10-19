@@ -1,6 +1,7 @@
 package server
 
 import (
+	"1037Market/server/api"
 	"context"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -71,11 +72,12 @@ func (s *Server) DELETE(relativePath string, handler gin.HandlerFunc) {
 
 func (s *Server) Route() {
 	s.GET("/", helloWorld())
-	s.POST("/api/user/register/email", registerEmail())
-	s.POST("/api/user/register", register())
-	s.POST("/api/user/login", login())
-	s.POST("/api/image", uploadImage())
-	s.GET("/api/image", downloadImage())
+	s.POST("/api/user/register/email", api.RegisterEmail())
+	s.POST("/api/user/register", api.Register())
+	s.POST("/api/user/login", api.Login())
+	s.POST("/api/image", api.UploadImage())
+	s.GET("/api/image", api.DownloadImage())
+	s.POST("/api/product", api.PublishProduct())
 }
 
 func cors() gin.HandlerFunc {
