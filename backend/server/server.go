@@ -74,6 +74,8 @@ func (s *Server) Route() {
 	s.POST("/api/user/register/email", registerEmail())
 	s.POST("/api/user/register", register())
 	s.POST("/api/user/login", login())
+	s.POST("/api/image", uploadImage())
+	s.GET("/api/image", downloadImage())
 }
 
 func cors() gin.HandlerFunc {
