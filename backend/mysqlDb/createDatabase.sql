@@ -10,7 +10,7 @@ create table COOKIES(
 );
 
 create table PRODUCTS(
-    productId   int primary key not null,
+    productId   int primary key not null auto_increment,
     userId      char(10) not null,
     price       decimal(10, 2) not null,
     description varchar(2047) not null,
@@ -32,7 +32,7 @@ create table PRODUCT_CATEGORIES(
 );
 
 create table COMMENTS(
-    commentId   int primary key not null,
+    commentId   int primary key not null auto_increment,
     publisherId char(10) not null,
     receiverId  char(10) not null,
     content     varchar(2047) not null,
@@ -41,7 +41,7 @@ create table COMMENTS(
 );
 
 create table SUBSCRIBE(
-    subscribeId int primary key not null,
+    subscribeId int primary key not null auto_increment,
     userId      char(10) not null,
     productId   int      not null,
     foreign key(userId) references USERS(userId),

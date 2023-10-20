@@ -78,6 +78,9 @@ func (s *Server) Route() {
 	s.POST("/api/image", api.UploadImage())
 	s.GET("/api/image", api.DownloadImage())
 	s.POST("/api/product", api.PublishProduct())
+	s.POST("/api/comment", api.CreateComment())
+	s.GET("/api/comment", api.QueryCommentList())
+	s.GET("/api/comment/get", api.GetCommentById())
 }
 
 func cors() gin.HandlerFunc {
