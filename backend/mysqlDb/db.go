@@ -3,6 +3,8 @@ package mysqlDb
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"io/ioutil"
+	"log"
 	"time"
 )
 
@@ -11,7 +13,12 @@ type DataBase struct {
 }
 
 func newDB() (*DataBase, error) {
-	db, err := sql.Open("mysql", "root:uniquefranky@/market")
+	psw, err := ioutil.ReadFile("/var/MYSQLPASSWORD")
+	if err != nil {
+		log.Fatalf("Error reading file: %v", err)
+	}
+
+	db, err := sql.Open("mysql", "root:"+string(psw)+"@/market")
 	if err != nil {
 		return nil, err
 	}

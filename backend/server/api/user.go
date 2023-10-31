@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jordan-wright/email"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/smtp"
@@ -25,6 +27,11 @@ func generateRandomDigits(length int) string {
 
 func RegisterEmail() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		psw, err := ioutil.ReadFile("/var/EMAILPASSWORD")
+		if err != nil {
+			log.Fatalf("Error reading file: %v", err)
+		}
+
 		e := email.NewEmail()
 		e.From = "Franky <1255411561@qq.com>"
 
@@ -34,7 +41,7 @@ func RegisterEmail() gin.HandlerFunc {
 		e.Subject = "1037Market 注册"
 		captcha := generateRandomDigits(6)
 		e.Text = []byte("1037Market\n您的验证码是：" + captcha)
-		err := e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", "", "smtp.qq.com"))
+		err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", string(psw), "smtp.qq.com"))
 
 		if err != nil {
 			c.String(400, err.Error())

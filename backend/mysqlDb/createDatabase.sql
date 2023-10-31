@@ -12,7 +12,9 @@ create table COOKIES(
 create table PRODUCTS(
     productId   int primary key not null auto_increment,
     userId      char(10) not null,
+    title       char(127) not null,
     price       decimal(10, 2) not null,
+    status      char(31),
     description varchar(2047) not null,
     createTime  time not null,
     updateTime  time not null,
@@ -22,13 +24,13 @@ create table PRODUCTS(
 create table PRODUCT_IMAGES(
     productId   int not null,
     imagePath   varchar(127) not null,
-    foreign key(productId) references PRODUCTS(productId)
+    foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
 create table PRODUCT_CATEGORIES(
     productId int not null,
     category  char(30),
-    foreign key(productId) references PRODUCTS(productId)
+    foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
 create table COMMENTS(
