@@ -75,6 +75,8 @@ func (s *Server) Route() {
 	s.POST("/api/user/register/email", api.RegisterEmail())
 	s.POST("/api/user/register", api.Register())
 	s.POST("/api/user/login", api.Login())
+	s.POST("/api/user/info", api.UpdateUserInfo())
+	s.GET("/api/user/info", api.GetUserInfo())
 	s.POST("/api/image", api.UploadImage())
 	s.GET("/api/image", api.DownloadImage())
 	s.POST("/api/product", api.PublishProduct())

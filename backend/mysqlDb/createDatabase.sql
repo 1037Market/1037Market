@@ -4,6 +4,14 @@ create table USERS(
     pswHash      char(128) not null
 );
 
+create table USER_INFOS(
+    userId      char(10) primary key not null,
+    nickName    varchar(127),
+    avatar      varchar(127),
+    contact     varchar(127),
+    foreign key(userId) references USERS(userId)
+);
+
 create table COOKIES(
     userId      char(10) primary key not null,
     cookie      char(16)

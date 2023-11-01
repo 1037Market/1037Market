@@ -2,14 +2,15 @@ package api
 
 import (
 	"1037Market/mysqlDb"
+	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jordan-wright/email"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
 	"net/smtp"
+	"os"
 	"time"
 )
 
@@ -27,11 +28,23 @@ func generateRandomDigits(length int) string {
 
 func RegisterEmail() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		psw, err := ioutil.ReadFile("/var/EMAILPASSWORD")
+		file, err := os.Open("/var/EMAILPASSWORD")
 		if err != nil {
-			log.Fatalf("Error reading file: %v", err)
+			log.Fatalf("Error opening file: %v", err)
+		}
+		// 创建一个Scanner用于读取文件
+		scanner := bufio.NewScanner(file)
+
+		// 读取第一行
+		var psw string
+		if scanner.Scan() {
+			psw = scanner.Text() // Text方法返回不带换行符的当前行
 		}
 
+		// 检查是否有读取错误
+		if err := scanner.Err(); err != nil {
+			log.Fatalf("Error reading file: %v", err)
+		}
 		e := email.NewEmail()
 		e.From = "Franky <1255411561@qq.com>"
 
@@ -41,7 +54,7 @@ func RegisterEmail() gin.HandlerFunc {
 		e.Subject = "1037Market 注册"
 		captcha := generateRandomDigits(6)
 		e.Text = []byte("1037Market\n您的验证码是：" + captcha)
-		err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", string(psw), "smtp.qq.com"))
+		err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", psw, "smtp.qq.com"))
 
 		if err != nil {
 			c.String(400, err.Error())
@@ -62,7 +75,7 @@ func Register() gin.HandlerFunc {
 		}
 		var user RegisterUser
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.String(400, err.Error())
+			c.String(http.StatusBadRequest, err.Error())
 			return
 		}
 		if user.EmailCaptcha != studentId2Captcha[user.StudentId] {
@@ -74,23 +87,39 @@ func Register() gin.HandlerFunc {
 		db, err := mysqlDb.GetNewDb()
 		defer db.Close()
 		if err != nil {
-			c.String(500, err.Error())
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		result, err := db.Exec("insert into USERS values(?, ?)", user.StudentId, user.HashedPsw)
 		if err != nil {
-			c.String(500, err.Error())
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		rowsAffected, err := result.RowsAffected()
 		if err != nil {
-			c.String(500, err.Error())
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 		if rowsAffected == 0 {
-			c.String(400, "用户已存在")
+			c.String(http.StatusBadRequest, "用户已存在")
+			return
+		}
+
+		result, err = db.Exec("insert into USER_INFOS(userId, nickName, avatar, contact) values(?, ?, ?, ?)",
+			user.StudentId, user.StudentId, "null", "null")
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		rowsAffected, err = result.RowsAffected()
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		if rowsAffected == 0 {
+			c.String(http.StatusBadRequest, "用户已存在")
 			return
 		}
 
@@ -169,4 +198,93 @@ func Login() gin.HandlerFunc {
 
 		c.String(http.StatusOK, "Cookie has been set!")
 	}
+}
+
+func UpdateUserInfo() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie, err := c.Cookie("user")
+		if err != nil {
+			c.String(http.StatusBadRequest, "no cookie is set")
+			return
+		}
+
+		type UserInfo struct {
+			NickName string `json:"nickName"`
+			Avatar   string `json:"avatar"`
+			Contact  string `json:"contact"`
+		}
+		var userInfo UserInfo
+		err = c.ShouldBindJSON(&userInfo)
+		if err != nil {
+			c.String(http.StatusBadRequest, "bind error: %s", err)
+			return
+		}
+
+		db, err := mysqlDb.GetNewDb()
+		defer db.Close()
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
+		}
+
+		rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
+		defer rows.Close()
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
+		}
+		if !rows.Next() {
+			c.String(http.StatusBadRequest, "no such user")
+			return
+		}
+
+		var userId string
+		if err = rows.Scan(&userId); err != nil {
+			c.String(http.StatusInternalServerError, "scan error: %s", err)
+			return
+		}
+
+		_, err = db.Exec("update USER_INFOS set nickName = ?, avatar = ?, contact = ? where userId = ?",
+			userInfo.NickName, userInfo.Avatar, userInfo.Contact, userId)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
+		}
+		c.String(http.StatusOK, "OK")
+	}
+}
+
+func GetUserInfo() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		type UserInfo struct {
+			UserId   string `json:"userId"`
+			NickName string `json:"nickName"`
+			Avatar   string `json:"avatar"`
+			Contact  string `json:"contact"`
+		}
+		id := c.Query("studentId")
+		db, err := mysqlDb.GetNewDb()
+		defer db.Close()
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
+		}
+		rows, err := db.Query("select * from USER_INFOS where userId = ?", id)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
+		}
+		if !rows.Next() {
+			c.String(http.StatusBadRequest, "no such user")
+			return
+		}
+		var userInfo UserInfo
+		if err = rows.Scan(&userInfo.UserId, &userInfo.NickName, &userInfo.Avatar, &userInfo.Contact); err != nil {
+			c.String(http.StatusInternalServerError, "scan error: %s", err)
+			return
+		}
+
+		c.JSON(http.StatusOK, userInfo)
+	}
+
 }
