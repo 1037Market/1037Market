@@ -22,6 +22,7 @@ func UploadImage() gin.HandlerFunc {
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error")
+			return
 		}
 		rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
 		if err != nil {
@@ -59,6 +60,7 @@ func DownloadImage() gin.HandlerFunc {
 		filePath := path.Join("./uploads", uri)
 		if _, err := os.Stat(filePath); os.IsNotExist(err) {
 			c.String(http.StatusBadRequest, fmt.Sprintf("image %s not exists", uri))
+			return
 		}
 		c.File(filePath)
 	}
