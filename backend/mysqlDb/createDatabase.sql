@@ -54,12 +54,12 @@ create table COMMENTS(
     foreign key(receiverId) references USERS(userId)
 );
 
-create table SUBSCRIBE(
-    subscribeId int primary key not null auto_increment,
+create table SUBSCRIBES(
     userId      char(10) not null,
     productId   int      not null,
+    primary key(userId, productId),
     foreign key(userId) references USERS(userId),
-    foreign key(productId) references PRODUCTS(productId)
+    foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
 

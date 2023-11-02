@@ -54,3 +54,25 @@ func AddNewUser(user ds.RegisterUser) error {
 	txn.Commit()
 	return nil
 }
+
+func GetUserIdByCookie(cookie string) (string, error) {
+	db, err := mysqlDb.GetNewDb()
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
+	if err != nil {
+		return "", err
+	}
+
+	if !rows.Next() {
+		return "", errors.New("invalid cookie")
+	}
+	var userId string
+	if err = rows.Scan(&userId); err != nil {
+		return "", err
+	}
+	return userId, nil
+}
