@@ -27,8 +27,7 @@ func PublishProduct() gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "no cookie is set")
 			return
 		}
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -117,8 +116,7 @@ func GetProductById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Query("productId")
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -196,8 +194,7 @@ func GetProductListByKeyword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		keyword := c.Query("keyword")
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
@@ -231,8 +228,7 @@ func DeleteProduct() gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "cookie not set")
 			return
 		}
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
@@ -275,8 +271,7 @@ func DeleteProduct() gin.HandlerFunc {
 func GetRandomProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
@@ -305,8 +300,7 @@ func GetProductListByCategory() gin.HandlerFunc {
 		category := c.Query("category")
 		cnt := c.Query("count")
 		fmt.Println(category, cnt)
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return

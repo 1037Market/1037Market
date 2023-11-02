@@ -11,11 +11,10 @@ type Subscribe struct {
 }
 
 func InsertSubscribe(subscribe Subscribe) error {
-	db, err := mysqlDb.GetNewDb()
+	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	txn, err := db.Begin()
 	if err != nil {
@@ -42,11 +41,10 @@ func InsertSubscribe(subscribe Subscribe) error {
 }
 
 func GetSubscribes(userId string) ([]int, error) {
-	db, err := mysqlDb.GetNewDb()
+	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	rows, err := db.Query("select productId from SUBSCRIBES where userId = ?", userId)
 	if err != nil {
@@ -64,11 +62,10 @@ func GetSubscribes(userId string) ([]int, error) {
 }
 
 func DeleteSubscribe(subscribe Subscribe) error {
-	db, err := mysqlDb.GetNewDb()
+	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	txn, err := db.Begin()
 	if err != nil {

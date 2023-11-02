@@ -102,8 +102,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(500, err.Error())
 			return
@@ -183,8 +182,7 @@ func UpdateUserInfo() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
@@ -226,8 +224,7 @@ func GetUserInfo() gin.HandlerFunc {
 			Contact  string `json:"contact"`
 		}
 		id := c.Query("studentId")
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return

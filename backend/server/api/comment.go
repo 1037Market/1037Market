@@ -18,8 +18,7 @@ func CreateComment() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -86,8 +85,7 @@ func QueryCommentList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userId := c.Query("studentId")
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -118,8 +116,7 @@ func GetCommentById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentId := c.Query("commentId")
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
+		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return

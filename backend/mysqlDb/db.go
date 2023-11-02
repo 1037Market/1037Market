@@ -13,6 +13,8 @@ type DataBase struct {
 	*sql.DB
 }
 
+var conn *DataBase = nil
+
 func newDB() (*DataBase, error) {
 	file, err := os.Open("/var/MYSQLPASSWORD")
 	if err != nil {
@@ -44,6 +46,14 @@ func newDB() (*DataBase, error) {
 	}, nil
 }
 
-func GetNewDb() (*DataBase, error) {
-	return newDB()
+func GetConnection() (*DataBase, error) {
+	if conn != nil {
+		return conn, nil
+	}
+	connection, err := newDB()
+	if err != nil {
+		return nil, err
+	}
+	conn = connection
+	return conn, nil
 }
