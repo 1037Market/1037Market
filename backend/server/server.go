@@ -88,6 +88,7 @@ func (s *Server) Route() {
 	s.DELETE("/api/product", api.DeleteProduct())
 	s.GET("/api/product/recommend", api.GetRandomProductList())
 	s.GET("/api/product/category", api.GetProductListByCategory())
+	s.GET("/api/product/categories", api.GetCategoryList())
 }
 
 func cors() gin.HandlerFunc {

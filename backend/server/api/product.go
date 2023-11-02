@@ -1,6 +1,7 @@
 package api
 
 import (
+	"1037Market/dao"
 	"1037Market/mysqlDb"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -326,6 +327,17 @@ func GetProductListByCategory() gin.HandlerFunc {
 				return
 			}
 			lst = append(lst, productId)
+		}
+		c.JSON(http.StatusOK, lst)
+	}
+}
+
+func GetCategoryList() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		lst, err := dao.GetCategoryList()
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
+			return
 		}
 		c.JSON(http.StatusOK, lst)
 	}

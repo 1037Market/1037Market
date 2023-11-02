@@ -35,6 +35,10 @@ create table PRODUCT_IMAGES(
     foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
+create table CATEGORIES(
+    categoryName char(30) primary key not null
+);
+
 create table PRODUCT_CATEGORIES(
     productId int not null,
     category  char(30),
