@@ -1,6 +1,8 @@
 package api
 
 import (
+	"1037Market/dao"
+	"1037Market/ds"
 	"1037Market/mysqlDb"
 	"bufio"
 	"fmt"
@@ -68,12 +70,7 @@ func RegisterEmail() gin.HandlerFunc {
 func Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		type RegisterUser struct {
-			StudentId    string `json:"studentId"`
-			HashedPsw    string `json:"hashedPassword"`
-			EmailCaptcha string `json:"emailCaptcha"`
-		}
-		var user RegisterUser
+		var user ds.RegisterUser
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.String(http.StatusBadRequest, err.Error())
 			return
@@ -84,42 +81,8 @@ func Register() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
-		defer db.Close()
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		result, err := db.Exec("insert into USERS values(?, ?)", user.StudentId, user.HashedPsw)
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		rowsAffected, err := result.RowsAffected()
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		if rowsAffected == 0 {
-			c.String(http.StatusBadRequest, "用户已存在")
-			return
-		}
-
-		result, err = db.Exec("insert into USER_INFOS(userId, nickName, avatar, contact) values(?, ?, ?, ?)",
-			user.StudentId, user.StudentId, "null", "null")
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		rowsAffected, err = result.RowsAffected()
-		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
-		if rowsAffected == 0 {
-			c.String(http.StatusBadRequest, "用户已存在")
+		if err := dao.AddNewUser(user); err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
 		}
 

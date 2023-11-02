@@ -19,3 +19,9 @@ type UserInfo struct {
 	Avatar   string `json:"avatar"`
 	Contact  uint64 `json:"contact"`
 }
+
+type RegisterUser struct {
+	StudentId    string `json:"studentId"`
+	HashedPsw    string `json:"hashedPassword"`
+	EmailCaptcha string `json:"emailCaptcha"`
+}
