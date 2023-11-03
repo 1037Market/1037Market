@@ -131,14 +131,6 @@ func Login() gin.HandlerFunc {
 			return
 		}
 		cookieString := generateRandomDigits(16)
-		cookie := &http.Cookie{
-			Name:     "user",
-			Value:    cookieString,
-			Path:     "/",
-			HttpOnly: false,
-			Expires:  time.Now().Add(24 * time.Hour), // 设置 cookie 的过期时间
-		}
-		http.SetCookie(c.Writer, cookie)
 
 		// check whether already has a cookie
 		rows, err = db.Query("select cookie from COOKIES where userId = ?", user.StudentId)
@@ -158,7 +150,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		c.String(http.StatusOK, "Cookie has been set!")
+		c.String(http.StatusOK, cookieString)
 	}
 }
 
