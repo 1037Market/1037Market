@@ -8,13 +8,22 @@
 
 
     <div style="margin: 60px">
+
       <van-image
-          width="10rem"
-          height="10rem"
-          radius="5rem"
-          fit="contain"
-          :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+            width="10rem"
+            height="10rem"
+            radius="5rem"
+            fit="contain"
+            :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+            @click="clickAvatar"
       />
+      <div style="margin-bottom: 10px">
+        <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
+          <van-button block color="#42b983" @click="tologout">上传头像</van-button>
+        </van-uploader>
+      </div>
+
+
       <van-cell-group>
         <van-field v-model="userInfo.nickName" label="昵称"
                    :right-icon="infoEditing.nickName?'sign':'edit'"
@@ -46,12 +55,12 @@ import NavBar from "components/common/navbar/NavBar";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Cookies from 'js-cookie'
-import { logout } from "network/user";
 import { updateUser } from "@/network/user";
 import { Toast } from "vant";
 
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {getUser} from "@/network/user";
+import {uploadImage} from "@/network/image";
 export default {
   name: "Profile",
   components: {
@@ -80,15 +89,21 @@ export default {
     const infoEditing = reactive(
         {
           nickName: false,
-          contact: false
+          contact: false,
+          avatar: false
         }
     )
-    getUser().then((data) => {
-      userInfo.studentId = data['userId'];
-      userInfo.avatar = data['avatar'];
-      userInfo.contact = data['contact'];
-      userInfo.nickName = data['nickName'];
-    })
+
+    const fetchUserInfo = () => {
+      getUser().then((data) => {
+        userInfo.studentId = data['userId'];
+        userInfo.avatar = data['avatar'];
+        userInfo.contact = data['contact'];
+        userInfo.nickName = data['nickName'];
+      })
+    }
+
+    fetchUserInfo();
 
     const updateNickName = () => {
       infoEditing.nickName = true;
@@ -96,6 +111,10 @@ export default {
 
     const updateContact = () => {
       infoEditing.contact = true;
+    }
+
+    const clickAvatar = () => {
+      infoEditing.avatar = true;
     }
 
     const saveUserInfo = () => {
@@ -107,10 +126,35 @@ export default {
           infoEditing.contact = false;
           infoEditing.nickName = false;
           Toast.success('保存成功');
-
+          fetchUserInfo();
         }
       })
+    }
 
+    const fileList = ref([
+
+    ]);
+
+
+
+    const afterReadAvatar = (file, detail) => {
+      let formData = new FormData()
+      formData.append('file', file.file)
+      console.log(formData)
+      uploadImage(formData).then((response) => {
+        userInfo.avatar = response;
+        updateUser(userInfo).then(() => {
+          Toast.success('上传成功');
+          fetchUserInfo();
+          fileList.value = [];
+        }).catch((err) => {
+          Toast.fail('上传失败');
+          console.log(err)
+        })
+      }).catch((err) => {
+        Toast.fail('上传失败');
+        console.log(err);
+      });
     }
 
     return {
@@ -119,7 +163,10 @@ export default {
       infoEditing,
       updateContact,
       updateNickName,
-      saveUserInfo
+      saveUserInfo,
+      fileList,
+      clickAvatar,
+      afterReadAvatar
     };
   },
 };
