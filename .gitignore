@@ -1,4 +1,5 @@
 **/.DS_Store
-.idea/*
+**/.idea
 uploads/*
 *.log
+**/node_modules
