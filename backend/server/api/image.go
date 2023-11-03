@@ -16,6 +16,7 @@ func UploadImage() gin.HandlerFunc {
 		cookie := c.Query("user")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error")
 		}

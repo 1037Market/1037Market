@@ -4,6 +4,7 @@ import "1037Market/mysqlDb"
 
 func GetCategoryList() ([]string, error) {
 	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return nil, err
 	}

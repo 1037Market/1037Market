@@ -12,6 +12,7 @@ type Subscribe struct {
 
 func InsertSubscribe(subscribe Subscribe) error {
 	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return err
 	}
@@ -42,6 +43,7 @@ func InsertSubscribe(subscribe Subscribe) error {
 
 func GetSubscribes(userId string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -63,6 +65,7 @@ func GetSubscribes(userId string) ([]int, error) {
 
 func DeleteSubscribe(subscribe Subscribe) error {
 	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return err
 	}

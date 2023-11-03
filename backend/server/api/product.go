@@ -25,6 +25,7 @@ func PublishProduct() gin.HandlerFunc {
 		cookie := c.Query("user")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -114,6 +115,7 @@ func GetProductById() gin.HandlerFunc {
 		id := c.Query("productId")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -192,6 +194,7 @@ func GetProductListByKeyword() gin.HandlerFunc {
 		keyword := c.Query("keyword")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
@@ -223,6 +226,7 @@ func DeleteProduct() gin.HandlerFunc {
 		productId := c.Query("productId")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
@@ -266,6 +270,7 @@ func GetRandomProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
@@ -295,6 +300,7 @@ func GetProductListByCategory() gin.HandlerFunc {
 		cnt := c.Query("count")
 		fmt.Println(category, cnt)
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return

@@ -15,6 +15,7 @@ func CreateComment() gin.HandlerFunc {
 		cookie := c.Query("user")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -82,6 +83,7 @@ func QueryCommentList() gin.HandlerFunc {
 
 		userId := c.Query("studentId")
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -113,6 +115,7 @@ func GetCommentById() gin.HandlerFunc {
 		commentId := c.Query("commentId")
 
 		db, err := mysqlDb.GetConnection()
+		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
