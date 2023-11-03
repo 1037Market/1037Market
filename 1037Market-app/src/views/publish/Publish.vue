@@ -1,4 +1,5 @@
 <template>
+    <van-nav-bar title="发布商品" style="background-color: #42b983;"/>
     <van-form @submit="onSubmit">
         <van-field
             v-model="form.name"
@@ -6,6 +7,7 @@
             name="name"
             placeholder="请输入商品名称"
             required
+            style="margin-bottom: 10px"
         />
 
         <van-uploader
@@ -19,15 +21,6 @@
         />
 
         <van-field
-            v-model="form.description"
-            label="商品描述"
-            name="description"
-            type="textarea"
-            placeholder="请输入商品描述"
-            required
-        />
-
-        <van-field
             v-model="form.price"
             label="商品价格"
             name="price"
@@ -36,60 +29,147 @@
             required
         />
 
-        <van-radio-group v-model="form.class1">
-            <van-radio name="二手书">二手书</van-radio>
-            <van-radio name="闲置物品">闲置物品</van-radio>
-        </van-radio-group>
+        <van-field
+            v-model="form.description"
+            label="商品描述"
+            name="description"
+            type="textarea"
+            placeholder="请输入商品描述"
+            required
+            style="height: 200px"
+        />
 
-        <van-checkbox-group v-model="form.class2">
-            <van-checkbox name="数学">数学</van-checkbox>
-            <van-checkbox name="英语">英语</van-checkbox>
-            <van-checkbox name="计算机">计算机</van-checkbox>
-        </van-checkbox-group>
-
+        <van-cell title="添加分类"  style="text-align: left">
+          <van-tag type="primary" style="margin-right: 5px" @click="addCategory">添加</van-tag>
+          <van-tag type="primary"
+                   v-for="(category, idx) in form.categories"
+                   closeable
+                   @close="deleteCategory(idx)"
+                   style="margin-right: 5px"
+          >
+            {{ category }}
+          </van-tag>
+        </van-cell>
         <van-button round block type="info" native-type="submit">提交</van-button>
     </van-form>
+
+    <van-dialog v-model:show="dialog.show" title="添加类别" @confirm="dialogConfirm">
+      <div style="margin-bottom: 300px">
+        <van-dropdown-menu>
+          <van-dropdown-item v-model="dialog.value" :options="dialog.options" style="top: 100px"/>
+        </van-dropdown-menu>
+      </div>
+
+    </van-dialog>
 </template>
 
 <script>
 import { ref, reactive } from 'vue';
+import {Dialog, Toast} from "vant";
+import {getCategoryData} from "@/network/category";
+import {uploadImage} from "@/network/image";
+import {updateUser} from "@/network/user";
+import {publishProduct} from "@/network/publish";
 
 export default {
-    setup() {
+  components: {},
+
+  setup() {
         const form = reactive({
             name: '',
             images: [],
+            imageURIs: [],
             description: '',
             price: null,
-            class1: 'books',
-            class2: []
+            categories: []
+        });
+
+        const dialog = reactive({
+            show: false,
+            value: '添加分类',
+            options: []
+        });
+
+        getCategoryData().then((categories) => {
+          dialog.options = [];
+          console.log(categories)
+          categories.forEach((element) => {
+            dialog.options.push({
+              text: element,
+              value: element
+            })
+          });
+        }).catch((err) => {
+          console.log(err);
         });
 
         const afterRead = (file) => {
-            // 此处应实现上传逻辑，并将返回的图片URL添加到form.images中
-            const reader = new FileReader();
-            reader.readAsDataURL(file.file);
-            reader.onload = () => {
-                // 假设上传成功，将图片URL添加到form.images
-                form.images.push(reader.result);
-            };
+          let formData = new FormData();
+          file.status = 'uploading';
+          file.message = '上传中';
+          formData.append('file', file.file);
+          console.log(formData)
+          uploadImage(formData).then((response) => {
+            form.imageURIs.push(response);
+            file.status = '';
+            file.message = '';
+          }).catch((err) => {
+            file.status = 'failed';
+            file.message = '上传失败';
+            form.imageURIs.push(err);
+            console.log(err);
+          })
         };
 
         const onDelete = (index) => {
             // 删除指定索引的图片
             form.images.splice(index, 1);
+            form.imageURIs.splice(index, 1);
         };
 
         const onSubmit = () => {
-            console.log('提交的表单数据', form);
-            // 在这里处理表单的提交，比如将数据发送到服务器
+            if(form.name === '' || form.imageURIs === [] || form.categories === [] || form.price === [] ||
+                form.description === '') {
+              Toast.fail('请填写全部字段');
+              return;
+            }
+            publishProduct({
+              title: form.name,
+              content: form.description,
+              categories: form.categories,
+              imageURIs: form.imageURIs,
+              price: parseFloat(form.price)
+            }).then((response) => {
+              Toast.success('发布成功');
+            }).catch((err) => {
+              Toast.fail('发布失败');
+            })
         };
+
+        const deleteCategory = (idx) => {
+            form.categories.splice(idx, 1);
+        }
+
+        const addCategory = () => {
+            console.log(dialog.options)
+            dialog.show = true;
+        }
+
+        const dialogConfirm = () => {
+            if(!form.categories.includes(dialog.value)) {
+              form.categories.push(dialog.value);
+            }
+        }
 
         return {
             form,
             afterRead,
             onDelete,
             onSubmit,
+            deleteCategory,
+            addCategory,
+            dialog,
+            dialogConfirm,
         };
     },
 };
