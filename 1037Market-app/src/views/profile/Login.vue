@@ -53,10 +53,8 @@ import { ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { login } from "network/user";
-import { Notify } from "vant";
 import { Toast } from "vant";
 import NavBar from "components/common/navbar/NavBar";
-import Cookies from "js-cookie";
 export default {
   components: {
     NavBar,
@@ -73,9 +71,10 @@ export default {
       login(userinfo).then((res) => {
         //在Vuex isLogin
         //   console.log(res)
-          window.localStorage.setItem('token', res)
 
+        window.localStorage.setItem('token', res)
         store.commit("setIsLogin", true);
+        window.localStorage.setItem('studentId', userinfo.studentId);
 
         Toast.success("登录成功");
         userinfo.studentId = "";

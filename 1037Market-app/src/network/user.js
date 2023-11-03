@@ -34,7 +34,7 @@ export function logout() {
 
 export function updateUser(data){
   return request({
-    url: '/api/user/info',
+    url: `/api/user/info?user=${localStorage.getItem('token')}`,
     method: 'post',
     data
   })
@@ -42,7 +42,7 @@ export function updateUser(data){
 
 export function getUser() {
   return request({
-    url: '/api/user/info',
+    url: `/api/user/info?studentId=${window.localStorage.getItem('studentId')}`,
     method: 'get'
   })
 }
