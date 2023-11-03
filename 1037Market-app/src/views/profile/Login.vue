@@ -56,6 +56,7 @@ import { login } from "network/user";
 import { Notify } from "vant";
 import { Toast } from "vant";
 import NavBar from "components/common/navbar/NavBar";
+import Cookies from "js-cookie";
 export default {
   components: {
     NavBar,

@@ -29,7 +29,7 @@ export default {
     const router = useRouter();
     const store = useStore();
     const tologout = () => {
-        store.commit("setIsLogin", false);
+        window.localStorage.removeItem('token')
 
         Cookies.remove('user')
 
