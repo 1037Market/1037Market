@@ -135,7 +135,7 @@ func Login() gin.HandlerFunc {
 			Name:     "user",
 			Value:    cookieString,
 			Path:     "/",
-			HttpOnly: true,
+			HttpOnly: false,
 			Expires:  time.Now().Add(24 * time.Hour), // 设置 cookie 的过期时间
 		}
 		http.SetCookie(c.Writer, cookie)
