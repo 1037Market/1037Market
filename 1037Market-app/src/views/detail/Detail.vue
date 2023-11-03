@@ -67,14 +67,14 @@ export default {
     let active = ref(1);
 
     const handleCart = () => {
-        console.log('购物车功能未实现')
-      // addCart({ goods_id: book.detail.id, num: 1 }).then((res) => {
-      //   if (res.status == "204" || res.status == "201") {
-      //     Toast.success("添加成功");
+        console.log(id.value)
+      addCart(id.value).then((res) => {
+        if (res.status == "204" || res.status == "201") {
+          Toast.success("添加成功");
       //     调用actions
-          // store.dispatch("updateCart");
-        // }
-      // });
+      //     store.dispatch("updateCart");
+        }
+      });
     };
 
     const goToCart = () => {

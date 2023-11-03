@@ -9,28 +9,20 @@ export function addCart(productId) {
   })
 }
 
-// 修改购物车数量， data = {num:1}
-export function modifyCart(id, data) {
-  return request({
-    url: `/api/carts/${id}`,
-    method: 'put',
-    data
-  })
-}
-
 //  获取购物车列表
 export function getCart(data = '') {
   return request({
     // api/carts?include=goods
-    url: '/api/carts?' + data,
+    url: `/api/subscribe`,
+    method: 'get'
   })
 }
 
 
 //  删除购物车
-export function deleteCartItem(id) {
+export function deleteCartItem(productId) {
   return request({
-    url: `/api/carts/${id}`,
+    url: `/api/carts/productId=${productId}`,
     method: 'delete'
   })
 }

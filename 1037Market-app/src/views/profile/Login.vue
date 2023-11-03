@@ -71,6 +71,9 @@ export default {
     const onSubmit = () => {
       login(userinfo).then((res) => {
         //在Vuex isLogin
+        //   console.log(res)
+          window.localStorage.setItem('token', res)
+
         store.commit("setIsLogin", true);
 
         Toast.success("登录成功");

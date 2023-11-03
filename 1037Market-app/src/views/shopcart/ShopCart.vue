@@ -20,7 +20,7 @@
             <div class="good-item">
               <van-checkbox :name="item.id" />
               <div class="good-img">
-                <img src="~assets/images/11.png" alt="" />
+<!--                <img src="~assets/images/11.png" alt="" />-->
               </div>
               <div class="good-desc">
                 <div class="good-title">
@@ -84,7 +84,7 @@
 import { ref, reactive, toRefs, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { getCart, deleteCartItem, checkedCard, modifyCart } from "network/cart";
+import { getCart, deleteCartItem} from "network/cart";
 import { Toast } from "vant";
 import NavBar from "components/common/navbar/NavBar";
 export default {
@@ -132,37 +132,6 @@ export default {
       return sum;
     });
 
-    // 异步改变购物车数量
-    const onChange = (value, detail) => {
-      Toast.loading({ message: "修改中...", forbidClick: true });
-
-      modifyCart(detail.name, { num: value }).then((res) => {
-        //将在onMounted中的list中的num也要改
-        state.list.forEach((item) => {
-          if (item.id == detail.name) {
-            item.num = value;
-          }
-        });
-
-        Toast.clear();
-      });
-    };
-
-    // 复选框改变处理
-    const groupChange = (result) => {
-      if (result.length == state.list.length) {
-        state.checkAll = true;
-      } else {
-        state.checkAll = false;
-      }
-
-      console.log(result);
-
-      state.result = result;
-      // 改变数据表中选中状态
-      checkedCard({ cart_ids: result });
-    };
-
     const allCheck = () => {
       if (!state.checkAll) {
         state.result = state.list.map((item) => item.id);
@@ -182,7 +151,6 @@ export default {
     const deleteGood = (id) => {
       deleteCartItem(id).then((res) => {
         init(); //重新初始化
-        store.dispatch("updateCart"); //改变vuex中的状态数量
       });
     };
 

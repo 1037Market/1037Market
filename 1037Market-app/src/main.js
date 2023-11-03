@@ -11,7 +11,7 @@ import { PullRefresh, List, Popup, Grid, GridItem, AddressEdit, AddressList, Ico
 
 createApp(App)
   .use(Swipe).use(SwipeItem).use(Lazyload, {
-    loading: require('./assets/images/default.png')
+    loading: require('./assets/images/default.jpg')
   }).use(Badge).use(Sidebar).use(SidebarItem).use(Collapse).use(CollapseItem)
   .use(Tab).use(Tabs).use(Card).use(VanImage).use(Tag).use(Button).use(Form).use(Field)
   .use(Checkbox).use(Stepper).use(SwipeCell).use(CheckboxGroup).use(SubmitBar).use(Icon).use(AddressList).use(AddressEdit)
