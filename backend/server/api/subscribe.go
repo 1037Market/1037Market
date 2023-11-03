@@ -8,12 +8,8 @@ import (
 
 func AddSubscribe() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
+		cookie := c.Query("user")
 		productId := c.Query("productId")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
 
 		userId, err := dao.GetUserIdByCookie(cookie)
 		if err != nil {
@@ -43,12 +39,8 @@ func GetSubscribes() gin.HandlerFunc {
 
 func DeleteSubscribe() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
+		cookie := c.Query("user")
 		productId := c.Query("productId")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
 
 		userId, err := dao.GetUserIdByCookie(cookie)
 		if err != nil {

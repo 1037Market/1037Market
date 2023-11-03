@@ -22,11 +22,8 @@ func PublishProduct() gin.HandlerFunc {
 		}
 
 		// user identity verify
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
+		cookie := c.Query("user")
+
 		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
@@ -222,12 +219,9 @@ func GetProductListByKeyword() gin.HandlerFunc {
 
 func DeleteProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
+		cookie := c.Query("user")
 		productId := c.Query("productId")
-		if err != nil {
-			c.String(http.StatusBadRequest, "cookie not set")
-			return
-		}
+
 		db, err := mysqlDb.GetConnection()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)

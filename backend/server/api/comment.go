@@ -12,11 +12,7 @@ func CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// user identity verify
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
+		cookie := c.Query("user")
 
 		db, err := mysqlDb.GetConnection()
 		if err != nil {

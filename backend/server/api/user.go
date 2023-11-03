@@ -156,11 +156,7 @@ func Login() gin.HandlerFunc {
 
 func UpdateUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
+		cookie := c.Query("user")
 
 		type UserInfo struct {
 			NickName string `json:"nickName"`
@@ -168,7 +164,7 @@ func UpdateUserInfo() gin.HandlerFunc {
 			Contact  string `json:"contact"`
 		}
 		var userInfo UserInfo
-		err = c.ShouldBindJSON(&userInfo)
+		err := c.ShouldBindJSON(&userInfo)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bind error: %s", err)
 			return
