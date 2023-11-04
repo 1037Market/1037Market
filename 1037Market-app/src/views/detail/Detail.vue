@@ -12,7 +12,7 @@
 
     <div>
       <price-display :name="productDetail.title" :price="productDetail.price" />
-      <product-description description="asasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasaasasasa" />
+      <product-description :description="productDetail.content" />
     </div>
 
     <van-action-bar>
