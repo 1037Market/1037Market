@@ -18,3 +18,9 @@ export function getHomeGoodsData(type = "recommend", count = 10) {
     url: `/api/product/category?category=${type}&count=${count}`
   })
 }
+
+export function getSearchData(keyword){
+  return request({
+    url: `/api/product/query?keyword=${keyword}`
+  })
+}

@@ -24,6 +24,7 @@
 
       <div>
           <van-tabs v-model:active="currentType" >
+              <van-tab title="搜索结果" name="search" v-if="searched"/>
               <van-tab title="推荐" name="recommend"/>
               <van-tab title="二手书" name="books"/>
               <van-tab title="闲置物品" name="items"/>
@@ -52,7 +53,8 @@
 <!--        ></tab-control>-->
 <!--          <button @click="debug">debug</button>-->
         <!-- 因为是切换选项卡，所以只显示一个，只传一个类型的数据，需要知道当前是哪个选项卡，使用计算属性 -->
-        <goods-list :goods="showGoods"></goods-list>
+          <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
+          <goods-list :goods="showGoods"></goods-list>
       </div>
     </div>
     <back-top @goback="goback" v-show="isShowBackTop"></back-top>
@@ -62,7 +64,7 @@
 <script>
 import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
 import { useRouter } from 'vue-router'
-import { getHomeAllData, getHomeGoodsData } from "network/home";
+import { getHomeAllData, getHomeGoodsData, getSearchData } from "network/home";
 import HomeSwiper from "views/home/childComps/HomeSwiper";
 import NavBar from "components/common/navbar/NavBar";
 import recommendView from "./childComps/RecommendView";
@@ -71,6 +73,7 @@ import GoodsList from "components/content/goods/GoodsList";
 import BackTop from "components/common/backtop/BackTop";
 
 import BScroll from "better-scroll";
+import {Search} from "vant";
 
 export default {
   name: "Home",
@@ -87,6 +90,9 @@ export default {
     const router = useRouter()
 
       const searchInfo = ref('')
+      const searchFail = computed(() => {
+          return goods.search.length === 0
+      })
 
     //复制TabControl
     const isTabFixed = ref(false);
@@ -99,7 +105,8 @@ export default {
     const goods = reactive({
       recommend: reactive([]),
       books: reactive([]),
-      items: reactive([])
+      items: reactive([]),
+      search: reactive([])
     });
 
     const currentType = ref("recommend");
@@ -113,12 +120,14 @@ export default {
                   currentType.value = oldValue
               })
               router.push('/category')
+          }else if(newValue === "search"){
+              // if(goods.search.length === 0)
+              //   searchFail.value = true
           }else if(goods[newValue].length === 0)
               getShowGoods()
       })
 
     const getShowGoods = () => {
-        console.log("get:",currentType.value)
         getHomeGoodsData(currentType.value).then((res) => {
             goods[currentType.value].push(...res);
         });
@@ -126,8 +135,20 @@ export default {
 
     let bscroll = reactive({});
 
+    const searched = ref(false)
+
     const onSearch = () => {
-        console.log("on search")
+        // console.log("on search")
+        getSearchData(searchInfo.value).then((res) => {
+            searched.value = true
+            goods.search.length = 0
+            goods.search.push(...res);
+            nextTick(() => {
+                currentType.value = 'search'
+                console.log('search success',currentType.value)
+            })
+
+        });
     }
 
     const onCancel = () => {
@@ -205,7 +226,7 @@ export default {
       });
     };
     const debug = () => {
-        console.log("goods",goods.recommend)
+        console.log("type",currentType.value)
     }
 
     return {
@@ -221,7 +242,9 @@ export default {
         searchInfo,
         onSearch,
         onCancel,
-        debug
+        debug,
+        searched,
+        searchFail
     };
   },
 };
