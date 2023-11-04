@@ -1,57 +1,67 @@
 <template>
-    <van-nav-bar title="发布商品" style="background-color: #42b983;"/>
-    <van-form @submit="onSubmit">
-        <van-field
-            v-model="form.name"
-            label="商品名称"
-            name="name"
-            placeholder="请输入商品名称"
-            required
-            style="margin-bottom: 10px"
-        />
+    <van-nav-bar title="发布商品" style="background-color: #42b983;" fixed/>
+    <div style="margin-bottom: 60px" />
+    <div class="display">
+        <van-form @submit="onSubmit">
+          <van-field
+              v-model="form.name"
+              label="商品名称"
+              name="name"
+              placeholder="请输入商品名称"
+              required
+              style="margin-bottom: 10px"
+          />
 
-        <van-uploader
-            v-model="form.images"
-            :after-read="afterRead"
-            multiple
-            :max-count="4"
-            accept="image/*"
-            :deletable="true"
-            @delete="onDelete"
-        />
+          <van-uploader
+              v-model="form.images"
+              :after-read="afterRead"
+              multiple
+              :max-count="4"
+              accept="image/*"
+              :deletable="true"
+              @delete="onDelete"
+          />
 
-        <van-field
-            v-model="form.price"
-            label="商品价格"
-            name="price"
-            type="number"
-            placeholder="请输入商品价格"
-            required
-        />
+          <van-field
+              v-model="form.price"
+              label="商品价格"
+              name="price"
+              type="number"
+              placeholder="请输入商品价格"
+              required
+          />
 
-        <van-field
-            v-model="form.description"
-            label="商品描述"
-            name="description"
-            type="textarea"
-            placeholder="请输入商品描述"
-            required
-            style="height: 200px"
-        />
+          <van-field
+              v-model="form.description"
+              label="商品描述"
+              name="description"
+              type="textarea"
+              placeholder="请输入商品描述"
+              required
+              style="max-height: 200px; min-height: 100px; overflow-y: auto"
+              autosize
+          />
 
-        <van-cell title="添加分类"  style="text-align: left">
-          <van-tag type="primary" style="margin-right: 5px" @click="addCategory">添加</van-tag>
-          <van-tag type="primary"
-                   v-for="(category, idx) in form.categories"
-                   closeable
-                   @close="deleteCategory(idx)"
-                   style="margin-right: 5px"
-          >
-            {{ category }}
-          </van-tag>
-        </van-cell>
-        <van-button round block type="info" native-type="submit">提交</van-button>
-    </van-form>
+          <van-cell title="添加分类" required style="text-align: left;">
+            <van-tag type="primary" size="medium" style="margin-right: 5px" @click="addCategory">添加</van-tag>
+            <van-tag type="primary"
+                     size="medium"
+                     v-for="(category, idx) in form.categories"
+                     closeable
+                     @close="deleteCategory(idx)"
+                     style="margin-right: 5px"
+            >
+              {{ category }}
+            </van-tag>
+          </van-cell>
+        </van-form>
+      </div>
+
+      <div style="margin: 20px">
+        <van-button round block type="success" color="#42b983">提交</van-button>
+      </div>
+
+
 
     <van-dialog v-model:show="dialog.show" title="添加类别" @confirm="dialogConfirm">
       <div style="margin-bottom: 300px">
@@ -70,9 +80,12 @@ import {getCategoryData} from "@/network/category";
 import {uploadImage} from "@/network/image";
 import {updateUser} from "@/network/user";
 import {publishProduct} from "@/network/publish";
+import PriceDisplay from "@/components/content/goods/PriceDisplay";
 
 export default {
-  components: {},
+  components: {
+    'BackgroundSurround': PriceDisplay
+  },
 
   setup() {
         const form = reactive({
@@ -173,3 +186,22 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px; /* Added horizontal margin */
+  color: #333;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  display: flex;
+  align-items: baseline;
+}
+</style>
