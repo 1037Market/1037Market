@@ -16,9 +16,10 @@
     </div>
 
     <van-action-bar>
-      <van-action-bar-icon icon="chat-o" text="联系卖家"/>
-      <van-action-bar-icon icon="friends-o" text="卖家信息"/>
-      <van-action-bar-button type="danger" text="立即购买"/>
+      <van-icon name="manager-o" style="margin-left: 20px" />
+      <van-action-bar-icon text="卖家信息"/>
+      <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
+      <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px"/>
     </van-action-bar>
 
   </div>
