@@ -224,27 +224,10 @@ func GetProductListByStudentId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId := c.Query("studentId")
 
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
-		}
-		rows, err := db.Query("select productId from PRODUCTS where userId = ?", studentId)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
-			return
-		}
-		rows.Close()
-		lst := make([]int, 0)
-		for rows.Next() {
-			var id int
-			err = rows.Scan(&id)
-			if err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err.Error())
-				return
-			}
-			lst = append(lst, id)
 		}
 		c.JSON(http.StatusOK, lst)
 	}

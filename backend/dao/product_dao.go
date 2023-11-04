@@ -4,6 +4,32 @@ import (
 	"1037Market/mysqlDb"
 )
 
+func GetProductListByStudentId(studentId string) ([]int, error) {
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := db.Query("select productId from PRODUCTS where userId = ?", studentId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	lst := make([]int, 0)
+	for rows.Next() {
+		var id int
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+		lst = append(lst, id)
+	}
+	return lst, nil
+}
+
 func GetProductListByCategory(category, count string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
