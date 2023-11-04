@@ -11,21 +11,20 @@
       src="https://picgo-xqaqyn.oss-cn-shanghai.aliyuncs.com/img/b_256781c21be0a7ed01ebd36a6d7c72c0.jpg"
     />
 
-    <van-card
-      style="text-align: left"
-      :price="productDetail.price + '.00'"
-      :desc="productDetail.content"
-      :title="productDetail.title"
-    >
-<!--      <template #tags>-->
-<!--        <van-tag plain type="danger">新书</van-tag>-->
-<!--        <van-tag plain type="danger">推荐</van-tag>-->
-<!--      </template>-->
-      <template #footer>
-        <van-button type="warning" @click="handleCart">加入购物车</van-button>
-        <van-button type="danger" @click="goToCart">立即购买</van-button>
-      </template>
-    </van-card>
+
+    <div>
+
+      <price-display :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
+      <product-description :description="productDetail.content" />
+
+    </div>
+
+    <van-action-bar>
+      <van-icon name="manager-o" style="margin-left: 20px" />
+      <van-action-bar-icon text="卖家信息" @click="userInfo"/>
+      <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
+      <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px"/>
+    </van-action-bar>
 
     <van-tabs v-model="active">
       <van-tab title="概述">
@@ -95,12 +94,18 @@ export default {
       })
     });
 
+    const userInfo = () => {
+      console.log(productDetail.value.publisher);
+      router.push({ path: `/seller/${productDetail.value.publisher}`});
+    }
+
     return {
         id,
         active,
         handleCart,
         goToCart,
-        productDetail
+        productDetail,
+        userInfo
     };
   },
 };

@@ -8,6 +8,7 @@ const Profile = () => import('views/profile/Profile');
 const Register = () => import('views/profile/Register');
 const Login = () => import('views/profile/Login')
 const Publish = () => import('views/publish/Publish')
+const Seller = () => import('views/seller/Seller');
 import { Notify } from "vant";
 
 
@@ -43,6 +44,14 @@ const routes = [
     component: Detail,
     meta: {
       title: '商品详情'
+    }
+  },
+  {
+    path: '/seller/:studentId',
+    name: 'Seller',
+    component: Seller,
+    meta: {
+      title: '卖家详情'
     }
   },
   {
