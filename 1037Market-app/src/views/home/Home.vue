@@ -94,9 +94,7 @@ export default {
     const isTabFixed = ref(false);
 
     const isShowBackTop = ref(false);
-
-    const searchInfo = ref('');
-
+    
     let banref = ref(null);
 
     //商品列表对象模型,里面三个选项卡的页码和列表
@@ -228,10 +226,6 @@ export default {
     };
     const debug = () => {
         console.log("type",currentType.value)
-    }
-
-    const debug = () => {
-        console.log("type:",currentType)
     }
 
     return {
