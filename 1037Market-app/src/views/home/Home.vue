@@ -1,15 +1,40 @@
 <template>
   <div id="home">
-    <nav-bar>
-      <!-- vue3插槽写法 -->
-      <template v-slot:center>1037集市</template>
-    </nav-bar>
+<!--    <nav-bar>-->
+<!--       vue3插槽写法 -->
+<!--      <template v-slot:center>1037集市</template>-->
+<!--    </nav-bar>-->
+      <van-nav-bar
+          title="1037集市"
+          fixed
+          placeholder
+      />
+
+      <div>
+          <van-search
+              v-model="searchInfo"
+              placeholder="请输入搜索关键词"
+              @search="onSearch"
+          />
+      </div>
+
+      <div>
+          <van-tabs v-model:active="currentType">
+              <van-tab title="推荐"/>
+              <van-tab title="二手书"/>
+              <van-tab title="闲置物品"/>
+              <van-tab title="更多分类"/>
+          </van-tabs>
+      </div>
+
+
+      <button @click="debug">debug</button>
 
     <!-- 复制一份tab-control选择性显示 -->
-    <tab-control
-      :titles="['推荐', '二手书', '闲置物品']"
-      @tabClick="tabClick"
-    ></tab-control>
+<!--    <tab-control-->
+<!--      :titles="['推荐', '二手书', '闲置物品']"-->
+<!--      @tabClick="tabClick"-->
+<!--    ></tab-control>-->
 
     <!-- 使用better-scroll -->
     <div class="wrapper">
@@ -26,7 +51,7 @@
 <!--        ></tab-control>-->
 
         <!-- 因为是切换选项卡，所以只显示一个，只传一个类型的数据，需要知道当前是哪个选项卡，使用计算属性 -->
-        <goods-list :goods="showGoods"></goods-list>
+        <goods-list :goods="showGoods" v-if="Array.isArray(showGoods)"></goods-list>
       </div>
     </div>
     <back-top @goback="goback" v-show="isShowBackTop"></back-top>
@@ -63,6 +88,8 @@ export default {
 
     const isShowBackTop = ref(false);
 
+    const searchInfo = ref('');
+
     let banref = ref(null);
 
     //商品列表对象模型,里面三个选项卡的页码和列表
@@ -72,12 +99,26 @@ export default {
       items: []
     });
 
-    const currentType = ref("recommend");
+    const currentType = ref("推荐");
     const showGoods = computed(() => {
       return goods[currentType.value];
     });
 
     let bscroll = reactive({});
+
+    const onSearch = () => {
+
+    }
+
+    const onCancel = () => {
+        searchInfo.value = ''
+    }
+
+    function onClickTab(type){
+        console.log('fuck')
+        currentType.value = type
+        console.log(currentType)
+    }
 
     //监听，任何一个变量有变化
     watchEffect(() => {
@@ -145,10 +186,13 @@ export default {
 
     //子组件TabControl传过来的
     const tabClick = (index) => {
-      let types = ["sales", "new", "recommend"];
+      let types = ["recommend", "books", "items", "more"];
       //选项卡切换后下面内容才会变
       currentType.value = types[index];
       // console.log(currentType.value);
+
+        if(currentType.value === "more")
+
 
       //监听，任何一个变量有变化
       watchEffect(() => {
@@ -159,6 +203,10 @@ export default {
         });
       });
     };
+
+    const debug = () => {
+        console.log("type:",currentType)
+    }
 
     return {
       recommends,
@@ -171,6 +219,11 @@ export default {
       banref,
       goback,
       isShowBackTop,
+        searchInfo,
+        onSearch,
+        onCancel,
+        onClickTab,
+        debug
     };
   },
 };
@@ -189,7 +242,7 @@ export default {
 
 .wrapper {
   position: absolute;
-  top: 45px;
+  top: 100px;
   bottom: 50px;
   right: 0;
   left: 0;
