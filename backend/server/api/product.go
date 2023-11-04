@@ -205,7 +205,7 @@ func GetProductListByKeyword() gin.HandlerFunc {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
 		}
-		rows.Close()
+		defer rows.Close()
 		lst := make([]int, 0)
 		for rows.Next() {
 			var id int
