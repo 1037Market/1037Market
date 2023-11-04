@@ -12,13 +12,9 @@ func CreateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		// user identity verify
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
+		cookie := c.Query("user")
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
@@ -86,7 +82,7 @@ func QueryCommentList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userId := c.Query("studentId")
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
@@ -118,7 +114,7 @@ func GetCommentById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentId := c.Query("commentId")
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))

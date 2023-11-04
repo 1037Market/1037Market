@@ -44,6 +44,6 @@ func newDB() (*DataBase, error) {
 	}, nil
 }
 
-func GetNewDb() (*DataBase, error) {
+func GetConnection() (*DataBase, error) {
 	return newDB()
 }

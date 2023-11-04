@@ -102,7 +102,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(500, err.Error())
@@ -132,14 +132,6 @@ func Login() gin.HandlerFunc {
 			return
 		}
 		cookieString := generateRandomDigits(16)
-		cookie := &http.Cookie{
-			Name:     "user",
-			Value:    cookieString,
-			Path:     "/",
-			HttpOnly: true,
-			Expires:  time.Now().Add(24 * time.Hour), // 设置 cookie 的过期时间
-		}
-		http.SetCookie(c.Writer, cookie)
 
 		// check whether already has a cookie
 		rows, err = db.Query("select cookie from COOKIES where userId = ?", user.StudentId)
@@ -159,17 +151,13 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		c.String(http.StatusOK, "Cookie has been set!")
+		c.String(http.StatusOK, cookieString)
 	}
 }
 
 func UpdateUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
+		cookie := c.Query("user")
 
 		type UserInfo struct {
 			NickName string `json:"nickName"`
@@ -177,13 +165,13 @@ func UpdateUserInfo() gin.HandlerFunc {
 			Contact  string `json:"contact"`
 		}
 		var userInfo UserInfo
-		err = c.ShouldBindJSON(&userInfo)
+		err := c.ShouldBindJSON(&userInfo)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bind error: %s", err)
 			return
 		}
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
@@ -226,7 +214,7 @@ func GetUserInfo() gin.HandlerFunc {
 			Contact  string `json:"contact"`
 		}
 		id := c.Query("studentId")
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)

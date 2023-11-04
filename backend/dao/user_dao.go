@@ -8,11 +8,11 @@ import (
 
 func AddNewUser(user ds.RegisterUser) error {
 	// get database connection
-	db, err := mysqlDb.GetNewDb()
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	//start transaction
 	txn, err := db.Begin()
@@ -53,4 +53,26 @@ func AddNewUser(user ds.RegisterUser) error {
 
 	txn.Commit()
 	return nil
+}
+
+func GetUserIdByCookie(cookie string) (string, error) {
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
+	if err != nil {
+		return "", err
+	}
+
+	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
+	if err != nil {
+		return "", err
+	}
+
+	if !rows.Next() {
+		return "", errors.New("invalid cookie")
+	}
+	var userId string
+	if err = rows.Scan(&userId); err != nil {
+		return "", err
+	}
+	return userId, nil
 }

@@ -3,11 +3,11 @@ package dao
 import "1037Market/mysqlDb"
 
 func GetCategoryList() ([]string, error) {
-	db, err := mysqlDb.GetNewDb()
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	rows, err := db.Query("select categoryName from CATEGORIES")
 	if err != nil {

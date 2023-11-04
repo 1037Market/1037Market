@@ -22,12 +22,9 @@ func PublishProduct() gin.HandlerFunc {
 		}
 
 		// user identity verify
-		cookie, err := c.Cookie("user")
-		if err != nil {
-			c.String(http.StatusBadRequest, "no cookie is set")
-			return
-		}
-		db, err := mysqlDb.GetNewDb()
+		cookie := c.Query("user")
+
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
@@ -117,7 +114,7 @@ func GetProductById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Query("productId")
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
@@ -196,7 +193,7 @@ func GetProductListByKeyword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		keyword := c.Query("keyword")
 
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
@@ -225,13 +222,10 @@ func GetProductListByKeyword() gin.HandlerFunc {
 
 func DeleteProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("user")
+		cookie := c.Query("user")
 		productId := c.Query("productId")
-		if err != nil {
-			c.String(http.StatusBadRequest, "cookie not set")
-			return
-		}
-		db, err := mysqlDb.GetNewDb()
+
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
@@ -275,7 +269,7 @@ func DeleteProduct() gin.HandlerFunc {
 func GetRandomProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
@@ -305,7 +299,7 @@ func GetProductListByCategory() gin.HandlerFunc {
 		category := c.Query("category")
 		cnt := c.Query("count")
 		fmt.Println(category, cnt)
-		db, err := mysqlDb.GetNewDb()
+		db, err := mysqlDb.GetConnection()
 		defer db.Close()
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
