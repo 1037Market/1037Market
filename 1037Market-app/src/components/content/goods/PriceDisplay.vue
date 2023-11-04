@@ -4,7 +4,18 @@
       <span class="currency">¥</span>
       <span class="price">{{ price }}</span>
     </div>
-    <div class="name">{{ name }}</div>
+    <div class="name-and-tags">
+      <div class="name">{{ name }}</div>
+      <div class="tags">
+        <van-tag type="primary" size="medium"
+                 v-for="category in categories"
+                 :key="category"
+                 style="margin: 5px"
+        >
+          {{ category }}
+        </van-tag>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -20,6 +31,10 @@ export default {
       type: Number,
       required: true,
     },
+    categories: {
+      type: Array,
+      required: true
+    }
   },
 };
 </script>
@@ -27,10 +42,10 @@ export default {
 <style scoped>
 .price-display {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Change to column layout */
+  align-items: flex-start; /* Align to the start of the flex container */
   padding: 15px;
-  margin: 10px; /* Added horizontal margin */
+  margin: 10px;
   color: #333;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -43,22 +58,30 @@ export default {
 }
 
 .currency {
-  font-size: 1.6em; /* Slightly larger to emphasize currency */
+  font-size: 1.6em;
   margin-right: 5px;
-  color: #333; /* Dark color for contrast */
+  color: #333;
 }
 
 .price {
-  font-size: 2.8em; /* Slightly larger for more emphasis */
+  font-size: 2.8em;
   font-weight: bold;
   letter-spacing: 1px;
+}
+
+.name-and-tags {
+  align-self: stretch; /* Stretch to fill the width */
 }
 
 .name {
   font-size: 1.2em;
   text-align: right;
-  flex: 1;
-  opacity: 0.85; /* Slightly transparent to blend with the background */
+  opacity: 0.85;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.tags {
+  text-align: right; /* Align tags to the right */
+  margin-top: 5px; /* Spacing between name and tags */
 }
 </style>

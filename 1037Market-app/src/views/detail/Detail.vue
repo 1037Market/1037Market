@@ -11,8 +11,10 @@
     </van-swipe>
 
     <div>
-      <price-display :name="productDetail.title" :price="productDetail.price" />
+
+      <price-display :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
       <product-description :description="productDetail.content" />
+
     </div>
 
     <van-action-bar>
@@ -55,7 +57,8 @@ export default {
 
     let id = ref(route.params.id);
     const productDetail = ref({
-      imageURIs: []
+      imageURIs: [],
+      categories: []
     })
     let active = ref(1);
 
@@ -118,5 +121,19 @@ export default {
 <style scoped lang="scss">
 #con1 {
   padding: 10px;
+}
+</style>
+
+<style scoped>
+.display {
+  font-family: 'Poppins', sans-serif;
+  margin: 10px 10px 50px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
+
 }
 </style>
