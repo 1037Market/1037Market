@@ -193,6 +193,11 @@ func GetProductListByKeyword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		keyword := c.Query("keyword")
 
+		lst, err := dao.GetProductListByKeyword(keyword)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
+			return
+		}
 		c.JSON(http.StatusOK, lst)
 	}
 }
