@@ -14,7 +14,7 @@
             v-model="form.images"
             :after-read="afterRead"
             multiple
-            :max-count="5"
+            :max-count="4"
             accept="image/*"
             :deletable="true"
             @delete="onDelete"
@@ -123,7 +123,6 @@ export default {
 
         const onDelete = (index) => {
             // 删除指定索引的图片
-            form.images.splice(index, 1);
             form.imageURIs.splice(index, 1);
         };
 
