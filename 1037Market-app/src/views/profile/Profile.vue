@@ -1,14 +1,10 @@
 <template>
   <div>
-    <nav-bar>
-      <!-- vue3插槽写法 -->
-      <template v-slot:center>个人中心</template>
-    </nav-bar>
+    <van-nav-bar title="个人中心"
+                 fixed
+                 placeholder
 
-
-
-    <div style="margin: 60px">
-
+    />
       <van-image
             width="10rem"
             height="10rem"
@@ -23,20 +19,22 @@
         </van-uploader>
       </div>
 
+      <div class="display">
+        <van-cell-group>
+          <van-field v-model="userInfo.nickName" label="昵称"
+                     :right-icon="infoEditing.nickName?'sign':'edit'"
+                     @update:model-value="updateNickName"
+                     @click-right-icon="saveUserInfo"
+          />
+          <van-field v-model="userInfo.studentId" label="学号" readonly/>
+          <van-field v-model="userInfo.contact" label="联系方式"
+                     :right-icon="infoEditing.contact?'sign':'edit'"
+                     @update:model-value="updateContact"
+                     @click-right-icon="saveUserInfo"
+          />
+        </van-cell-group>
+      </div>
 
-      <van-cell-group>
-        <van-field v-model="userInfo.nickName" label="昵称"
-                   :right-icon="infoEditing.nickName?'sign':'edit'"
-                   @update:model-value="updateNickName"
-                   @click-right-icon="saveUserInfo"
-        />
-        <van-field v-model="userInfo.studentId" label="学号" readonly/>
-        <van-field v-model="userInfo.contact" label="联系方式"
-                   :right-icon="infoEditing.contact?'sign':'edit'"
-                   @update:model-value="updateContact"
-                   @click-right-icon="saveUserInfo"
-        />
-      </van-cell-group>
     </div>
 
 
@@ -47,7 +45,6 @@
       >
 
     </div>
-  </div>
 </template>
 
 <script>
@@ -172,5 +169,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px; /* Added horizontal margin */
+  color: #333;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+}
 </style>

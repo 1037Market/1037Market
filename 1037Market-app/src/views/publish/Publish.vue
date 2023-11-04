@@ -1,6 +1,9 @@
 <template>
-    <van-nav-bar title="发布商品" style="background-color: #42b983;" fixed/>
-    <div style="margin-bottom: 60px" />
+  <van-nav-bar title="发布商品"
+               fixed
+               placeholder
+
+  />
     <div class="display">
         <van-form @submit="onSubmit">
           <van-field
@@ -198,10 +201,5 @@ export default {
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
-}
-
-.container {
-  display: flex;
-  align-items: baseline;
 }
 </style>
