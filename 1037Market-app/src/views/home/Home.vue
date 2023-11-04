@@ -1,34 +1,31 @@
 <template>
   <div id="home">
-<!--    <nav-bar>-->
-<!--       vue3插槽写法 -->
-<!--      <template v-slot:center>1037集市</template>-->
-<!--    </nav-bar>-->
+
       <van-nav-bar
           title="1037集市"
           fixed
           placeholder
       />
 
-      <div>
+
+      <form action="/">
           <van-search
               v-model="searchInfo"
               placeholder="请输入搜索关键词"
               @search="onSearch"
           />
-      </div>
+
+      </form>
 
       <div>
-          <van-tabs v-model:active="currentType">
-              <van-tab title="推荐"/>
-              <van-tab title="二手书"/>
-              <van-tab title="闲置物品"/>
-              <van-tab title="更多分类"/>
+          <van-tabs v-model:active="currentType" >
+              <van-tab title="搜索结果" name="search" v-if="searched"/>
+              <van-tab title="推荐" name="recommend"/>
+              <van-tab title="二手书" name="books"/>
+              <van-tab title="闲置物品" name="items"/>
+              <van-tab title="更多分类" name="more"/>
           </van-tabs>
       </div>
-
-
-      <button @click="debug">debug</button>
 
     <!-- 复制一份tab-control选择性显示 -->
 <!--    <tab-control-->
@@ -49,9 +46,11 @@
 <!--          :titles="['推荐', '二手书', '闲置物品']"-->
 <!--          @tabClick="tabClick"-->
 <!--        ></tab-control>-->
-
+<!--          <button @click="debug">debug</button>-->
         <!-- 因为是切换选项卡，所以只显示一个，只传一个类型的数据，需要知道当前是哪个选项卡，使用计算属性 -->
-        <goods-list :goods="showGoods" v-if="Array.isArray(showGoods)"></goods-list>
+
+          <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
+          <goods-list :goods="showGoods"></goods-list>
       </div>
     </div>
     <back-top @goback="goback" v-show="isShowBackTop"></back-top>
@@ -59,8 +58,9 @@
 </template>
 
 <script>
-import { onMounted, ref, reactive, computed, watchEffect, nextTick } from "vue";
-import { getHomeAllData, getHomeGoodsData } from "network/home";
+import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
+import { useRouter } from 'vue-router'
+import { getHomeAllData, getHomeGoodsData, getSearchData } from "network/home";
 import HomeSwiper from "views/home/childComps/HomeSwiper";
 import NavBar from "components/common/navbar/NavBar";
 import recommendView from "./childComps/RecommendView";
@@ -69,6 +69,7 @@ import GoodsList from "components/content/goods/GoodsList";
 import BackTop from "components/common/backtop/BackTop";
 
 import BScroll from "better-scroll";
+import {Search} from "vant";
 
 export default {
   name: "Home",
@@ -82,6 +83,12 @@ export default {
   },
   setup() {
     const recommends = ref([]);
+    const router = useRouter()
+
+      const searchInfo = ref('')
+      const searchFail = computed(() => {
+          return goods.search.length === 0
+      })
 
     //复制TabControl
     const isTabFixed = ref(false);
@@ -94,30 +101,57 @@ export default {
 
     //商品列表对象模型,里面三个选项卡的页码和列表
     const goods = reactive({
-      recommend: [],
-      books: [],
-      items: []
+      recommend: reactive([]),
+      books: reactive([]),
+      items: reactive([]),
+      search: reactive([])
     });
 
     const currentType = ref("推荐");
     const showGoods = computed(() => {
-      return goods[currentType.value];
-    });
+        return goods[currentType.value]
+    })
+
+      watch(currentType, (newValue, oldValue) => {
+          if(newValue === "more"){
+              nextTick(() => {
+                  currentType.value = oldValue
+              })
+              router.push('/category')
+          }else if(newValue === "search"){
+              // if(goods.search.length === 0)
+              //   searchFail.value = true
+          }else if(goods[newValue].length === 0)
+              getShowGoods()
+      })
+
+    const getShowGoods = () => {
+        getHomeGoodsData(currentType.value).then((res) => {
+            goods[currentType.value].push(...res);
+        });
+    }
 
     let bscroll = reactive({});
 
-    const onSearch = () => {
+    const searched = ref(false)
 
+    const onSearch = () => {
+        // console.log("on search")
+        getSearchData(searchInfo.value).then((res) => {
+            searched.value = true
+            goods.search.length = 0
+            goods.search.push(...res);
+            nextTick(() => {
+                currentType.value = 'search'
+                console.log('search success',currentType.value)
+            })
+
+        });
     }
 
     const onCancel = () => {
+        console.log("on cancel")
         searchInfo.value = ''
-    }
-
-    function onClickTab(type){
-        console.log('fuck')
-        currentType.value = type
-        console.log(currentType)
     }
 
     //监听，任何一个变量有变化
@@ -134,20 +168,9 @@ export default {
       bscroll.scrollTo(0, 0);
     };
 
-    onMounted(() => {
-      //分别传参获取三个选项卡的数据
-
-        getHomeGoodsData("recommend").then((res) => {
-            goods.recommend.push(...res);
-        });
-
-        getHomeGoodsData("books").then((res) => {
-            goods.books.push(...res);
-        });
-
-      getHomeGoodsData("items").then((res) => {
-        goods.items.push(...res);
-      });
+      onMounted(() => {
+          currentType.value = 'recommend'
+          getShowGoods()
 
       // 创建BS对象
       bscroll = new BScroll(document.querySelector(".wrapper"), {
@@ -203,6 +226,9 @@ export default {
         });
       });
     };
+    const debug = () => {
+        console.log("type",currentType.value)
+    }
 
     const debug = () => {
         console.log("type:",currentType)
@@ -210,7 +236,6 @@ export default {
 
     return {
       recommends,
-      tabClick,
       goods,
       currentType,
       showGoods,
@@ -222,8 +247,9 @@ export default {
         searchInfo,
         onSearch,
         onCancel,
-        onClickTab,
-        debug
+        debug,
+        searched,
+        searchFail
     };
   },
 };
@@ -242,7 +268,8 @@ export default {
 
 .wrapper {
   position: absolute;
-  top: 100px;
+  top: 45px;
+  top: 150px;
   bottom: 50px;
   right: 0;
   left: 0;

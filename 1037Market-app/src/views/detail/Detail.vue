@@ -4,12 +4,11 @@
       <template v-slot:center>商品详情:{{ id }}</template>
     </nav-bar>
 
-    <van-image
-      style="margin-top: 50px"
-      width="100%"
-      lazy-load
-      src="https://picgo-xqaqyn.oss-cn-shanghai.aliyuncs.com/img/b_256781c21be0a7ed01ebd36a6d7c72c0.jpg"
-    />
+    <van-swipe :autoplay="3000" indicator-color="#44b883" style="height: 300px; margin-top: 45px;" lazy-render>
+      <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri">
+        <van-image :src="'http://franky.pro:7301/api/image?imageURI=' + uri" fit="contain"/>
+      </van-swipe-item>
+    </van-swipe>
 
 
     <div>
@@ -26,15 +25,6 @@
       <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px"/>
     </van-action-bar>
 
-    <van-tabs v-model="active">
-      <van-tab title="概述">
-        <div id="con1" v-html="productDetail.content"></div>
-      </van-tab>
-      <van-tab title="热评"> </van-tab>
-<!--      <van-tab title="相关图书">-->
-<!--        <goods-list :goods="like_goods"></goods-list>-->
-<!--      </van-tab>-->
-    </van-tabs>
   </div>
 </template>
 
@@ -42,7 +32,7 @@
 import NavBar from "components/common/navbar/NavBar";
 import GoodsList from "components/content/goods/GoodsList";
 
-import { useRoute } from "vue-router";
+import {onBeforeRouteLeave, useRoute} from "vue-router";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -50,11 +40,16 @@ import { ref, onMounted, reactive, toRefs } from "vue";
 import { getDetail } from "network/detail";
 import { Toast } from "vant";
 import { addCart } from "network/cart";
+
+import PriceDisplay from "components/content/goods/PriceDisplay"
+import ProductDescription from "components/content/goods/ProductDescription";
 export default {
   name: "Detail",
   components: {
     NavBar,
     GoodsList,
+    PriceDisplay,
+    ProductDescription
   },
   setup() {
     const route = useRoute();
@@ -62,11 +57,13 @@ export default {
     const store = useStore();
 
     let id = ref(route.params.id);
-    const productDetail = ref({})
+    const productDetail = ref({
+      imageURIs: [],
+      categories: []
+    })
     let active = ref(1);
 
     const handleCart = () => {
-        console.log(id.value)
       addCart(id.value).then((res) => {
         if (res.status == "204" || res.status == "201") {
           Toast.success("添加成功");
@@ -87,11 +84,28 @@ export default {
       // });
     };
 
+    onBeforeRouteLeave((to, from, next) => { // 离开前将底部tabbar恢复
+      const nav = document.getElementById('nav');
+      if(nav) {
+        nav.style.visibility = 'visible';
+      }
+      next();
+    })
+
     onMounted(() => {
+      // 进入时隐藏底部tabbar
+      const nav = document.getElementById('nav');
+      if(nav) {
+        nav.style.visibility = 'hidden';
+      }
 
       getDetail(id.value).then((res) => {
-          productDetail.value = res
-      })
+          productDetail.value = res;
+          console.log(res);
+      }).catch((err) => {
+        console.log(err);
+      });
+
     });
 
     const userInfo = () => {
@@ -114,5 +128,19 @@ export default {
 <style scoped lang="scss">
 #con1 {
   padding: 10px;
+}
+</style>
+
+<style scoped>
+.display {
+  font-family: 'Poppins', sans-serif;
+  margin: 10px 10px 50px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
+
 }
 </style>
