@@ -35,7 +35,7 @@
                      @update:model-value="updateContact"
                      @click-right-icon="saveUserInfo"
           />
-          <van-field left-icon="map-marked" v-model="userInfo.contact" label="地址"
+          <van-field left-icon="map-marked" v-model="userInfo.address" label="地址"
                      :right-icon="infoEditing.contact?'sign':'edit'"
                      @update:model-value="updateContact"
                      @click-right-icon="saveUserInfo"
@@ -96,7 +96,8 @@ export default {
       studentId: "",
       avatar: "",
       contact: "",
-      nickName: ""
+      nickName: "",
+      address: ""
     })
 
     const infoEditing = reactive(
@@ -113,6 +114,7 @@ export default {
         userInfo.avatar = data['avatar'];
         userInfo.contact = data['contact'];
         userInfo.nickName = data['nickName'];
+        userInfo.address = data['address'];
       })
     }
 
