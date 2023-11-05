@@ -64,3 +64,11 @@ type UserInfoUpdated struct {
 	Avatar   string `json:"avatar"`
 	Contact  string `json:"contact"`
 }
+
+type CommentGot struct {
+	FromId   string `json:"fromId"`
+	Content  string `json:"content"`
+	NickName string `json:"nickName"`
+	Avatar   string `json:"avatar"`
+	Stars    int    `json:"stars"`
+}

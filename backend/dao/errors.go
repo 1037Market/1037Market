@@ -18,6 +18,7 @@ const (
 	ErrTypeProductAlreadyExist
 	ErrTypeWrongPassword
 	ErrTypeWrongRequestFormat
+	ErrTypeNoSuchComment
 )
 
 type ErrorDao struct {

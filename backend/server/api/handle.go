@@ -65,5 +65,8 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeProductAlreadyExist:
 		log.Println("product already exist", errorDao.Message)
 		c.String(http.StatusBadRequest, "商品已存在\nproduct already exist")
+	case dao.ErrTypeNoSuchComment:
+		log.Println("no such comment", errorDao.Message)
+		c.String(http.StatusBadRequest, "评论不存在\nno such comment")
 	}
 }

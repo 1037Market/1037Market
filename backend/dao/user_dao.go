@@ -121,7 +121,8 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
-	defer rows.Close()
+	rows.Close()
+
 	if !rows.Next() {
 		return "", NewErrorDao(ErrTypeNoSuchUser, user.StudentId+" not found")
 	}
@@ -134,11 +135,11 @@ func Login(user ds.LoginUser) (string, error) {
 		return "", NewErrorDao(ErrTypeWrongPassword, user.StudentId+"wrong password")
 	}
 	cookieString := generateRandomDigits(16)
+
 	rows, err = db.Query("select cookie from COOKIES where userId = ?", user.StudentId)
 	if err != nil {
 		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
-	defer rows.Close()
 	if rows.Next() { // already has a cookie in DB
 		_, err = db.Exec("update COOKIES set cookie = ? where userId = ?", cookieString, user.StudentId)
 	} else {
@@ -147,6 +148,7 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return cookieString, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
+	defer rows.Close()
 	return cookieString, nil
 }
 
@@ -160,10 +162,10 @@ func UpdateUserInfo(cookie string, userInfo ds.UserInfoUpdated) error {
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 	if !rows.Next() {
 		return NewErrorDao(ErrTypeNoSuchUser, "no such user")
 	}
-	defer rows.Close()
 
 	var userId string
 	if err = rows.Scan(&userId); err != nil {
@@ -188,10 +190,10 @@ func GetUserInfo(userId string) (ds.UserInfoGot, error) {
 	if err != nil {
 		return ds.UserInfoGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 	if !rows.Next() {
 		return ds.UserInfoGot{}, NewErrorDao(ErrTypeNoSuchUser, "no such user")
 	}
-	defer rows.Close()
 
 	var userInfo ds.UserInfoGot
 	if err = rows.Scan(&userInfo.UserId, &userInfo.NickName, &userInfo.Avatar, &userInfo.Contact); err != nil {
@@ -211,6 +213,7 @@ func GetUserIdByCookie(cookie string) (string, error) {
 	if err != nil {
 		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 
 	if !rows.Next() {
 		return "", NewErrorDao(ErrTypeNoSuchUser, "wrong cookie")

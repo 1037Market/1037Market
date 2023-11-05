@@ -49,7 +49,8 @@ create table COMMENTS(
     commentId   int primary key not null auto_increment,
     publisherId char(10) not null,
     receiverId  char(10) not null,
-    content     varchar(2047) not null,
+    content     varchar(2047),
+    stars      int not null,
     foreign key(publisherId) references USERS(userId),
     foreign key(receiverId) references USERS(userId)
 );
