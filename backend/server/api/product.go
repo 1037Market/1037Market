@@ -193,28 +193,23 @@ func GetProductListByKeyword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		keyword := c.Query("keyword")
 
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		lst, err := dao.GetProductListByKeyword(keyword)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
 		}
-		rows, err := db.Query("select productId from PRODUCTS where title like ? or description like ?",
-			"%"+keyword+"%", "%"+keyword+"%")
+		c.JSON(http.StatusOK, lst)
+	}
+}
+
+func GetProductListByStudentId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studentId := c.Query("studentId")
+
+		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			return
-		}
-		rows.Close()
-		lst := make([]int, 0)
-		for rows.Next() {
-			var id int
-			err = rows.Scan(&id)
-			if err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err.Error())
-				return
-			}
-			lst = append(lst, id)
 		}
 		c.JSON(http.StatusOK, lst)
 	}
@@ -269,26 +264,10 @@ func DeleteProduct() gin.HandlerFunc {
 func GetRandomProductList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		lst, err := dao.GetRandomProductList(cnt)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
-		}
-		rows, err := db.Query("select productId from PRODUCTS order by rand() limit ?", cnt)
-		defer rows.Close()
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		lst := make([]int, 0)
-		for rows.Next() {
-			var productId int
-			if err = rows.Scan(&productId); err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err)
-				return
-			}
-			lst = append(lst, productId)
 		}
 		c.JSON(http.StatusOK, lst)
 	}
@@ -298,29 +277,10 @@ func GetProductListByCategory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		category := c.Query("category")
 		cnt := c.Query("count")
-		fmt.Println(category, cnt)
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		lst, err := dao.GetProductListByCategory(category, cnt)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
-		}
-		rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? order by rand() limit ?",
-			category, cnt)
-		defer rows.Close()
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		lst := make([]int, 0)
-		for rows.Next() {
-			var productId int
-			err = rows.Scan(&productId)
-			if err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err)
-				return
-			}
-			lst = append(lst, productId)
 		}
 		c.JSON(http.StatusOK, lst)
 	}
