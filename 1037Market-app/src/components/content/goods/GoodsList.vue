@@ -14,7 +14,7 @@
 
 <script setup>
 import {getDetail} from "@/network/detail";
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {debounce} from "lodash";
 
@@ -30,36 +30,32 @@ const props = defineProps({
 const productIDs = ref(props.showGoods)
 
 const products = ref([])
-const renderIDs = new Set()
+let renderIDs = new Set()
+
+watchEffect(() => {
+    productIDs.value = [...props.showGoods]
+    // debouncedHandle(productIDs.value)
+})
 
 const debouncedHandle = debounce((newIDs) => {
-    products.value = []
-    renderIDs.clear()
+    products.value = products.value.filter(item => newIDs.includes(item.productId))
+    renderIDs = new Set(newIDs.filter(item => renderIDs.has(item)))
     newIDs.forEach(function (productId, index) {
         if(renderIDs.has(productId) === false){
             renderIDs.add(productId)
             getDetail(productId).then((resp) => {
                 products.value.push(resp)
             }).catch((error) => {
-                renderIDs.remove(productId)
+                renderIDs.delete(productId)
                 console.log("Load error")
             })
         }
     })
 }, 100)
 
-watch(productIDs.value, (newIDs) => {
+watch(productIDs, (newIDs) => {
     debouncedHandle(newIDs)
 })
-
-onMounted(() => {
-    // for (const productId of productIDs.value) {
-    //     getDetail(productId).then((resp) => {
-    //         products.value.push(resp)
-    //         console.log(products)
-    // })
-    // }
-});
 
 const itemClick = (productId) => {
     router.push({path: `/detail/${productId}`});

@@ -28,12 +28,16 @@
         </div>
 
         <div class="wrapper">
-            <div class="content">
+            <van-pull-refresh
+                v-model="pullingDown"
+                @refresh="pullingDownHandler"
+                success-text="刷新成功"
+                :head-height="50"
+            >
                 <div ref="banref"></div>
-
                 <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
                 <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
-            </div>
+            </van-pull-refresh>
         </div>
         <back-top @goback="goback" v-show="isShowBackTop"></back-top>
     </div>
@@ -42,10 +46,14 @@
 <script>
 import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
 import {useRouter} from 'vue-router'
-import {getHomeAllData, getHomeGoodsData, getSearchData} from "@/network/home";
+import {getHomeAllData, getHomeGoodsData, getSearchData, refresh} from "@/network/home";
 import GoodsList from "@/components/content/goods/GoodsList.vue";
 import BackTop from "@/components/common/backtop/BackTop.vue";
-import BScroll from "better-scroll";
+import BetterScroll from "@better-scroll/core";
+import PullUp from '@better-scroll/pull-up'
+import PullDown from "@better-scroll/pull-down";
+
+BetterScroll.use(PullUp).use(PullDown)
 
 export default {
     name: "Home",
@@ -59,7 +67,7 @@ export default {
 
         const searchInfo = ref('')
         const searchFail = computed(() => {
-            return goods.search.length === 0
+            return goods['search'].value.length === 0
         })
 
         //复制TabControl
@@ -70,16 +78,16 @@ export default {
         let banref = ref(null);
 
         //商品列表对象模型,里面三个选项卡的页码和列表
-        const goods = reactive({
-            recommend: reactive([]),
-            books: reactive([]),
-            items: reactive([]),
-            search: reactive([])
-        });
+        const goods = {
+            recommend: ref([]),
+            books: ref([]),
+            items: ref([]),
+            search: ref([])
+        };
 
-        const currentType = ref("推荐");
+        const currentType = ref("recommend");
         const showGoods = computed(() => {
-            return goods[currentType.value]
+            return goods[currentType.value].value
         })
 
         watch(currentType, (newValue, oldValue) => {
@@ -91,13 +99,13 @@ export default {
             } else if (newValue === "search") {
                 // if(goods.search.length === 0)
                 //   searchFail.value = true
-            } else if (goods[newValue].length === 0)
+            } else if (goods[newValue].value.length === 0)
                 getShowGoods()
         })
 
         const getShowGoods = () => {
             getHomeGoodsData(currentType.value).then((res) => {
-                goods[currentType.value].push(...res);
+                goods[currentType.value].value.push(...res);
             });
         }
 
@@ -109,8 +117,8 @@ export default {
             // console.log("on search")
             getSearchData(searchInfo.value).then((res) => {
                 searched.value = true
-                goods.search.length = 0
-                goods.search.push(...res);
+                goods.search.value.length = 0
+                goods.search.value.push(...res);
                 nextTick(() => {
                     currentType.value = 'search'
                     console.log('search success', currentType.value)
@@ -138,43 +146,71 @@ export default {
             bscroll.scrollTo(0, 0);
         };
 
+        const pullingDown = ref(false)
+        const pullingUp = ref(false)
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        const pullingDownHandler = () => {
+            // TODO: 刷新并获取数据的逻辑
+            refresh()
+            getHomeGoodsData(currentType.value).then((res) => {
+                goods[currentType.value].value = []
+                goods[currentType.value].value.push(...res);
+                console.log('pulling down')
+                bscroll.finishPullDown();
+                bscroll.refresh();
+                pullingDown.value = false;
+            }).catch((error) => {
+                console.log('refresh fail')
+                bscroll.finishPullDown();
+                bscroll.refresh();
+                pullingDown.value = false;
+            })
+        };
+
+        const pullingUpHandler = () => {
+            if(pullingUp.value) return;
+            pullingUp.value = true;
+            console.log('pulling up')
+            // TODO: 加载更多数据的逻辑
+            getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
+                goods[currentType.value].value.push(...res);
+                console.log('pulling up')
+                const bsRefreshTimer = setTimeout(() => {
+                    console.log('pulling up finish')
+                    bscroll.finishPullUp();
+                    bscroll.refresh();
+                    pullingUp.value = false;
+                    clearTimeout(bsRefreshTimer)
+                },3000)
+            }).catch((error) => {
+                console.log('get more fail')
+                const bsRefreshTimer = setTimeout(() => {
+                    bscroll.finishPullUp();
+                    bscroll.refresh();
+                    pullingUp.value = false;
+                    clearTimeout(bsRefreshTimer)
+                },3000)
+            })
+        };
+
         onMounted(() => {
             currentType.value = 'recommend'
             getShowGoods()
 
             // 创建BS对象
-            bscroll = new BScroll(document.querySelector(".wrapper"), {
+            bscroll = new BetterScroll(document.querySelector(".wrapper"), {
                 probeType: 3, // 0, 1, 2, 3, 3 只要在运动就触发scroll事件
                 click: true, // 是否允许点击
-                pullUpLoad: true, //上拉加载更多， 默认是false
+                pullUpLoad: true,
+                pullDownRefresh: true
             });
 
-            // 触发滚动事件
-            bscroll.on("scroll", (position) => {
-                // console.log(-position.y);
-                //   悬停条件(返回顶部和Tabcontrol)
-                isShowBackTop.value = isTabFixed.value =
-                    -position.y > banref.value.offsetHeight;
-            });
-
-            //上拉加载数据,触发pullingUp
-            bscroll.on("pullingUp", () => {
-                // console.log("上拉加载更多");
-                bscroll.refresh();
-                // const page = goods[currentType.value].page + 1;
-
-                // 获取下拉数据
-                // getHomeGoodsData(currentType.value, page).then((res) => {
-                //   goods[currentType.value].push(...res.goods.data);
-                //   goods[currentType.value].page += 1;
-                // });
-
-                // 完成上拉， 等数据请求完成， 要将新数据展示出来
-                bscroll.finishPullUp();
-
-                //重新计算高度
-                bscroll.refresh();
-            });
+            // bscroll.on('pullingDown', pullingDownHandler);
+            bscroll.on('pullingUp', pullingUpHandler);
         });
 
         const debug = () => {
@@ -196,7 +232,9 @@ export default {
             onCancel,
             debug,
             searched,
-            searchFail
+            searchFail,
+            pullingDown,
+            pullingDownHandler
         };
     },
 };
@@ -218,12 +256,11 @@ export default {
 }
 
 .wrapper {
-    position: absolute;
-    top: 45px;
-    top: 150px;
-    bottom: 50px;
+    position: relative;
+    top: 0;
     right: 0;
     left: 0;
     overflow: hidden;
+    height: calc(100vh - 200px);
 }
 </style>
