@@ -13,20 +13,26 @@
             :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
             @click="clickAvatar"
       />
+      <!--TODO:加上上传图片链接-->
       <van-icon name="photograph" id="photograph"
           size="large"
       />
 
-
+      <!--TODO:调整文字输入位置,还有地址的model-value-->
       <div class="display">
         <van-cell-group>
-          <van-field v-model="userInfo.nickName" label="昵称"
+          <van-field left-icon="contact" v-model="userInfo.nickName" label="昵称"
                      :right-icon="infoEditing.nickName?'sign':'edit'"
                      @update:model-value="updateNickName"
                      @click-right-icon="saveUserInfo"
           />
-          <van-field v-model="userInfo.studentId" label="学号" readonly/>
-          <van-field v-model="userInfo.contact" label="联系方式"
+          <van-field left-icon="bookmark" v-model="userInfo.studentId" label="学号" readonly/>
+          <van-field left-icon="phone" v-model="userInfo.contact" label="联系方式"
+                     :right-icon="infoEditing.contact?'sign':'edit'"
+                     @update:model-value="updateContact"
+                     @click-right-icon="saveUserInfo"
+          />
+          <van-field left-icon="map-marked" v-model="userInfo.contact" label="地址"
                      :right-icon="infoEditing.contact?'sign':'edit'"
                      @update:model-value="updateContact"
                      @click-right-icon="saveUserInfo"
