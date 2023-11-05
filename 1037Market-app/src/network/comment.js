@@ -10,7 +10,7 @@ export function getUserCommentIds(studentId) {
 
 export function getCommentDetail(commentId) {
     return request({
-        url: `/api/comment?commentId=${commentId}`,
+        url: `/api/comment/get?commentId=${commentId}`,
         method: 'get'
     })
 }

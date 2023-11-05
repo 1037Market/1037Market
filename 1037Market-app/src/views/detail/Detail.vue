@@ -85,7 +85,8 @@ export default {
 
     onBeforeRouteLeave((to, from, next) => { // 离开前将底部tabbar恢复
       const nav = document.getElementById('nav');
-      if(nav) {
+      console.log(to)
+      if(nav && to.name !== 'Seller') {
         nav.style.visibility = 'visible';
       }
       next();

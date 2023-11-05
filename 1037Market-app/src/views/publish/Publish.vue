@@ -78,7 +78,7 @@
 
 <script>
 import { ref, reactive } from 'vue';
-import {Dialog, Toast} from "vant";
+import {Dialog, showFailToast, showSuccessToast, Toast} from "vant";
 import {getCategoryData} from "@/network/category";
 import {uploadImage} from "@/network/image";
 import {updateUser} from "@/network/user";
@@ -145,7 +145,7 @@ export default {
         const onSubmit = () => {
             if(form.name === '' || form.imageURIs === [] || form.categories === [] || form.price === [] ||
                 form.description === '') {
-              Toast.fail('请填写全部字段');
+              showFailToast('请填写全部字段')
               return;
             }
             publishProduct({
@@ -155,9 +155,9 @@ export default {
               imageURIs: form.imageURIs,
               price: parseFloat(form.price)
             }).then((response) => {
-              Toast.success('发布成功');
+              showSuccessToast("发布成功")
             }).catch((err) => {
-              Toast.fail('发布失败');
+              showFailToast('发布失败')
             })
         };
 

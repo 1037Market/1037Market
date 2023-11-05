@@ -37,13 +37,13 @@
 
     </div>
 
+    <profile-comments :seller="seller" title="我收到的评论" />
+    <profile-products :seller="seller" title="我发布的商品" />
 
     <div style="margin: 60px">
-
       <van-button round block color="#42b983" @click="tologout"
         >退出登录</van-button
       >
-
     </div>
 </template>
 
@@ -58,9 +58,17 @@ import { Toast } from "vant";
 import {reactive, ref} from "vue";
 import {getUser} from "@/network/user";
 import {uploadImage} from "@/network/image";
+import {getCommentDetail, getUserCommentIds} from "../../network/comment";
+import {getDetail} from "../../network/detail";
+import {getUserPublishedProductIds} from "../../network/user";
+import {route} from "vant/es/composables/use-route";
+import ProfileComments from "@/components/content/profile/Comments.vue";
+import ProfileProducts from "@/components/content/profile/Products.vue";
 export default {
   name: "Profile",
   components: {
+    ProfileProducts,
+    ProfileComments,
     NavBar,
   },
   setup() {
@@ -154,6 +162,88 @@ export default {
       });
     }
 
+
+    const seller = reactive({
+      avatar: '',
+      nickname: '',
+      comments: [],
+      products: []
+    });
+
+    const sellerInfo = reactive({
+      productIds: [],
+      commentIds: [],
+      commentContents: []
+    });
+
+    const updateView = () => {
+      getUser(window.localStorage.getItem('studentId')).then((response) => { // 获取用户信息
+        seller.studentId = response.userId;
+        seller.nickname = response.nickName;
+        seller.avatar = 'http://franky.pro:7301/api/image?imageURI=' + response.avatar;
+        seller.contact = response.contact;
+        console.log(seller)
+
+        getUserPublishedProductIds(seller.studentId).then((response) => { // 拿到该用户发布的商品id列表
+          sellerInfo.productIds = response;
+
+          seller.products = [];
+          sellerInfo.productIds.forEach((productId) => {
+            getDetail(productId).then((response) => { // 获取每个商品的详情
+              seller.products.push({
+                id: productId,
+                name: response.title,
+                description: response.content,
+                image: 'http://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0]
+              })
+            })
+          })
+
+          getUserCommentIds(seller.studentId).then((response) => {
+            sellerInfo.commentIds = response;
+
+            seller.comments = [];
+            sellerInfo.commentIds.forEach((commentId) => {
+              getCommentDetail(commentId).then((response) => {
+                sellerInfo.commentContents.push({
+                  id: commentId,
+                  text: response.content
+                })
+                seller.comments.push({
+                  id: commentId,
+                  text: response.content,
+                  commenter: {
+                    id: response.fromId,
+                    nickname: response.nickName,
+                    avatar: 'http://franky.pro:7301/api/image?imageURI=' + response.avatar
+                  }
+                });
+              }).catch((err) => {
+                console.log(err);
+              });
+            })
+          }).catch((err) => {
+            console.log(err);
+          })
+
+
+        }).catch((err) => {
+          console.log(err);
+        });
+
+        getUserCommentIds(seller.studentId).then((response) => {
+          sellerInfo.commentIds = response;
+          console.log(response)
+        }).catch((err) => {
+          console.log(err);
+        })
+
+      }).catch((err) => {
+        console.log(err);
+      })
+    }
+    updateView();
+
     return {
       tologout,
       userInfo,
@@ -163,7 +253,8 @@ export default {
       saveUserInfo,
       fileList,
       clickAvatar,
-      afterReadAvatar
+      afterReadAvatar,
+      seller
     };
   },
 };
@@ -175,14 +266,14 @@ export default {
 }
 
 .display {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  margin: 10px;
   padding: 15px;
-  margin: 10px; /* Added horizontal margin */
-  color: #333;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
+
 }
 </style>
