@@ -228,6 +228,7 @@ export default {
                 seller.comments.push({
                   id: commentId,
                   text: response.content,
+                  stars: response.stars,
                   commenter: {
                     id: response.fromId,
                     nickname: response.nickName,
