@@ -14,34 +14,10 @@
       </div>
     </van-barrage>
 
+    <profile-comments :seller="seller" title="TA收到的评论"/>
 
-    <!-- Customer Reviews -->
-    <div class="display seller-comments">
-      <h3>TA收到的评论</h3>
-      <div class="comments-container">
-        <div v-for="comment in seller.comments" :key="comment.id" class="comment" @click="clickComment(comment.commenter.id)">
-          <div class="commenter-details">
-            <van-image :src="comment.commenter.avatar" alt="Commenter's Avatar" class="commenter-avatar" radius="15px" />
-            <span class="commenter-nickname">{{ comment.commenter.nickname }}</span>
-          </div>
-          <p class="comment-text">{{ comment.text }}</p>
-        </div>
-      </div>
-    </div>
+    <profile-products :seller="seller" title="TA出售的商品"/>
 
-    <!-- Published Products -->
-    <div class="display seller-products">
-      <h3>TA的商品</h3>
-      <div class="products-grid">
-        <div class="product-card" v-for="product in seller.products" :key="product.id" @click="clickProduct(product.id)">
-          <van-image :src="product.image" alt="Product Image" class="product-image" />
-          <div class="product-info">
-            <h4 class="product-name">{{ product.name }}</h4>
-            <p class="product-description">{{ product.description }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -54,6 +30,8 @@ import {useRoute, useRouter} from "vue-router/dist/vue-router";
 import {useStore} from "vuex";
 import {getCommentDetail, getUserCommentIds} from "@/network/comment";
 import {getDetail} from "@/network/detail";
+import ProfileComments from "@/components/content/profile/Comments.vue";
+import ProfileProducts from "@/components/content/profile/Products.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -159,14 +137,6 @@ onMounted(() => {
   updateView();
 })
 
-const clickProduct = (productId) => {
-  router.push({path: `/detail/${productId}`})
-}
-
-const clickComment = (commenterId) => {
-
-}
-
 </script>
 
 
@@ -197,89 +167,12 @@ const clickComment = (commenterId) => {
   color: #ffcc00;
 }
 
-.seller-comments {
-  margin-top: 20px; /* Additional spacing if needed */
-}
-
-.comments-container {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.comment {
-  padding: 10px 0;
-  border-top: 1px solid #eee;
-}
-
-.comment:first-child {
-  border-top: none; /* Remove border for the first item */
-}
-
-.commenter-details {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.commenter-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.commenter-nickname {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.comment-text {
-  font-size: 13px;
-  line-break: anywhere; /* Ensure long words do not break the layout */
-}
 .seller-products h3 {
   margin-top: 20px;
   margin-bottom: 20px;
   text-align: center;
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
-  margin-bottom: 45px;
-}
-
-.product-card {
-  border: 1px solid #e1e1e1;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  height: 200px;
-}
-
-.product-image {
-  width: 100%;
-  height: 70%;
-  overflow: hidden;
-  object-fit: contain;
-}
-
-.product-info {
-  padding: 8px;
-}
-
-.product-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin: 0 0 5px 0;
-}
-
-.product-description {
-  font-size: 12px;
-  color: #666;
-}
 </style>
 
 <style scoped>
