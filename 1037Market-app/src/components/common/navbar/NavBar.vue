@@ -4,7 +4,7 @@
       <slot name="left"><img src="@/assets/images/left.png" alt="" /></slot>
     </div>
     <div class="center"><slot name="center"></slot></div>
-    <div class="right"><slot name="right"></slot></div>
+    <div class="right"><slot name="right"><van-icon @click="goHome" name="home-o"/></slot></div>
   </div>
 </template>
 
@@ -18,8 +18,12 @@ export default {
     const goback = () => {
       router.go(-1);
     };
+    const goHome = () => {
+        router.push('/')
+    }
     return {
-      goback,
+        goback,
+        goHome
     };
   },
 };

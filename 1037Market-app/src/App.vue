@@ -24,9 +24,7 @@
 
       <router-link to="/shopcart" class="tab-bar-item">
           <div class="icon">
-              <van-badge :content="$store.state.cartCount" max="9">
-                  <i class="iconfont icon-gouwuche"></i>
-              </van-badge>
+              <i class="iconfont icon-gouwuche"></i>
           </div>
           <div>购物车</div>
       </router-link>
@@ -58,7 +56,7 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  //text-align: center;
   color: #2c3e50;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="profile">
     <van-nav-bar title="个人中心"
                  fixed
                  placeholder
@@ -170,6 +170,10 @@ export default {
 </script>
 
 <style scoped>
+#profile {
+    text-align: center;
+}
+
 .display {
   display: flex;
   justify-content: space-between;

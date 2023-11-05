@@ -221,7 +221,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#home{
+    text-align: left;
+}
+
 .banners img {
   width: 100%;
   height: auto;
