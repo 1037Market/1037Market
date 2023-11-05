@@ -120,7 +120,14 @@ func GetCommentById() gin.HandlerFunc {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
 		}
-		rows, err := db.Query("select publisherId, content from COMMENTS where commentId = ?", commentId)
+		// rows, err := db.Query("select publisherId, content from COMMENTS where commentId = ?", commentId)
+		// select publisherId, content, nickName, avatar from COMMENTS and USER_INFOS
+		rows, err := db.Query(
+			"select publisherId, content, nickName, avatar from COMMENTS, USER_INFOS "+
+				"where commentId = ? and COMMENTS.publisherId = USER_INFOS.userId",
+			commentId)
+		defer rows.Close()
+
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
 			return
@@ -131,11 +138,13 @@ func GetCommentById() gin.HandlerFunc {
 		}
 
 		type Comment struct {
-			FromId  string `json:"fromId"`
-			Content string `json:"content"`
+			FromId   string `json:"fromId"`
+			Content  string `json:"content"`
+			NickName string `json:"nickName"`
+			Avatar   string `json:"avatar"`
 		}
 		var comment Comment
-		err = rows.Scan(&comment.FromId, &comment.Content)
+		err = rows.Scan(&comment.FromId, &comment.Content, &comment.NickName, &comment.Avatar)
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("scan error: %s", err.Error()))
 			return
