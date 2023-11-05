@@ -2,7 +2,6 @@ package api
 
 import (
 	"1037Market/dao"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -40,7 +39,6 @@ func handleError(c *gin.Context, err error) {
 		log.Println("no such user", errorDao.Message)
 		c.String(http.StatusBadRequest, "no such user")
 	case dao.ErrTypeNoSuchProduct:
-		fmt.Println("no such product", errorDao.Message)
 		log.Println("no such product", errorDao.Message)
 		c.String(http.StatusBadRequest, "no such product")
 	}
