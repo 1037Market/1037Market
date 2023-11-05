@@ -15,6 +15,7 @@ const (
 	ErrTypeEmailSend
 	ErrTypeWrongCaptcha
 	ErrTypeUserAlreadyExist
+	ErrTypeProductAlreadyExist
 	ErrTypeWrongPassword
 	ErrTypeWrongRequestFormat
 )
