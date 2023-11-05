@@ -8,14 +8,14 @@ func GetProductListByKeyword(keyword string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 
 	rows, err := db.Query("select productId from PRODUCTS where title like ? or description like ?",
 		"%"+keyword+"%", "%"+keyword+"%")
 	defer rows.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 
 	lst := make([]int, 0)
@@ -23,7 +23,7 @@ func GetProductListByKeyword(keyword string) ([]int, error) {
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 		}
 		lst = append(lst, id)
 	}
@@ -34,24 +34,21 @@ func GetProductListByStudentId(studentId string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 
 	rows, err := db.Query("select productId from PRODUCTS where userId = ?", studentId)
-	if err != nil {
-		return nil, err
-	}
 	defer rows.Close()
-
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+
 	lst := make([]int, 0)
 	for rows.Next() {
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 		}
 		lst = append(lst, id)
 	}
@@ -62,13 +59,13 @@ func GetRandomProductList(count string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 
 	rows, err := db.Query("select productId from PRODUCTS order by rand() limit ?", count)
 	defer rows.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 
 	lst := make([]int, 0)
@@ -76,7 +73,7 @@ func GetRandomProductList(count string) ([]int, error) {
 		var productId int
 		err = rows.Scan(&productId)
 		if err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 		}
 		lst = append(lst, productId)
 	}
@@ -87,14 +84,14 @@ func GetProductListByCategory(category, count string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 
 	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? order by rand() limit ?",
 		category, count)
 	defer rows.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 
 	lst := make([]int, 0)
@@ -102,7 +99,7 @@ func GetProductListByCategory(category, count string) ([]int, error) {
 		var productId int
 		err = rows.Scan(&productId)
 		if err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 		}
 		lst = append(lst, productId)
 	}
@@ -113,20 +110,20 @@ func GetCategoryList() ([]string, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 
 	rows, err := db.Query("select categoryName from CATEGORIES")
 	defer rows.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 
 	lst := make([]string, 0)
 	for rows.Next() {
 		var name string
 		if err = rows.Scan(&name); err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 		}
 		lst = append(lst, name)
 	}

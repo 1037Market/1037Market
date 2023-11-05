@@ -195,7 +195,8 @@ func GetProductListByKeyword() gin.HandlerFunc {
 
 		lst, err := dao.GetProductListByKeyword(keyword)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
+			// c.String(http.StatusInternalServerError, "database error: %s", err.Error())
+			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
@@ -208,7 +209,8 @@ func GetProductListByStudentId() gin.HandlerFunc {
 
 		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
+			// c.String(http.StatusInternalServerError, "database error: %s", err.Error())
+			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
@@ -266,7 +268,8 @@ func GetRandomProductList() gin.HandlerFunc {
 		cnt := c.Query("count")
 		lst, err := dao.GetRandomProductList(cnt)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			// c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
@@ -279,7 +282,8 @@ func GetProductListByCategory() gin.HandlerFunc {
 		cnt := c.Query("count")
 		lst, err := dao.GetProductListByCategory(category, cnt)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			// c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
@@ -290,7 +294,8 @@ func GetCategoryList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		lst, err := dao.GetCategoryList()
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
+			// c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
