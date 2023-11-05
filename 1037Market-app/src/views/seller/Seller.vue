@@ -2,14 +2,18 @@
   <nav-bar>
     <template v-slot:center>卖家详情</template>
   </nav-bar>
+
   <div class="detail-container">
     <!-- Seller Details -->
-    <div class="display seller-details">
-      <van-image :src="seller.avatar" alt="Seller's Avatar" class="seller-avatar" radius="45px" />
-      <h2 class="seller-nickname">{{ seller.nickname }}</h2>
-      <h4>{{seller.contact}}</h4>
-      <!-- Rating could be included here if needed -->
-    </div>
+    <van-barrage v-model="sellerInfo.commentContents">
+      <div class="display seller-details">
+        <van-image :src="seller.avatar" alt="Seller's Avatar" class="seller-avatar" radius="45px" />
+        <h2 class="seller-nickname">{{ seller.nickname }}</h2>
+        <h4>{{seller.contact}}</h4>
+        <!-- Rating could be included here if needed -->
+      </div>
+    </van-barrage>
+
 
     <!-- Customer Reviews -->
     <div class="display seller-comments">
@@ -80,7 +84,8 @@ const seller = reactive({
 
 const sellerInfo = reactive({
   productIds: [],
-  commentIds: []
+  commentIds: [],
+  commentContents: []
 });
 
 const updateView = () => {
@@ -112,6 +117,10 @@ const updateView = () => {
         seller.comments = [];
         sellerInfo.commentIds.forEach((commentId) => {
           getCommentDetail(commentId).then((response) => {
+            sellerInfo.commentContents.push({
+              id: commentId,
+              text: response.content
+            })
             seller.comments.push({
               id: commentId,
               text: response.content,
