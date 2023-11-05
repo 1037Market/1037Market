@@ -4,7 +4,6 @@ import (
 	"1037Market/ds"
 	"1037Market/mysqlDb"
 	"bufio"
-	"errors"
 	"github.com/jordan-wright/email"
 	"math/rand"
 	"net/smtp"
@@ -204,21 +203,21 @@ func GetUserInfo(userId string) (ds.UserInfoGot, error) {
 func GetUserIdByCookie(cookie string) (string, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
-		return "", err
+		return "", NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
 	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
 	if err != nil {
-		return "", err
+		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 
 	if !rows.Next() {
-		return "", errors.New("invalid cookie")
+		return "", NewErrorDao(ErrTypeNoSuchUser, "wrong cookie")
 	}
 	var userId string
 	if err = rows.Scan(&userId); err != nil {
-		return "", err
+		return "", NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 	return userId, nil
 }

@@ -62,5 +62,8 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeWrongRequestFormat:
 		log.Println("wrong request format", errorDao.Message)
 		c.String(http.StatusBadRequest, "请求格式错误\nwrong request format")
+	case dao.ErrTypeProductAlreadyExist:
+		log.Println("product already exist", errorDao.Message)
+		c.String(http.StatusBadRequest, "商品已存在\nproduct already exist")
 	}
 }

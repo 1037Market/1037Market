@@ -13,14 +13,13 @@ func AddSubscribe() gin.HandlerFunc {
 
 		userId, err := dao.GetUserIdByCookie(cookie)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
 			return
 		}
-		if err = dao.InsertSubscribe(dao.Subscribe{UserId: userId, ProductId: productId}); err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+		if err = dao.InsertSubscribe(userId, productId); err != nil {
+			handleError(c, err)
 			return
 		}
-
 		c.String(http.StatusOK, "ok")
 	}
 }
@@ -30,7 +29,7 @@ func GetSubscribes() gin.HandlerFunc {
 		userId := c.Query("userId")
 		lst, err := dao.GetSubscribes(userId)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)
@@ -44,11 +43,11 @@ func DeleteSubscribe() gin.HandlerFunc {
 
 		userId, err := dao.GetUserIdByCookie(cookie)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
 			return
 		}
-		if err = dao.DeleteSubscribe(dao.Subscribe{UserId: userId, ProductId: productId}); err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
+		if err = dao.DeleteSubscribe(userId, productId); err != nil {
+			handleError(c, err)
 			return
 		}
 

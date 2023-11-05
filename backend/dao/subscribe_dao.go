@@ -2,40 +2,34 @@ package dao
 
 import (
 	"1037Market/mysqlDb"
-	"errors"
 )
 
-type Subscribe struct {
-	UserId    string
-	ProductId string
-}
-
-func InsertSubscribe(subscribe Subscribe) error {
+func InsertSubscribe(userId, productId string) error {
 	db, err := mysqlDb.GetConnection()
-	defer db.Close()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
+	defer db.Close()
 
 	txn, err := db.Begin()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer txn.Rollback()
 
 	result, err := txn.Exec("insert into SUBSCRIBES(userId, productId) values(?, ?)",
-		subscribe.UserId, subscribe.ProductId)
+		userId, productId)
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	affected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
 	}
 
-	if rowsAffected < 1 {
-		return errors.New("insert failed")
+	if affected < 1 {
+		return NewErrorDao(ErrTypeProductAlreadyExist, "user "+userId+" subscribe "+productId+"already exist")
 	}
 	txn.Commit()
 	return nil
@@ -43,52 +37,48 @@ func InsertSubscribe(subscribe Subscribe) error {
 
 func GetSubscribes(userId string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
-	defer db.Close()
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
+	defer db.Close()
 
 	rows, err := db.Query("select productId from SUBSCRIBES where userId = ?", userId)
 	if err != nil {
-		return nil, err
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 	lst := make([]int, 0)
 	for rows.Next() {
 		var productId int
 		if err = rows.Scan(&productId); err != nil {
-			return nil, err
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, productId)
 	}
 	return lst, nil
 }
 
-func DeleteSubscribe(subscribe Subscribe) error {
+func DeleteSubscribe(userId, productId string) error {
 	db, err := mysqlDb.GetConnection()
-	defer db.Close()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
-
+	defer db.Close()
 	txn, err := db.Begin()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer txn.Rollback()
-
 	result, err := txn.Exec("delete from SUBSCRIBES where userId = ? and productId = ?",
-		subscribe.UserId, subscribe.ProductId)
+		userId, productId)
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
-
-	rowsAffected, err := result.RowsAffected()
+	affected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
 	}
-
-	if rowsAffected < 1 {
-		return errors.New("delete failed")
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, "user "+userId+" delete "+productId+" not exist")
 	}
 	txn.Commit()
 	return nil
