@@ -53,7 +53,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Cookies from 'js-cookie'
 import { updateUser } from "@/network/user";
-import { Toast } from "vant";
+import { showSuccessToast, showFailToast } from 'vant';
 
 import {reactive, ref} from "vue";
 import {getUser} from "@/network/user";
@@ -126,11 +126,11 @@ export default {
       console.log(userInfo)
       updateUser(userInfo).then((response) => {
         if(response !== 'OK') {
-          Toast.fail('保存失败');
+          showFailToast('保存失败');
         } else {
           infoEditing.contact = false;
           infoEditing.nickName = false;
-          Toast.success('保存成功');
+          showSuccessToast('保存成功');
           fetchUserInfo();
         }
       })
@@ -149,15 +149,15 @@ export default {
       uploadImage(formData).then((response) => {
         userInfo.avatar = response;
         updateUser(userInfo).then(() => {
-          Toast.success('上传成功');
+          showSuccessToast('上传成功');
           fetchUserInfo();
           fileList.value = [];
         }).catch((err) => {
-          Toast.fail('上传失败');
+          showFailToast('上传失败');
           console.log(err)
         })
       }).catch((err) => {
-        Toast.fail('上传失败');
+        showFailToast('上传失败');
         console.log(err);
       });
     }

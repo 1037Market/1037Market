@@ -71,7 +71,7 @@ import { ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import { register, getCaptcha } from "@/network/user";
 import { Notify } from "vant";
-import { Toast } from "vant";
+import { showSuccessToast, showFailToast } from 'vant';
 import NavBar from "@/components/common/navbar/NavBar.vue";
 export default {
   components: {
@@ -125,7 +125,7 @@ export default {
         }).then((res) => {
           console.log(res);
           if (res == 'OK') {
-            Toast.success("注册成功");
+            showSuccessToast("注册成功");
 
             setTimeout(() => {
               router.push({ path: "/login" });
