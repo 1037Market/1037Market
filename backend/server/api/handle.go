@@ -41,5 +41,8 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeNoSuchProduct:
 		log.Println("no such product", errorDao.Message)
 		c.String(http.StatusBadRequest, "no such product")
+	case dao.ErrTypeIntParse:
+		log.Println("int parse error", errorDao.Message)
+		c.String(http.StatusBadRequest, "not a int")
 	}
 }

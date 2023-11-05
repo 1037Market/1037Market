@@ -10,6 +10,7 @@ const (
 	ErrTypeAffectRows
 	ErrTypeNoSuchUser
 	ErrTypeNoSuchProduct
+	ErrTypeIntParse
 )
 
 type ErrorDao struct {

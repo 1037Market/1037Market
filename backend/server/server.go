@@ -86,7 +86,7 @@ func (s *Server) Route() {
 	s.GET("/api/product/query", api.GetProductListByKeyword())
 	s.GET("api/product/student", api.GetProductListByStudentId())
 	s.DELETE("/api/product", api.DeleteProduct())
-	s.GET("/api/product/recommend", api.GetRandomProductList())
+	s.GET("/api/product/recommend", api.GetRecommendProductList())
 	s.GET("/api/product/category", api.GetProductListByCategory())
 	s.GET("/api/product/categories", api.GetCategoryList())
 	s.GET("/api/subscribe", api.GetSubscribes())

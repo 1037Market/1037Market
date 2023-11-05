@@ -85,10 +85,25 @@ func DeleteProduct() gin.HandlerFunc {
 	}
 }
 
-func GetRandomProductList() gin.HandlerFunc {
+func GetRandomProductList() gin.HandlerFunc { // Deprecated
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
 		lst, err := dao.GetRandomProductList(cnt)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, lst)
+	}
+}
+
+func GetRecommendProductList() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		seed := c.Query("seed")
+		startIndex := c.Query("startIndex")
+		count := c.Query("count")
+
+		lst, err := dao.GetRecommendProductList(seed, startIndex, count)
 		if err != nil {
 			handleError(c, err)
 			return

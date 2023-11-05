@@ -4,6 +4,7 @@ import (
 	"1037Market/mysqlDb"
 	"log"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -335,4 +336,57 @@ func GetCategoryList() ([]string, error) {
 		lst = append(lst, name)
 	}
 	return lst, nil
+}
+
+func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, error) {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+
+	seedInt, err := strconv.ParseInt(seed, 10, 32)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
+	}
+
+	startIdxInt, err := strconv.ParseInt(startIdx, 10, 32)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
+	}
+
+	cntInt, err := strconv.ParseInt(cnt, 10, 32)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
+	}
+
+	rows, err := db.Query("select productId from PRODUCTS")
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+
+	lst := make([]int, 0)
+	for rows.Next() {
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+		}
+		lst = append(lst, id)
+	}
+
+	if startIdxInt >= int64(len(lst)) || len(lst) == 0 {
+		return make([]int, 0), nil
+	}
+
+	rand.Seed(seedInt)
+	rand.Shuffle(len(lst), func(i, j int) {
+		lst[i], lst[j] = lst[j], lst[i]
+	})
+
+	if startIdxInt+cntInt <= int64(len(lst)) {
+		return lst[startIdxInt : startIdxInt+cntInt], nil
+	} else {
+		return lst[startIdxInt:], nil
+	}
 }
