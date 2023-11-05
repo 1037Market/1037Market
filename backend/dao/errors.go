@@ -13,6 +13,16 @@ const (
 	ErrTypeNoSuchUser
 	ErrTypeNoSuchProduct
 	ErrTypeIntParse
+	ErrTypeNoSuchComment
+	ErrTypeSysOpenFile
+	ErrTypeSysReadFile
+	ErrTypeSysSaveFile
+	ErrTypeEmailSend
+	ErrTypeProductAlreadyExist
+	ErrTypeUserAlreadyExist
+	ErrTypeWrongCaptcha
+	ErrTypeWrongPassword
+	ErrTypeWrongRequestFormat
 )
 
 type ErrorDao struct {

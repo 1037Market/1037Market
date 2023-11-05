@@ -1,33 +1,13 @@
 package dao
 
 import (
+	"1037Market/ds"
 	"1037Market/mysqlDb"
 	"log"
 	"math/rand"
 	"strconv"
 	"time"
 )
-
-type ProductGot struct {
-	ProductId   int      `json:"productId"`
-	Title       string   `json:"title"`
-	Content     string   `json:"content"`
-	Publisher   string   `json:"publisher"`
-	Price       float32  `json:"price"`
-	PublishTime string   `json:"publishTime"`
-	UpdateTime  string   `json:"updateTime"`
-	ImageURIs   []string `json:"imageURIs"`
-	Categories  []string `json:"categories"`
-	Status      string   `json:"status"`
-}
-
-type ProductPublished struct {
-	Title      string   `json:"title"`
-	Content    string   `json:"content"`
-	Categories []string `json:"categories"`
-	ImageURIs  []string `json:"imageURIs"`
-	Price      float32  `json:"price"`
-}
 
 func UserIdentityVerify(cookie string) (string, error) {
 	db, err := mysqlDb.GetConnection()
@@ -52,7 +32,7 @@ func UserIdentityVerify(cookie string) (string, error) {
 	return userId, nil
 }
 
-func PublishProduct(userId string, product ProductPublished) (int, error) {
+func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return -1, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -117,34 +97,34 @@ func PublishProduct(userId string, product ProductPublished) (int, error) {
 	return productId, nil
 }
 
-func GetProductById(productId string) (ProductGot, error) {
+func GetProductById(productId string) (ds.ProductGot, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
-		return ProductGot{}, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
 	rows, err := db.Query("select * from PRODUCTS where productId = ?", productId)
 	if err != nil {
-		return ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		return ProductGot{}, NewErrorDao(ErrTypeNoSuchProduct, productId+" not found")
+		return ds.ProductGot{}, NewErrorDao(ErrTypeNoSuchProduct, productId+" not found")
 	}
 
-	var product ProductGot
+	var product ds.ProductGot
 	err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
 		&product.PublishTime, &product.UpdateTime)
 	if err != nil {
-		return ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
+		return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
 	rows.Close()
 	rows, err = db.Query("select imagePath from PRODUCT_IMAGES where productId = ?", productId)
 	if err != nil {
-		return ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 	defer rows.Close()
 
@@ -153,7 +133,7 @@ func GetProductById(productId string) (ProductGot, error) {
 		var uri string
 		err = rows.Scan(&uri)
 		if err != nil {
-			return ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
+			return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		product.ImageURIs = append(product.ImageURIs, uri)
 	}
@@ -161,7 +141,7 @@ func GetProductById(productId string) (ProductGot, error) {
 	rows.Close()
 	rows, err = db.Query("select category from PRODUCT_CATEGORIES where productId = ?", productId)
 	if err != nil {
-		return ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 	defer rows.Close()
 
@@ -170,7 +150,7 @@ func GetProductById(productId string) (ProductGot, error) {
 		var category string
 		err = rows.Scan(&category)
 		if err != nil {
-			return ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
+			return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		product.Categories = append(product.Categories, category)
 	}

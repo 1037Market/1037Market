@@ -2,6 +2,7 @@ package api
 
 import (
 	"1037Market/dao"
+	"1037Market/ds"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,7 +17,7 @@ func PublishProduct() gin.HandlerFunc {
 			return
 		}
 
-		var product dao.ProductPublished
+		var product ds.ProductPublished
 		err = c.ShouldBindJSON(&product)
 		if err != nil {
 			c.String(http.StatusBadRequest, "incorrect request format")
