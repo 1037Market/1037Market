@@ -7,6 +7,7 @@
     <div class="display seller-details">
       <van-image :src="seller.avatar" alt="Seller's Avatar" class="seller-avatar" radius="45px" />
       <h2 class="seller-nickname">{{ seller.nickname }}</h2>
+      <h4>{{seller.contact}}</h4>
       <!-- Rating could be included here if needed -->
     </div>
 
@@ -14,7 +15,7 @@
     <div class="display seller-comments">
       <h3>TA收到的评论</h3>
       <div class="comments-container">
-        <div v-for="comment in seller.comments" :key="comment.id" class="comment">
+        <div v-for="comment in seller.comments" :key="comment.id" class="comment" @click="clickComment(comment.commenter.id)">
           <div class="commenter-details">
             <van-image :src="comment.commenter.avatar" alt="Commenter's Avatar" class="commenter-avatar" radius="15px" />
             <span class="commenter-nickname">{{ comment.commenter.nickname }}</span>
@@ -28,7 +29,7 @@
     <div class="display seller-products">
       <h3>TA的商品</h3>
       <div class="products-grid">
-        <div class="product-card" v-for="product in seller.products" :key="product.id">
+        <div class="product-card" v-for="product in seller.products" :key="product.id" @click="clickProduct(product.id)">
           <van-image :src="product.image" alt="Product Image" class="product-image" />
           <div class="product-info">
             <h4 class="product-name">{{ product.name }}</h4>
@@ -43,7 +44,7 @@
 <script setup>
 import NavBar from "@/components/common/navbar/NavBar.vue";
 
-import {reactive, ref} from 'vue';
+import {nextTick, onMounted, reactive, ref} from 'vue';
 import {getUser, getUserPublishedProductIds} from "@/network/user";
 import {useRoute, useRouter} from "vue-router/dist/vue-router";
 import {useStore} from "vuex";
@@ -82,69 +83,80 @@ const sellerInfo = reactive({
   commentIds: []
 });
 
-getUser(route.params.studentId).then((response) => { // 获取用户信息
-  console.log(response)
-  seller.studentId = response.userId;
-  seller.nickname = response.nickName;
-  seller.avatar = 'http://franky.pro:7301/api/image?imageURI=' + response.avatar;
-  seller.contact = response.contact;
-  console.log(seller)
+const updateView = () => {
+  getUser(route.params.studentId).then((response) => { // 获取用户信息
+    seller.studentId = response.userId;
+    seller.nickname = response.nickName;
+    seller.avatar = 'http://franky.pro:7301/api/image?imageURI=' + response.avatar;
+    seller.contact = response.contact;
+    console.log(seller)
 
-  getUserPublishedProductIds(seller.studentId).then((response) => { // 拿到该用户发布的商品id列表
-    sellerInfo.productIds = response;
-    console.log(response)
+    getUserPublishedProductIds(seller.studentId).then((response) => { // 拿到该用户发布的商品id列表
+      sellerInfo.productIds = response;
 
-    seller.products = [];
-    sellerInfo.productIds.forEach((productId) => {
-      getDetail(productId).then((response) => { // 获取每个商品的详情
-        seller.products.push({
-          id: productId,
-          name: response.title,
-          description: response.content,
-          image: 'http://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0]
+      seller.products = [];
+      sellerInfo.productIds.forEach((productId) => {
+        getDetail(productId).then((response) => { // 获取每个商品的详情
+          seller.products.push({
+            id: productId,
+            name: response.title,
+            description: response.content,
+            image: 'http://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0]
+          })
         })
       })
-    })
+
+      getUserCommentIds(seller.studentId).then((response) => {
+        sellerInfo.commentIds = response;
+
+        seller.comments = [];
+        sellerInfo.commentIds.forEach((commentId) => {
+          getCommentDetail(commentId).then((response) => {
+            seller.comments.push({
+              id: commentId,
+              text: response.content,
+              commenter: {
+                id: response.fromId,
+                nickname: response.nickName,
+                avatar: 'http://franky.pro:7301/api/image?imageURI=' + response.avatar
+              }
+            });
+          }).catch((err) => {
+            console.log(err);
+          });
+        })
+      }).catch((err) => {
+        console.log(err);
+      })
+
+
+    }).catch((err) => {
+      console.log(err);
+    });
 
     getUserCommentIds(seller.studentId).then((response) => {
       sellerInfo.commentIds = response;
-      console.log(response);
-
-      seller.comments = [];
-      sellerInfo.commentIds.forEach((commentId) => {
-        getCommentDetail(commentId).then((response) => {
-          seller.comments.push({
-            id: commentId,
-            text: response.content,
-            commenter: {
-              nickname: response.nickName,
-              avatar: response.avatar
-            }
-          });
-        }).catch((err) => {
-          console.log(err);
-        });
-      })
+      console.log(response)
     }).catch((err) => {
       console.log(err);
     })
 
-
-  }).catch((err) => {
-    console.log(err);
-  });
-
-  getUserCommentIds(seller.studentId).then((response) => {
-    sellerInfo.commentIds = response;
-    console.log(response)
   }).catch((err) => {
     console.log(err);
   })
+}
 
-}).catch((err) => {
-  console.log(err);
+onMounted(() => {
+  updateView();
 })
 
+const clickProduct = (productId) => {
+  router.push({path: `/detail/${productId}`})
+}
+
+const clickComment = (commenterId) => {
+
+}
 
 </script>
 
@@ -234,8 +246,7 @@ getUser(route.params.studentId).then((response) => { // 获取用户信息
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  min-height: 200px;
-  max-height: 250px;
+  height: 200px;
 }
 
 .product-image {
