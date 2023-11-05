@@ -73,7 +73,6 @@ import GoodsList from "components/content/goods/GoodsList";
 import BackTop from "components/common/backtop/BackTop";
 
 import BScroll from "better-scroll";
-import {Search} from "vant";
 
 export default {
   name: "Home",

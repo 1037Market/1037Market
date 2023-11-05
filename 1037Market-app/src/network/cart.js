@@ -10,7 +10,7 @@ export function addCart(productId) {
 }
 
 //  获取购物车列表
-export function getCart(data = '') {
+export function getCart() {
   return request({
     // api/carts?include=goods
     url: `/api/subscribe?userId=${window.localStorage.getItem('studentId')}`,
@@ -22,7 +22,7 @@ export function getCart(data = '') {
 //  删除购物车
 export function deleteCartItem(productId) {
   return request({
-    url: `/api/carts/user=${window.localStorage.getItem('token')}&productId=${productId}`,
+    url: `/api/subscribe?user=${window.localStorage.getItem('token')}&productId=${productId}`,
     method: 'delete'
   })
 }

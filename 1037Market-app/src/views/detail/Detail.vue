@@ -19,7 +19,7 @@
       <van-icon name="manager-o" style="margin-left: 20px" />
       <van-action-bar-icon text="卖家信息"/>
       <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
-      <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px"/>
+      <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
     </van-action-bar>
 
   </div>
@@ -35,11 +35,11 @@ import { useStore } from "vuex";
 
 import { ref, onMounted, reactive, toRefs } from "vue";
 import { getDetail } from "network/detail";
-import { Toast } from "vant";
 import { addCart } from "network/cart";
 
 import PriceDisplay from "components/content/goods/PriceDisplay"
 import ProductDescription from "components/content/goods/ProductDescription";
+import {Toast} from "vant";
 export default {
   name: "Detail",
   components: {
@@ -60,13 +60,12 @@ export default {
     let active = ref(1);
 
     const handleCart = () => {
-      addCart(id.value).then((res) => {
-        if (res.status == "204" || res.status == "201") {
-          Toast.success("添加成功");
-      //     调用actions
-      //     store.dispatch("updateCart");
-        }
-      });
+        addCart(id.value).then((res) => {
+            console.log(res)
+            if(res === 'ok')
+                Toast.success('收藏成功')
+            else Toast.fail('收藏失败')
+        });
     };
 
     const goToCart = () => {
