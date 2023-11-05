@@ -66,7 +66,7 @@ create table SUBSCRIBES(
 create table CHAT_SESSIONS(
     user1Id     char(10) not null,
     user2Id     char(10) not null,
-    sessionId   int unique not null,
+    sessionId   int unique not null auto_increment,
     primary key(user1Id, user2Id),
     foreign key(user1Id) references USERS(userId) on delete cascade,
     foreign key(user2Id) references USERS(userId) on delete cascade

@@ -34,15 +34,29 @@ TODO:
 
 */
 
-func GetSessionIdByStudentIds() gin.HandlerFunc {
+// GetSingleSessionIdByStudentIds 注意命名的单复数
+func GetSingleSessionIdByStudentIds() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId1 := c.Query("studentId1")
 		studentId2 := c.Query("studentId2")
-		sessionId, err := dao.GetSessionIdByStudentIds(studentId1, studentId2)
+		sessionId, err := dao.GetSingleSessionIdByStudentIds(studentId1, studentId2)
 		if err != nil {
 			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, sessionId)
+	}
+}
+
+func GetSessionIdsBySingleStudentId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studentId := c.Query("studentId")
+
+		sessionIds, err := dao.GetSessionIdsBySingleStudentId(studentId)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, sessionIds)
 	}
 }

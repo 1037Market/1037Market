@@ -92,7 +92,8 @@ func (s *Server) Route() {
 	s.GET("/api/subscribe", api.GetSubscribes())
 	s.POST("/api/subscribe", api.AddSubscribe())
 	s.DELETE("/api/subscribe", api.DeleteSubscribe())
-	s.GET("/api/chat/session", api.GetSessionIdByStudentIds())
+	s.GET("/api/chat/session", api.GetSingleSessionIdByStudentIds())
+	s.GET("/api/chat/sessions", api.GetSessionIdsBySingleStudentId())
 }
 
 func cors() gin.HandlerFunc {

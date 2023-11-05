@@ -4,7 +4,7 @@ import (
 	"1037Market/mysqlDb"
 )
 
-func GetSessionIdByStudentIds(studentId1 string, studentId2 string) (sessionId int, err error) {
+func GetSingleSessionIdByStudentIds(studentId1 string, studentId2 string) (sessionId int, err error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return 0, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -57,4 +57,28 @@ func GetSessionIdByStudentIds(studentId1 string, studentId2 string) (sessionId i
 	}
 
 	return sessionId, nil
+}
+
+func GetSessionIdsBySingleStudentId(studentId string) ([]int, error) {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+	rows, err := db.Query("select sessionId from CHAT_SESSIONS where user1Id = ? or user2Id = ?",
+		studentId, studentId)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+
+	lst := make([]int, 0)
+	for rows.Next() {
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+		}
+		lst = append(lst, id)
+	}
+	return lst, nil
 }
