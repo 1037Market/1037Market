@@ -10,14 +10,17 @@
       </van-swipe-item>
     </van-swipe>
 
+
     <div>
-      <price-display :name="productDetail.title" :price="productDetail.price" />
+
+      <price-display :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
       <product-description :description="productDetail.content" />
+
     </div>
 
     <van-action-bar>
       <van-icon name="manager-o" style="margin-left: 20px" />
-      <van-action-bar-icon text="卖家信息"/>
+      <van-action-bar-icon text="卖家信息" @click="userInfo"/>
       <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
       <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
     </van-action-bar>
@@ -55,7 +58,8 @@ export default {
 
     let id = ref(route.params.id);
     const productDetail = ref({
-      imageURIs: []
+      imageURIs: [],
+      categories: []
     })
     let active = ref(1);
 
@@ -103,12 +107,18 @@ export default {
 
     });
 
+    const userInfo = () => {
+      console.log(productDetail.value.publisher);
+      router.push({ path: `/seller/${productDetail.value.publisher}`});
+    }
+
     return {
         id,
         active,
         handleCart,
         goToCart,
-        productDetail
+        productDetail,
+        userInfo
     };
   },
 };
@@ -117,5 +127,19 @@ export default {
 <style scoped lang="scss">
 #con1 {
   padding: 10px;
+}
+</style>
+
+<style scoped>
+.display {
+  font-family: 'Poppins', sans-serif;
+  margin: 10px 10px 50px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
+
 }
 </style>

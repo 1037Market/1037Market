@@ -5,6 +5,7 @@ import store from './store'
 import 'vant/lib/index.css';
 // import 'src/assets/css/iconfont.css';
 
+
 import { Tabbar, TabbarItem, ActionBar, ActionBarIcon, ActionBarButton, DropdownMenu, DropdownItem, Dialog, NavBar, Uploader, Toast, Cell, CellGroup, PullRefresh, List, Popup, Grid, GridItem, AddressEdit,
     AddressList, Icon, Search, ConfigProvider,
     SubmitBar, CheckboxGroup, SwipeCell, Stepper, Checkbox, Field, Form, Tag, Button, Image as VanImage, Card, Tab,

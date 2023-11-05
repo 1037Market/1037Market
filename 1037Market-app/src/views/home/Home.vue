@@ -1,18 +1,12 @@
 <template>
   <div id="home">
-    <nav-bar>
-      <!-- vue3插槽写法 -->
-      <template v-slot:center>1037集市</template>
-    </nav-bar>
-<!--    <nav-bar>-->
-<!--       vue3插槽写法 -->
-<!--      <template v-slot:center>1037集市</template>-->
-<!--    </nav-bar>-->
+
       <van-nav-bar
           title="1037集市"
           fixed
           placeholder
       />
+
 
       <form action="/">
           <van-search
@@ -20,6 +14,7 @@
               placeholder="请输入搜索关键词"
               @search="onSearch"
           />
+
       </form>
 
       <div>
@@ -53,6 +48,7 @@
 <!--        ></tab-control>-->
 <!--          <button @click="debug">debug</button>-->
         <!-- 因为是切换选项卡，所以只显示一个，只传一个类型的数据，需要知道当前是哪个选项卡，使用计算属性 -->
+
           <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
           <goods-list :goods="showGoods"></goods-list>
       </div>
@@ -97,7 +93,7 @@ export default {
     const isTabFixed = ref(false);
 
     const isShowBackTop = ref(false);
-
+    
     let banref = ref(null);
 
     //商品列表对象模型,里面三个选项卡的页码和列表
@@ -108,7 +104,7 @@ export default {
       search: reactive([])
     });
 
-    const currentType = ref("recommend");
+    const currentType = ref("推荐");
     const showGoods = computed(() => {
         return goods[currentType.value]
     })
@@ -210,10 +206,13 @@ export default {
 
     //子组件TabControl传过来的
     const tabClick = (index) => {
-      let types = ["sales", "new", "recommend"];
+      let types = ["recommend", "books", "items", "more"];
       //选项卡切换后下面内容才会变
       currentType.value = types[index];
       // console.log(currentType.value);
+
+        if(currentType.value === "more")
+
 
       //监听，任何一个变量有变化
       watchEffect(() => {
