@@ -13,11 +13,10 @@
             :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
             @click="clickAvatar"
       />
-      <div style="margin-bottom: 10px">
-        <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
-          <van-button block color="#42b983" @click="tologout">上传头像</van-button>
-        </van-uploader>
-      </div>
+      <van-icon name="photograph" id="photograph"
+          size="large"
+      />
+
 
       <div class="display">
         <van-cell-group>
@@ -275,5 +274,9 @@ export default {
   line-break: anywhere;
   text-align: left;
 
+}
+#photograph {
+  
+  margin-left: -30px;
 }
 </style>
