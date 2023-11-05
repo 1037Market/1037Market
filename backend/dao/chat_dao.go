@@ -21,8 +21,34 @@ func GetSessionIdByStudentIds(studentId1 string, studentId2 string) (sessionId i
 	}
 	defer rows.Close()
 
-	if !rows.Next() { // TODO: session不存在则创建一个session
-		return 0, NewErrorDao(ErrTypeInvalidStudentId, "no corresponding session")
+	if !rows.Next() { // session不存在则创建一个session
+		txn, err := db.Begin()
+		if err != nil {
+			return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		}
+		defer txn.Rollback()
+		result, err := txn.Exec("insert into CHAT_SESSIONS(user1Id, user2Id) values(?, ?)",
+			studentId1, studentId2)
+		if err != nil {
+			return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		}
+		if _, err := result.RowsAffected(); err != nil {
+			return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		}
+		rows.Close()
+		rows, err = txn.Query("select sessionId from CHAT_SESSIONS where user1Id = ? and user2Id = ?",
+			studentId1, studentId2)
+		if err != nil {
+			return 0, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		}
+		if !rows.Next() {
+			return 0, NewErrorDao(ErrTypeAffectRows, "nothing affected")
+		}
+		var id int
+		if err = rows.Scan(&id); err != nil {
+			return 0, NewErrorDao(ErrTypeScanRows, err.Error())
+		}
+		return id, nil
 	}
 
 	if err = rows.Scan(&sessionId); err != nil {
