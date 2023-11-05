@@ -21,7 +21,7 @@
         productIDs: Array
     })
 
-    watch(props.productIDs, () => {
+    watch(() => props.productIDs, () => {
         updatePage()
     })
 
