@@ -1,248 +1,229 @@
 <template>
-  <div id="home">
+    <div id="home">
 
-      <van-nav-bar
-          title="1037集市"
-          fixed
-          placeholder
-      />
+        <van-nav-bar
+            title="1037集市"
+            fixed
+            placeholder
+        />
 
 
-      <form action="/">
-          <van-search
-              v-model="searchInfo"
-              placeholder="请输入搜索关键词"
-              @search="onSearch"
-          />
+        <form action="/">
+            <van-search
+                v-model="searchInfo"
+                placeholder="请输入搜索关键词"
+                @search="onSearch"
+            />
 
-      </form>
+        </form>
 
-      <div>
-          <van-tabs v-model:active="currentType" >
-              <van-tab title="搜索结果" name="search" v-if="searched"/>
-              <van-tab title="推荐" name="recommend"/>
-              <van-tab title="二手书" name="books"/>
-              <van-tab title="闲置物品" name="items"/>
-              <van-tab title="更多分类" name="more"/>
-          </van-tabs>
-      </div>
+        <div>
+            <van-tabs v-model:active="currentType">
+                <van-tab title="搜索结果" name="search" v-if="searched"/>
+                <van-tab title="推荐" name="recommend"/>
+                <van-tab title="二手书" name="books"/>
+                <van-tab title="闲置物品" name="items"/>
+                <van-tab title="更多分类" name="more"/>
+            </van-tabs>
+        </div>
 
-    <div class="wrapper">
-      <div class="content">
-        <div ref="banref"></div>
+        <div class="wrapper">
+            <div class="content">
+                <div ref="banref"></div>
 
-          <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
-          <goods-list :productIDs="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
-      </div>
+                <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
+                <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
+            </div>
+        </div>
+        <back-top @goback="goback" v-show="isShowBackTop"></back-top>
     </div>
-    <back-top @goback="goback" v-show="isShowBackTop"></back-top>
-  </div>
 </template>
 
 <script>
 import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
-import { useRouter } from 'vue-router'
-import { getHomeAllData, getHomeGoodsData, getSearchData } from "@/network/home";
+import {useRouter} from 'vue-router'
+import {getHomeAllData, getHomeGoodsData, getSearchData} from "@/network/home";
 import GoodsList from "@/components/content/goods/GoodsList.vue";
 import BackTop from "@/components/common/backtop/BackTop.vue";
 import BScroll from "better-scroll";
 
 export default {
-  name: "Home",
-  components: {
-    GoodsList,
-    BackTop,
-  },
-  setup() {
-    const recommends = ref([]);
-    const router = useRouter()
+    name: "Home",
+    components: {
+        GoodsList,
+        BackTop,
+    },
+    setup() {
+        const recommends = ref([]);
+        const router = useRouter()
 
-      const searchInfo = ref('')
-      const searchFail = computed(() => {
-          return goods.search.length === 0
-      })
+        const searchInfo = ref('')
+        const searchFail = computed(() => {
+            return goods.search.length === 0
+        })
 
-    //复制TabControl
-    const isTabFixed = ref(false);
+        //复制TabControl
+        const isTabFixed = ref(false);
 
-    const isShowBackTop = ref(false);
+        const isShowBackTop = ref(false);
 
-    let banref = ref(null);
+        let banref = ref(null);
 
-    //商品列表对象模型,里面三个选项卡的页码和列表
-    const goods = reactive({
-      recommend: reactive([]),
-      books: reactive([]),
-      items: reactive([]),
-      search: reactive([])
-    });
-
-    const currentType = ref("推荐");
-    const showGoods = computed(() => {
-        return goods[currentType.value]
-    })
-
-      watch(currentType, (newValue, oldValue) => {
-          if(newValue === "more"){
-              nextTick(() => {
-                  currentType.value = oldValue
-              })
-              router.push('/category')
-          }else if(newValue === "search"){
-              // if(goods.search.length === 0)
-              //   searchFail.value = true
-          }else if(goods[newValue].length === 0)
-              getShowGoods()
-      })
-
-    const getShowGoods = () => {
-        getHomeGoodsData(currentType.value).then((res) => {
-            goods[currentType.value].push(...res);
+        //商品列表对象模型,里面三个选项卡的页码和列表
+        const goods = reactive({
+            recommend: reactive([]),
+            books: reactive([]),
+            items: reactive([]),
+            search: reactive([])
         });
-    }
 
-    let bscroll = reactive({});
+        const currentType = ref("推荐");
+        const showGoods = computed(() => {
+            return goods[currentType.value]
+        })
 
-    const searched = ref(false)
+        watch(currentType, (newValue, oldValue) => {
+            if (newValue === "more") {
+                nextTick(() => {
+                    currentType.value = oldValue
+                })
+                router.push('/category')
+            } else if (newValue === "search") {
+                // if(goods.search.length === 0)
+                //   searchFail.value = true
+            } else if (goods[newValue].length === 0)
+                getShowGoods()
+        })
 
-    const onSearch = () => {
-        // console.log("on search")
-        getSearchData(searchInfo.value).then((res) => {
-            searched.value = true
-            goods.search.length = 0
-            goods.search.push(...res);
+        const getShowGoods = () => {
+            getHomeGoodsData(currentType.value).then((res) => {
+                goods[currentType.value].push(...res);
+            });
+        }
+
+        let bscroll = reactive({});
+
+        const searched = ref(false)
+
+        const onSearch = () => {
+            // console.log("on search")
+            getSearchData(searchInfo.value).then((res) => {
+                searched.value = true
+                goods.search.length = 0
+                goods.search.push(...res);
+                nextTick(() => {
+                    currentType.value = 'search'
+                    console.log('search success', currentType.value)
+                })
+
+            });
+        }
+
+        const onCancel = () => {
+            console.log("on cancel")
+            searchInfo.value = ''
+        }
+
+        //监听，任何一个变量有变化
+        watchEffect(() => {
+            //nextTick：Dom加载完成后
             nextTick(() => {
-                currentType.value = 'search'
-                console.log('search success',currentType.value)
-            })
-
+                //只要页面有变化就要调用refresh
+                bscroll && bscroll.refresh();
+            });
         });
-    }
 
-    const onCancel = () => {
-        console.log("on cancel")
-        searchInfo.value = ''
-    }
+        //回到顶部
+        const goback = () => {
+            bscroll.scrollTo(0, 0);
+        };
 
-    //监听，任何一个变量有变化
-    watchEffect(() => {
-      //nextTick：Dom加载完成后
-      nextTick(() => {
-        //只要页面有变化就要调用refresh
-        bscroll && bscroll.refresh();
-      });
-    });
+        onMounted(() => {
+            currentType.value = 'recommend'
+            getShowGoods()
 
-    //回到顶部
-    const goback = () => {
-      bscroll.scrollTo(0, 0);
-    };
+            // 创建BS对象
+            bscroll = new BScroll(document.querySelector(".wrapper"), {
+                probeType: 3, // 0, 1, 2, 3, 3 只要在运动就触发scroll事件
+                click: true, // 是否允许点击
+                pullUpLoad: true, //上拉加载更多， 默认是false
+            });
 
-      onMounted(() => {
-          currentType.value = 'recommend'
-          getShowGoods()
+            // 触发滚动事件
+            bscroll.on("scroll", (position) => {
+                // console.log(-position.y);
+                //   悬停条件(返回顶部和Tabcontrol)
+                isShowBackTop.value = isTabFixed.value =
+                    -position.y > banref.value.offsetHeight;
+            });
 
-      // 创建BS对象
-      bscroll = new BScroll(document.querySelector(".wrapper"), {
-        probeType: 3, // 0, 1, 2, 3, 3 只要在运动就触发scroll事件
-        click: true, // 是否允许点击
-        pullUpLoad: true, //上拉加载更多， 默认是false
-      });
+            //上拉加载数据,触发pullingUp
+            bscroll.on("pullingUp", () => {
+                // console.log("上拉加载更多");
+                bscroll.refresh();
+                // const page = goods[currentType.value].page + 1;
 
-      // 触发滚动事件
-      bscroll.on("scroll", (position) => {
-        // console.log(-position.y);
-      //   悬停条件(返回顶部和Tabcontrol)
-        isShowBackTop.value = isTabFixed.value =
-          -position.y > banref.value.offsetHeight;
-      });
+                // 获取下拉数据
+                // getHomeGoodsData(currentType.value, page).then((res) => {
+                //   goods[currentType.value].push(...res.goods.data);
+                //   goods[currentType.value].page += 1;
+                // });
 
-      //上拉加载数据,触发pullingUp
-      bscroll.on("pullingUp", () => {
-        // console.log("上拉加载更多");
-        bscroll.refresh();
-        // const page = goods[currentType.value].page + 1;
+                // 完成上拉， 等数据请求完成， 要将新数据展示出来
+                bscroll.finishPullUp();
 
-        // 获取下拉数据
-        // getHomeGoodsData(currentType.value, page).then((res) => {
-        //   goods[currentType.value].push(...res.goods.data);
-        //   goods[currentType.value].page += 1;
-        // });
-
-        // 完成上拉， 等数据请求完成， 要将新数据展示出来
-        bscroll.finishPullUp();
-
-        //重新计算高度
-        bscroll.refresh();
-      });
-    });
-
-    //子组件TabControl传过来的
-    const tabClick = (index) => {
-      let types = ["recommend", "books", "items", "more"];
-      //选项卡切换后下面内容才会变
-      currentType.value = types[index];
-      // console.log(currentType.value);
-
-        if(currentType.value === "more")
-
-
-      //监听，任何一个变量有变化
-      watchEffect(() => {
-        //nextTick：Dom加载完成后
-        nextTick(() => {
-          //只要页面有变化就要调用refresh
-          bscroll && bscroll.refresh();
+                //重新计算高度
+                bscroll.refresh();
+            });
         });
-      });
-    };
-    const debug = () => {
-        console.log("type",currentType.value)
-    }
 
-    return {
-      recommends,
-      goods,
-      currentType,
-      showGoods,
-      bscroll,
-      isTabFixed,
-      banref,
-      goback,
-      isShowBackTop,
-        searchInfo,
-        onSearch,
-        onCancel,
-        debug,
-        searched,
-        searchFail
-    };
-  },
+        const debug = () => {
+            console.log("type", currentType.value)
+        }
+
+        return {
+            recommends,
+            goods,
+            currentType,
+            showGoods,
+            bscroll,
+            isTabFixed,
+            banref,
+            goback,
+            isShowBackTop,
+            searchInfo,
+            onSearch,
+            onCancel,
+            debug,
+            searched,
+            searchFail
+        };
+    },
 };
 </script>
 
 <style scoped>
-#home{
+#home {
     text-align: left;
 }
 
 .banners img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 #home {
-  height: 100vh;
-  position: relative;
+    height: 100vh;
+    position: relative;
 }
 
 .wrapper {
-  position: absolute;
-  top: 45px;
-  top: 150px;
-  bottom: 50px;
-  right: 0;
-  left: 0;
-  overflow: hidden;
+    position: absolute;
+    top: 45px;
+    top: 150px;
+    bottom: 50px;
+    right: 0;
+    left: 0;
+    overflow: hidden;
 }
 </style>

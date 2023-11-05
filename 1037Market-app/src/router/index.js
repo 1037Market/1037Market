@@ -105,7 +105,6 @@ router.beforeEach((to, from, next) => {
 
   } else {
     const nav = document.getElementById('nav');
-    console.log(to)
     if(nav) {
       if(to.name === 'Seller' || to.name === 'Detail') { // 这些页面隐藏底部tabbar
         nav.style.visibility = 'hidden';

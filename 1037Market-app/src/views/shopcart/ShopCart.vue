@@ -124,7 +124,8 @@ export default {
     const cardTheme = {
         cardFontSize: '16px',
         cardTitleLineHeight: '20px',
-        tagPadding: '3px'
+        tagPadding: '3px',
+        cardBackground: 'white'
     }
 
     return {
