@@ -27,7 +27,7 @@
             </van-tabs>
         </div>
 
-        <div class="wrapper">
+        <div class="wrapper" @touchend="handleTouchEnd">
             <van-pull-refresh
                 v-model="pullingDown"
                 @refresh="pullingDownHandler"
@@ -154,12 +154,11 @@ export default {
         }
 
         const pullingDownHandler = () => {
-            // TODO: 刷新并获取数据的逻辑
             refresh()
             getHomeGoodsData(currentType.value).then((res) => {
                 goods[currentType.value].value = []
                 goods[currentType.value].value.push(...res);
-                console.log('pulling down')
+                // console.log('pulling down')
                 bscroll.finishPullDown();
                 bscroll.refresh();
                 pullingDown.value = false;
@@ -171,29 +170,31 @@ export default {
             })
         };
 
+        const handleTouchEnd = () => {
+            // console.log('touch end')
+            bscroll.finishPullUp();
+            bscroll.refresh();
+            pullingUp.value = false;
+        };
+
         const pullingUpHandler = () => {
-            if(pullingUp.value) return;
+            // console.log('pulling up')
+            if(pullingUp.value)
+                return
             pullingUp.value = true;
-            console.log('pulling up')
             // TODO: 加载更多数据的逻辑
             getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
                 goods[currentType.value].value.push(...res);
-                console.log('pulling up')
-                const bsRefreshTimer = setTimeout(() => {
-                    console.log('pulling up finish')
-                    bscroll.finishPullUp();
-                    bscroll.refresh();
-                    pullingUp.value = false;
-                    clearTimeout(bsRefreshTimer)
-                },3000)
+                // console.log('pulling up finish')
+                // const bsRefreshTimer = setTimeout(() => {
+                //     clearTimeout(bsRefreshTimer)
+                // },1000)
             }).catch((error) => {
                 console.log('get more fail')
-                const bsRefreshTimer = setTimeout(() => {
-                    bscroll.finishPullUp();
-                    bscroll.refresh();
-                    pullingUp.value = false;
-                    clearTimeout(bsRefreshTimer)
-                },3000)
+                // const bsRefreshTimer = setTimeout(() => {
+                //
+                //     clearTimeout(bsRefreshTimer)
+                // },1000)
             })
         };
 
@@ -234,7 +235,8 @@ export default {
             searched,
             searchFail,
             pullingDown,
-            pullingDownHandler
+            pullingDownHandler,
+            handleTouchEnd
         };
     },
 };
