@@ -32,7 +32,7 @@
         <div ref="banref"></div>
 
           <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
-          <goods-list :goods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
+          <goods-list :productIDs="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
       </div>
     </div>
     <back-top @goback="goback" v-show="isShowBackTop"></back-top>
