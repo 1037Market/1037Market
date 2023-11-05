@@ -15,7 +15,7 @@
               style="margin-bottom: 10px"
           />
 
-          <van-uploader id="picture"
+          <van-uploader style="margin-left: 130px;"
               v-model="form.images"
               :after-read="afterRead"
               multiple
@@ -204,8 +204,5 @@ export default {
 }
 div van-form{
   width: 100%;
-}
-#picture {
-  margin-left: 60px;
 }
 </style>
