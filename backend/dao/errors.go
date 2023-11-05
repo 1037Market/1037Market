@@ -10,6 +10,13 @@ const (
 	ErrTypeAffectRows
 	ErrTypeNoSuchUser
 	ErrTypeNoSuchProduct
+	ErrTypeSysOpenFile
+	ErrTypeSysReadFile
+	ErrTypeEmailSend
+	ErrTypeWrongCaptcha
+	ErrTypeUserAlreadyExist
+	ErrTypeWrongPassword
+	ErrTypeWrongRequestFormat
 )
 
 type ErrorDao struct {
