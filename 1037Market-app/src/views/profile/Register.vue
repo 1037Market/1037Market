@@ -69,10 +69,10 @@
 <script>
 import { ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
-import { register, getCaptcha } from "network/user";
+import { register, getCaptcha } from "@/network/user";
 import { Notify } from "vant";
 import { Toast } from "vant";
-import NavBar from "components/common/navbar/NavBar";
+import NavBar from "@/components/common/navbar/NavBar.vue";
 export default {
   components: {
     NavBar,

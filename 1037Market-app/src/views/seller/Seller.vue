@@ -41,14 +41,14 @@
 </template>
 
 <script setup>
-import NavBar from "components/common/navbar/NavBar";
+import NavBar from "@/components/common/navbar/NavBar.vue";
 
 import {reactive, ref} from 'vue';
-import {getUser, getUserPublishedProductIds} from "../../network/user";
+import {getUser, getUserPublishedProductIds} from "@/network/user";
 import {useRoute, useRouter} from "vue-router/dist/vue-router";
 import {useStore} from "vuex";
-import {getCommentDetail, getUserCommentIds} from "../../network/comment";
-import {getDetail} from "../../network/detail";
+import {getCommentDetail, getUserCommentIds} from "@/network/comment";
+import {getDetail} from "@/network/detail";
 
 const route = useRoute();
 const router = useRouter();

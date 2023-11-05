@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import 'vant/lib/index.css';
 // import 'src/assets/css/iconfont.css';
-
+import defaultImg from '@/assets/images/default.jpg'
 
 import { Tabbar, TabbarItem, ActionBar, ActionBarIcon, ActionBarButton, DropdownMenu, DropdownItem, Dialog, NavBar, Uploader, Toast, Cell, CellGroup, PullRefresh, List, Popup, Grid, GridItem, AddressEdit,
     AddressList, Icon, Search, ConfigProvider,
@@ -17,7 +17,8 @@ import { Tabbar, TabbarItem, ActionBar, ActionBarIcon, ActionBarButton, Dropdown
 
 createApp(App)
   .use(Swipe).use(SwipeItem).use(Lazyload, {
-    loading: require('./assets/images/default.jpg')
+    lazyComponent: true,
+    loading: defaultImg,
   }).use(Badge).use(Sidebar).use(SidebarItem).use(Collapse).use(CollapseItem).use(ConfigProvider)
   .use(Tab).use(Tabs).use(Card).use(VanImage).use(Tag).use(Button).use(Form).use(Field).use(Search)
   .use(Checkbox).use(Stepper).use(SwipeCell).use(CheckboxGroup).use(SubmitBar).use(Icon).use(AddressList).use(AddressEdit)

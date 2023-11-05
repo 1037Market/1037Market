@@ -54,13 +54,13 @@
 </template>
 
 <script>
-import NavBar from "components/common/navbar/NavBar";
-import BackTop from "components/common/backtop/BackTop";
+import NavBar from "@/components/common/navbar/NavBar.vue";
+import BackTop from "@/components/common/backtop/BackTop.vue";
 
 import { ref, reactive, onMounted, computed, watchEffect, nextTick } from "vue";
 import { useRouter } from "vue-router";
 
-import { getCategoryData, getCategoryGoods } from "network/category";
+import { getCategoryData, getCategoryGoods } from "@/network/category";
 
 import BScroll from "better-scroll";
 

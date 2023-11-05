@@ -13,8 +13,8 @@
 
     <div>
 
-      <price-display :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
-      <product-description :description="productDetail.content" />
+      <price-display v-if="typeof (productDetail.title) !== 'undefined' " :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
+      <product-description v-if="typeof (productDetail.content) != 'undefined'" :description="productDetail.content" />
 
     </div>
 
@@ -29,20 +29,20 @@
 </template>
 
 <script>
-import NavBar from "components/common/navbar/NavBar";
-import GoodsList from "components/content/goods/GoodsList";
+import NavBar from "@/components/common/navbar/NavBar.vue";
+import GoodsList from "@/components/content/goods/GoodsList.vue";
 
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import { ref, onMounted, reactive, toRefs } from "vue";
-import { getDetail } from "network/detail";
-import { addCart } from "network/cart";
+import { getDetail } from "@/network/detail";
+import { addCart } from "@/network/cart";
 
-import PriceDisplay from "components/content/goods/PriceDisplay"
-import ProductDescription from "components/content/goods/ProductDescription";
-import {Toast} from "vant";
+import PriceDisplay from "@/components/content/goods/PriceDisplay.vue"
+import ProductDescription from "@/components/content/goods/ProductDescription.vue";
+import { showSuccessToast, showFailToast } from 'vant';
 export default {
   name: "Detail",
   components: {
@@ -67,8 +67,8 @@ export default {
         addCart(id.value).then((res) => {
             console.log(res)
             if(res === 'ok')
-                Toast.success('收藏成功')
-            else Toast.fail('收藏失败')
+                showSuccessToast('收藏成功')
+            else showFailToast('收藏失败')
         });
     };
 
@@ -100,7 +100,6 @@ export default {
 
       getDetail(id.value).then((res) => {
           productDetail.value = res;
-          console.log(res);
       }).catch((err) => {
         console.log(err);
       });

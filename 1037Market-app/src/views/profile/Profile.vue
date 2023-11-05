@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import NavBar from "components/common/navbar/NavBar";
+import NavBar from "@/components/common/navbar/NavBar.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Cookies from 'js-cookie'

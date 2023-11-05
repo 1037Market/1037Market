@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index'
-const Home = () => import('views/home/Home');
-const Category = () => import('views/category/Category');
-const Detail = () => import('views/detail/Detail');
-const ShopCart = () => import('views/shopcart/ShopCart');
-const Profile = () => import('views/profile/Profile');
-const Register = () => import('views/profile/Register');
-const Login = () => import('views/profile/Login')
-const Publish = () => import('views/publish/Publish')
-const Seller = () => import('views/seller/Seller');
-import { Notify } from "vant";
+const Home = () => import('@/views/home/Home.vue');
+const Category = () => import('@/views/category/Category.vue');
+const Detail = () => import('@/views/detail/Detail.vue');
+const ShopCart = () => import('@/views/shopcart/ShopCart.vue');
+const Profile = () => import('@/views/profile/Profile.vue');
+const Register = () => import('@/views/profile/Register.vue');
+const Login = () => import('@/views/profile/Login.vue')
+const Publish = () => import('@/views/publish/Publish.vue')
+const Seller = () => import('@/views/seller/Seller.vue');
+import { showNotify } from "vant";
 
 
 const routes = [
@@ -91,7 +91,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
@@ -100,7 +100,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 如果没有登录， 在这里到login
   if (to.meta.isAuthRequired && store.state.user.isLogin == false) {
-    Notify('请先登录')
+    showNotify({message:'请先登录'})
     return next('/login')
 
   } else {

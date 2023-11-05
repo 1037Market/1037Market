@@ -83,7 +83,7 @@ import {getCategoryData} from "@/network/category";
 import {uploadImage} from "@/network/image";
 import {updateUser} from "@/network/user";
 import {publishProduct} from "@/network/publish";
-import PriceDisplay from "@/components/content/goods/PriceDisplay";
+import PriceDisplay from "@/components/content/goods/PriceDisplay.vue";
 
 export default {
   components: {

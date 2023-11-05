@@ -1,7 +1,7 @@
 <template>
   <div class="nav-bar">
     <div class="left" @click="goback">
-      <slot name="left"><img src="~assets/images/left.png" alt="" /></slot>
+      <slot name="left"><img src="@/assets/images/left.png" alt="" /></slot>
     </div>
     <div class="center"><slot name="center"></slot></div>
     <div class="right"><slot name="right"></slot></div>

@@ -52,9 +52,9 @@
 import { ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { login } from "network/user";
-import { Toast } from "vant";
-import NavBar from "components/common/navbar/NavBar";
+import { login } from "@/network/user";
+import { showSuccessToast, showFailToast } from 'vant';
+import NavBar from "@/components/common/navbar/NavBar.vue";
 export default {
   components: {
     NavBar,
@@ -76,7 +76,7 @@ export default {
         store.commit("setIsLogin", true);
         window.localStorage.setItem('studentId', userinfo.studentId);
 
-        Toast.success("登录成功");
+        showSuccessToast("登录成功");
         userinfo.studentId = "";
         userinfo.hashedPassword = "";
 

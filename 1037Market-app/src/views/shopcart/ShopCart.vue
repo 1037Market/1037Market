@@ -26,7 +26,7 @@
         <div class="empty" v-if="!products.length">
         <img
           class="empty-cart"
-          src="~assets/images/empty-car.png"
+          src="@/assets/images/empty-car.png"
           alt="空购物车"
         />
         <div class="title">购物车空空如也</div>
@@ -42,10 +42,10 @@
 import {ref, reactive, toRefs, onMounted, computed, nextTick, watch} from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { getCart, deleteCartItem} from "network/cart";
-import { getDetail } from "network/detail"
-import { Toast } from "vant";
-import NavBar from "components/common/navbar/NavBar";
+import { getCart, deleteCartItem} from "@/network/cart";
+import { getDetail } from "@/network/detail"
+import { showLoadingToast, closeToast } from 'vant';
+import NavBar from "@/components/common/navbar/NavBar.vue";
 export default {
   name: "ShopCart",
   setup() {
@@ -54,11 +54,14 @@ export default {
     const products = ref([])
 
     onMounted(() => {
-        Toast.loading({ message: "加载中...", forbidClick: true });
+        showLoadingToast({
+            message: '加载中...',
+            forbidClick: true,
+        });
 
         getCart().then((res) => {
             productIDs.value = res;
-            Toast.clear();
+            closeToast(true)
         });
     });
 

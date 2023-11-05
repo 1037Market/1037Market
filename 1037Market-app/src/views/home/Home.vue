@@ -27,30 +27,12 @@
           </van-tabs>
       </div>
 
-    <!-- 复制一份tab-control选择性显示 -->
-<!--    <tab-control-->
-<!--      :titles="['推荐', '二手书', '闲置物品']"-->
-<!--      @tabClick="tabClick"-->
-<!--    ></tab-control>-->
-
-    <!-- 使用better-scroll -->
     <div class="wrapper">
       <div class="content">
-        <div ref="banref">
-<!--          <home-swiper :banners="banners"></home-swiper>-->
-
-<!--          <recommend-view :recommends="recommends"></recommend-view>-->
-        </div>
-
-<!--        <tab-control-->
-<!--          :titles="['推荐', '二手书', '闲置物品']"-->
-<!--          @tabClick="tabClick"-->
-<!--        ></tab-control>-->
-<!--          <button @click="debug">debug</button>-->
-        <!-- 因为是切换选项卡，所以只显示一个，只传一个类型的数据，需要知道当前是哪个选项卡，使用计算属性 -->
+        <div ref="banref"></div>
 
           <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
-          <goods-list :goods="showGoods"></goods-list>
+          <goods-list :goods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
       </div>
     </div>
     <back-top @goback="goback" v-show="isShowBackTop"></back-top>
@@ -60,25 +42,16 @@
 <script>
 import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
 import { useRouter } from 'vue-router'
-import { getHomeAllData, getHomeGoodsData, getSearchData } from "network/home";
-import HomeSwiper from "views/home/childComps/HomeSwiper";
-import NavBar from "components/common/navbar/NavBar";
-import recommendView from "./childComps/RecommendView";
-import TabControl from "components/content/tabcontrol/TabControl";
-import GoodsList from "components/content/goods/GoodsList";
-import BackTop from "components/common/backtop/BackTop";
-
+import { getHomeAllData, getHomeGoodsData, getSearchData } from "@/network/home";
+import GoodsList from "@/components/content/goods/GoodsList.vue";
+import BackTop from "@/components/common/backtop/BackTop.vue";
 import BScroll from "better-scroll";
 
 export default {
   name: "Home",
   components: {
-    NavBar,
-    recommendView,
-    TabControl,
     GoodsList,
     BackTop,
-    HomeSwiper,
   },
   setup() {
     const recommends = ref([]);
@@ -93,7 +66,7 @@ export default {
     const isTabFixed = ref(false);
 
     const isShowBackTop = ref(false);
-    
+
     let banref = ref(null);
 
     //商品列表对象模型,里面三个选项卡的页码和列表

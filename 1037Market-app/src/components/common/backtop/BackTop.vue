@@ -25,6 +25,6 @@ export default {
   z-index: 90;
   box-shadow: 5px 5px 5px #888888;
   border-radius: 50%;
-  background: #fcfcfc url("~assets/images/up.png") no-repeat center center;
+  background: #fcfcfc url("@/assets/images/up.png") no-repeat center center;
 }
 </style>

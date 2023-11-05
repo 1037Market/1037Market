@@ -13,7 +13,7 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue"
-import { getDetail } from "network/detail"
+import { getDetail } from "@/network/detail"
 const props = defineProps(["productId"])
 
 const router = useRouter();
