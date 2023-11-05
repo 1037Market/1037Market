@@ -4,6 +4,74 @@ import (
 	"1037Market/mysqlDb"
 )
 
+type Product struct {
+	ProductId   int      `json:"productId"`
+	Title       string   `json:"title"`
+	Content     string   `json:"content"`
+	Publisher   string   `json:"publisher"`
+	Price       float32  `json:"price"`
+	PublishTime string   `json:"publishTime"`
+	UpdateTime  string   `json:"updateTime"`
+	ImageURIs   []string `json:"imageURIs"`
+	Categories  []string `json:"categories"`
+	Status      string   `json:"status"`
+}
+
+func GetProductById(productId string) (*Product, error) {
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+
+	rows, err := db.Query("select * from PRODUCTS where productId = ?", productId)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+
+	var product Product
+	if !rows.Next() {
+		return nil, NewErrorDao(ErrTypeNoSuchProduct, err.Error())
+	}
+	err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
+		&product.PublishTime, &product.UpdateTime)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+	defer rows.Close()
+
+	rows, err = db.Query("select imagePath from PRODUCT_IMAGES where productId = ?", productId)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	product.ImageURIs = make([]string, 0)
+	for rows.Next() {
+		var uri string
+		err = rows.Scan(&uri)
+		if err != nil {
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+		}
+		product.ImageURIs = append(product.ImageURIs, uri)
+	}
+	defer rows.Close()
+
+	rows, err = db.Query("select category from PRODUCT_CATEGORIES where productId = ?", productId)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	product.Categories = make([]string, 0)
+	for rows.Next() {
+		var category string
+		err = rows.Scan(&category)
+		if err != nil {
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+		}
+		product.Categories = append(product.Categories, category)
+	}
+	defer rows.Close()
+	return &product, nil
+}
+
 func GetProductListByKeyword(keyword string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	defer db.Close()
@@ -23,7 +91,7 @@ func GetProductListByKeyword(keyword string) ([]int, error) {
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, id)
 	}
@@ -48,11 +116,45 @@ func GetProductListByStudentId(studentId string) ([]int, error) {
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, id)
 	}
 	return lst, nil
+}
+
+func DeleteProduct(cookie, productId string) error {
+	db, err := mysqlDb.GetConnection()
+	defer db.Close()
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	if !rows.Next() {
+		return NewErrorDao(ErrTypeNoSuchUser, err.Error())
+	}
+
+	var userId string
+	if err = rows.Scan(&userId); err != nil {
+		return NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+	defer rows.Close()
+
+	result, err := db.Exec("delete from PRODUCTS where userId = ? and productId = ?", userId, productId)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, err.Error())
+	}
+	return nil
 }
 
 func GetRandomProductList(count string) ([]int, error) {
@@ -73,7 +175,7 @@ func GetRandomProductList(count string) ([]int, error) {
 		var productId int
 		err = rows.Scan(&productId)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, productId)
 	}
@@ -99,7 +201,7 @@ func GetProductListByCategory(category, count string) ([]int, error) {
 		var productId int
 		err = rows.Scan(&productId)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, productId)
 	}
@@ -123,7 +225,7 @@ func GetCategoryList() ([]string, error) {
 	for rows.Next() {
 		var name string
 		if err = rows.Scan(&name); err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, name)
 	}

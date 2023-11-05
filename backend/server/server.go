@@ -71,7 +71,6 @@ func (s *Server) DELETE(relativePath string, handler gin.HandlerFunc) {
 }
 
 func (s *Server) Route() {
-	s.GET("/", helloWorld())
 	s.POST("/api/user/register/email", api.RegisterEmail())
 	s.POST("/api/user/register", api.Register())
 	s.POST("/api/user/login", api.Login())

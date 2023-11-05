@@ -26,9 +26,20 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeDatabaseQuery:
 		log.Println("database query error", errorDao.Message)
 		c.String(http.StatusInternalServerError, "database error")
-	case dao.ErrTypeDatabaseScanRows:
-		log.Println("database scan error", errorDao.Message)
+	case dao.ErrTypeDatabaseExec:
+		log.Println("database exec error", errorDao.Message)
 		c.String(http.StatusInternalServerError, "database error")
+	case dao.ErrTypeScanRows:
+		log.Println("database result scan error", errorDao.Message)
+		c.String(http.StatusInternalServerError, "database error")
+	case dao.ErrTypeAffectRows:
+		log.Println("database affect rows error", errorDao.Message)
+		c.String(http.StatusInternalServerError, "database error")
+	case dao.ErrTypeNoSuchUser:
+		log.Println("no such user", errorDao.Message)
+		c.String(http.StatusBadRequest, "no such user")
+	case dao.ErrTypeNoSuchProduct:
+		log.Println("no such product", errorDao.Message)
+		c.String(http.StatusBadRequest, "no such product")
 	}
-
 }

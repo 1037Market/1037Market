@@ -5,7 +5,11 @@ type ErrorTypeDao int
 const (
 	ErrTypeDatabaseConnection ErrorTypeDao = iota + 1
 	ErrTypeDatabaseQuery
-	ErrTypeDatabaseScanRows
+	ErrTypeDatabaseExec
+	ErrTypeScanRows
+	ErrTypeAffectRows
+	ErrTypeNoSuchUser
+	ErrTypeNoSuchProduct
 )
 
 type ErrorDao struct {
