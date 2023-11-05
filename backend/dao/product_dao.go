@@ -51,16 +51,16 @@ func UserIdentityVerify(cookie string) (string, error) {
 	return userId, nil
 }
 
-func PublishProduct(userId string, product ProductPublished) error {
+func PublishProduct(userId string, product ProductPublished) (int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
-		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+		return -1, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
 	txn, err := db.Begin()
 	if err != nil {
-		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+		return -1, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer func() {
 		if err := txn.Rollback(); err != nil {
@@ -72,48 +72,48 @@ func PublishProduct(userId string, product ProductPublished) error {
 	result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime, status) "+
 		"values(?, ?, ? ,?, ?, ?, ?, ?)", productId, userId, product.Title, product.Price, product.Content, time.Now(), time.Now(), "common")
 	if err != nil {
-		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		return productId, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
 	affected, err := result.RowsAffected()
 	if err != nil {
-		return NewErrorDao(ErrTypeAffectRows, err.Error())
+		return productId, NewErrorDao(ErrTypeAffectRows, err.Error())
 	}
 	if affected < 1 {
-		return NewErrorDao(ErrTypeDatabaseExec, userId+"insert product failed")
+		return productId, NewErrorDao(ErrTypeDatabaseExec, userId+"insert product failed")
 	}
 
 	for _, uri := range product.ImageURIs {
 		result, err = txn.Exec("insert into PRODUCT_IMAGES values(?, ?)", productId, uri)
 		if err != nil {
-			return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+			return productId, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 		}
 		affected, err = result.RowsAffected()
 		if err != nil {
-			return NewErrorDao(ErrTypeAffectRows, err.Error())
+			return productId, NewErrorDao(ErrTypeAffectRows, err.Error())
 		}
 		if affected < 1 {
-			return NewErrorDao(ErrTypeDatabaseExec, userId+"insert product's images failed")
+			return productId, NewErrorDao(ErrTypeDatabaseExec, userId+"insert product's images failed")
 		}
 	}
 
 	for _, category := range product.Categories {
 		result, err = txn.Exec("insert into PRODUCT_CATEGORIES values(?, ?)", productId, category)
 		if err != nil {
-			return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+			return productId, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 		}
 		affected, err = result.RowsAffected()
 		if err != nil {
-			return NewErrorDao(ErrTypeAffectRows, err.Error())
+			return productId, NewErrorDao(ErrTypeAffectRows, err.Error())
 		}
 		if affected < 1 {
-			return NewErrorDao(ErrTypeDatabaseExec, userId+"insert product's categories failed")
+			return productId, NewErrorDao(ErrTypeDatabaseExec, userId+"insert product's categories failed")
 		}
 	}
 
 	if err = txn.Commit(); err != nil {
 		log.Println(err)
 	}
-	return nil
+	return productId, nil
 }
 
 func GetProductById(productId string) (ProductGot, error) {

@@ -2,6 +2,7 @@ package api
 
 import (
 	"1037Market/dao"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,12 +22,12 @@ func PublishProduct() gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "incorrect request format")
 			return
 		}
-		err = dao.PublishProduct(userId, product)
+		productId, err := dao.PublishProduct(userId, product)
 		if err != nil {
 			handleError(c, err)
 			return
 		}
-		c.String(http.StatusOK, "OK")
+		c.String(http.StatusOK, fmt.Sprintf("%d", productId))
 	}
 }
 
