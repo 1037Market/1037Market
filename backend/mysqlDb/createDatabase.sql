@@ -62,4 +62,20 @@ create table SUBSCRIBES(
     foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
+create table CHAT_SESSION(
+    user1Id     char(10) not null,
+    user2Id     char(10) not null,
+    sessionId   int unique not null,
+    primary key(user1Id, user2Id),
+    foreign key(user1Id) references USERS(userId) on delete cascade,
+    foreign key(user2Id) references USERS(userId) on delete cascade
+);
+
+create table CHAT_MESSAGES(
+    messageId   int primary key auto_increment,
+    sessionId   int not null,
+    type        char(31),
+    content     varchar(2047),
+    foreign key(sessionId) references CHAT_SESSION(sessionId) on delete cascade
+);
 
