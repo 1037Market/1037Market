@@ -3,7 +3,7 @@
   <div class="display seller-products">
     <h3>{{ title }}</h3>
     <div class="products-grid">
-      <div class="product-card" v-for="product in seller.products" :key="product.id" @click="clickProduct(product.id)">
+      <div class="product-card" v-for="product in displayedProducts" :key="product.id" @click="clickProduct(product.id)">
         <van-image :src="product.image" alt="Product Image" class="product-image" />
         <div class="product-info">
           <h4 class="product-name">{{ product.name }}</h4>
@@ -11,46 +11,56 @@
         </div>
       </div>
     </div>
+    <!-- "查看更多"按钮 -->
+    <button v-if="seller.products.length > 2 && !showAllProducts" @click="toggleDisplay" class="view-more-btn">
+      查看更多
+    </button>
+    <!-- "收起"按钮 -->
+    <button v-if="showAllProducts" @click="toggleDisplay" class="collapse-btn">
+      收起
+    </button>
   </div>
 </template>
 
-<script>
-import {useRouter} from "vue-router";
+<script setup>
+import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
 
-
-export default {
-  name: "ProfileProducts",
-  props: {
-    title: '',
-    seller: {
+const props = defineProps({
+  title: String,
+  seller: {
+    type: Object,
+    default: () => ({
       avatar: '',
       nickname: '',
-      comments: [
-      ],
-      products: [
-      ]
-    }
+      comments: [],
+      products: []
+    }),
   },
+});
 
-  setup() {
-    const router = useRouter()
-    const clickProduct = (productId) => {
-      router.push({path: `/detail/${productId}`})
-    }
-    return {
-      clickProduct
-    }
-  }
-}
+const router = useRouter();
+const showAllProducts = ref(false);
+
+const displayedProducts = computed(() => {
+  return showAllProducts.value ? props.seller.products : props.seller.products.slice(0, 2);
+});
+
+const toggleDisplay = () => {
+  showAllProducts.value = !showAllProducts.value;
+};
+
+const clickProduct = (productId) => {
+  router.push({ path: `/detail/${productId}` });
+};
 </script>
 
 <style scoped>
-
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
-  margin-bottom: 45px;
+  margin-bottom: 10px;
 }
 
 .product-card {
@@ -88,5 +98,20 @@ export default {
   margin-top: 20px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.view-more-btn,  .collapse-btn {
+  background-color: transparent;
+  border: none;
+  color: #1f8efa;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: block;
+  margin: 10px auto; /* Center the button */
+}
+
+.view-more-btn:hover, .collapse-btn:hover {
+  text-decoration: underline;
 }
 </style>
