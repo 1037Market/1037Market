@@ -5,18 +5,21 @@
                  placeholder
 
     />
+    <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
       <van-image
-            width="10rem"
-            height="10rem"
-            radius="5rem"
-            fit="contain"
-            :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
-            @click="clickAvatar"
+          width="10rem"
+          height="10rem"
+          radius="5rem"
+          fit="contain"
+          :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+          @click="clickAvatar"
       />
-      <!--TODO:加上上传图片链接-->
       <van-icon name="photograph" id="photograph"
-          size="large"
+                size="large"
       />
+    </van-uploader>
+
+
 
       <!--TODO:调整文字输入位置,还有地址的model-value-->
       <div class="display">
@@ -32,9 +35,9 @@
                      @update:model-value="updateContact"
                      @click-right-icon="saveUserInfo"
           />
-          <van-field left-icon="map-marked" v-model="userInfo.contact" label="地址"
-                     :right-icon="infoEditing.contact?'sign':'edit'"
-                     @update:model-value="updateContact"
+          <van-field left-icon="map-marked" v-model="userInfo.address" label="地址"
+                     :right-icon="infoEditing.address?'sign':'edit'"
+                     @update:model-value="updateAddress"
                      @click-right-icon="saveUserInfo"
           />
         </van-cell-group>
@@ -93,14 +96,16 @@ export default {
       studentId: "",
       avatar: "",
       contact: "",
-      nickName: ""
+      nickName: "",
+      address: ""
     })
 
     const infoEditing = reactive(
         {
           nickName: false,
           contact: false,
-          avatar: false
+          avatar: false,
+          address: false
         }
     )
 
@@ -110,6 +115,7 @@ export default {
         userInfo.avatar = data['avatar'];
         userInfo.contact = data['contact'];
         userInfo.nickName = data['nickName'];
+        userInfo.address = data['address'];
       })
     }
 
@@ -127,6 +133,10 @@ export default {
       infoEditing.avatar = true;
     }
 
+    const updateAddress = () => {
+      infoEditing.address = true;
+    }
+
     const saveUserInfo = () => {
       console.log(userInfo)
       updateUser(userInfo).then((response) => {
@@ -135,6 +145,7 @@ export default {
         } else {
           infoEditing.contact = false;
           infoEditing.nickName = false;
+          infoEditing.address = false;
           showSuccessToast('保存成功');
           fetchUserInfo();
         }
@@ -259,7 +270,8 @@ export default {
       fileList,
       clickAvatar,
       afterReadAvatar,
-      seller
+      seller,
+      updateAddress
     };
   },
 };
