@@ -5,18 +5,21 @@
                  placeholder
 
     />
+    <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
       <van-image
-            width="10rem"
-            height="10rem"
-            radius="5rem"
-            fit="contain"
-            :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
-            @click="clickAvatar"
+          width="10rem"
+          height="10rem"
+          radius="5rem"
+          fit="contain"
+          :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+          @click="clickAvatar"
       />
-      <!--TODO:加上上传图片链接-->
       <van-icon name="photograph" id="photograph"
-          size="large"
+                size="large"
       />
+    </van-uploader>
+
+
 
       <!--TODO:调整文字输入位置,还有地址的model-value-->
       <div class="display">
