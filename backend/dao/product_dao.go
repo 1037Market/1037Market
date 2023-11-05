@@ -30,10 +30,11 @@ func GetProductById(productId string) (Product, error) {
 	}
 	defer rows.Close()
 
-	var product Product
 	if !rows.Next() {
-		return Product{}, NewErrorDao(ErrTypeNoSuchProduct, err.Error())
+		return Product{}, NewErrorDao(ErrTypeNoSuchProduct, productId+" not found")
 	}
+
+	var product Product
 	err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
 		&product.PublishTime, &product.UpdateTime)
 	if err != nil {
@@ -156,7 +157,7 @@ func DeleteProduct(cookie, productId string) error {
 		return NewErrorDao(ErrTypeAffectRows, err.Error())
 	}
 	if affected < 1 {
-		return NewErrorDao(ErrTypeNoSuchProduct, err.Error())
+		return NewErrorDao(ErrTypeNoSuchProduct, productId+" never published")
 	}
 	return nil
 }

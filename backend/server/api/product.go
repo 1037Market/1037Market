@@ -115,11 +115,11 @@ func GetProductById() gin.HandlerFunc {
 		id := c.Query("productId")
 
 		product, err := dao.GetProductById(id)
+
 		if err != nil {
 			handleError(c, err)
 			return
 		}
-
 		c.JSON(http.StatusOK, product)
 	}
 }
