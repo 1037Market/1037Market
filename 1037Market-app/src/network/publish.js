@@ -7,3 +7,11 @@ export function publishProduct(data) {
         data
     })
 }
+
+export function updateProduct(data) {
+    return request({
+        url: `/api/product/update?user=${window.localStorage.getItem('token')}`,
+        method: 'post',
+        data
+    })
+}
