@@ -17,59 +17,63 @@ type Product struct {
 	Status      string   `json:"status"`
 }
 
-func GetProductById(productId string) (*Product, error) {
+func GetProductById(productId string) (Product, error) {
 	db, err := mysqlDb.GetConnection()
-	defer db.Close()
 	if err != nil {
-		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+		return Product{}, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
+	defer db.Close()
 
 	rows, err := db.Query("select * from PRODUCTS where productId = ?", productId)
 	if err != nil {
-		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		return Product{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 
 	var product Product
 	if !rows.Next() {
-		return nil, NewErrorDao(ErrTypeNoSuchProduct, err.Error())
+		return Product{}, NewErrorDao(ErrTypeNoSuchProduct, err.Error())
 	}
 	err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
 		&product.PublishTime, &product.UpdateTime)
 	if err != nil {
-		return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+		return Product{}, NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+
+	rows.Close()
+	rows, err = db.Query("select imagePath from PRODUCT_IMAGES where productId = ?", productId)
+	if err != nil {
+		return Product{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
 	defer rows.Close()
 
-	rows, err = db.Query("select imagePath from PRODUCT_IMAGES where productId = ?", productId)
-	if err != nil {
-		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
-	}
 	product.ImageURIs = make([]string, 0)
 	for rows.Next() {
 		var uri string
 		err = rows.Scan(&uri)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+			return Product{}, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		product.ImageURIs = append(product.ImageURIs, uri)
 	}
-	defer rows.Close()
 
+	rows.Close()
 	rows, err = db.Query("select category from PRODUCT_CATEGORIES where productId = ?", productId)
 	if err != nil {
-		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+		return Product{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
+
 	product.Categories = make([]string, 0)
 	for rows.Next() {
 		var category string
 		err = rows.Scan(&category)
 		if err != nil {
-			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
+			return Product{}, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		product.Categories = append(product.Categories, category)
 	}
-	defer rows.Close()
-	return &product, nil
+	return product, nil
 }
 
 func GetProductListByKeyword(keyword string) ([]int, error) {
