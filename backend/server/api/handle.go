@@ -29,6 +29,9 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeDatabaseScanRows:
 		log.Println("database scan error", errorDao.Message)
 		c.String(http.StatusInternalServerError, "database error")
+	case dao.ErrTypeInvalidStudentId:
+		log.Println("invalid student id", errorDao.Message)
+		c.String(http.StatusBadRequest, "invalid student id")
 	}
 
 }

@@ -71,7 +71,6 @@ func (s *Server) DELETE(relativePath string, handler gin.HandlerFunc) {
 }
 
 func (s *Server) Route() {
-	s.GET("/", helloWorld())
 	s.POST("/api/user/register/email", api.RegisterEmail())
 	s.POST("/api/user/register", api.Register())
 	s.POST("/api/user/login", api.Login())
@@ -93,6 +92,7 @@ func (s *Server) Route() {
 	s.GET("/api/subscribe", api.GetSubscribes())
 	s.POST("/api/subscribe", api.AddSubscribe())
 	s.DELETE("/api/subscribe", api.DeleteSubscribe())
+	s.GET("/api/chat/session", api.GetSessionIdByStudentIds())
 }
 
 func cors() gin.HandlerFunc {

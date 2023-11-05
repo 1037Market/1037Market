@@ -1,5 +1,11 @@
 package api
 
+import (
+	"1037Market/dao"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
 /*
 TODO:
 chat API
@@ -13,3 +19,16 @@ CHAT_MESSAGES: 每个message属于一个session。
 				需要支持在固定sessionId的情况下根据messageId的排序查询，因为前端需要查询从倒数第i条开始的n条消息
 
 */
+
+func GetSessionIdByStudentIds() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studentId1 := c.Query("studentId1")
+		studentId2 := c.Query("studentId2")
+		sessionId, err := dao.GetSessionIdByStudentIds(studentId1, studentId2)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, sessionId)
+	}
+}

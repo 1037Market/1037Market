@@ -6,6 +6,7 @@ const (
 	ErrTypeDatabaseConnection ErrorTypeDao = iota + 1
 	ErrTypeDatabaseQuery
 	ErrTypeDatabaseScanRows
+	ErrTypeInvalidStudentId
 )
 
 type ErrorDao struct {
