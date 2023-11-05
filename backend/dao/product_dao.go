@@ -345,17 +345,17 @@ func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, e
 	}
 	defer db.Close()
 
-	seedInt, err := strconv.ParseInt(seed, 10, 32)
+	seedInt, err := strconv.ParseInt(seed, 10, 64)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
 	}
 
-	startIdxInt, err := strconv.ParseInt(startIdx, 10, 32)
+	startIdxInt, err := strconv.ParseInt(startIdx, 10, 64)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
 	}
 
-	cntInt, err := strconv.ParseInt(cnt, 10, 32)
+	cntInt, err := strconv.ParseInt(cnt, 10, 64)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
 	}
