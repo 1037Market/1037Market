@@ -13,7 +13,7 @@ import (
 
 var studentId2Captcha = make(map[string]string)
 
-func generateRandomDigits(length int) string {
+func GenerateRandomDigits(length int) string {
 	rand.Seed(time.Now().UnixNano())
 	digits := "0123456789"
 	result := make([]byte, length)
@@ -42,7 +42,7 @@ func RegisterEmail(studentId string) error {
 	e.From = "Franky <1255411561@qq.com>"
 	e.To = []string{studentId + "@hust.edu.cn"}
 	e.Subject = "1037Market Register"
-	captcha := generateRandomDigits(6)
+	captcha := GenerateRandomDigits(6)
 	e.Text = []byte("1037Market\nYour captcha is: " + captcha)
 	err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1255411561@qq.com", psw, "smtp.qq.com"))
 	if err != nil {
@@ -134,7 +134,7 @@ func Login(user ds.LoginUser) (string, error) {
 	if realPsw != user.HashedPassword {
 		return "", NewErrorDao(ErrTypeWrongPassword, user.StudentId+"wrong password")
 	}
-	cookieString := generateRandomDigits(16)
+	cookieString := GenerateRandomDigits(16)
 
 	rows, err = db.Query("select cookie from COOKIES where userId = ?", user.StudentId)
 	if err != nil {

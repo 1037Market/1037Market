@@ -68,5 +68,8 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeNoSuchComment:
 		log.Println("no such comment", errorDao.Message)
 		c.String(http.StatusBadRequest, "评论不存在\nno such comment")
+	case dao.ErrTypeSysSaveFile:
+		log.Println("save file error", errorDao.Message)
+		c.String(http.StatusInternalServerError, "服务错误\ninternal error")
 	}
 }
