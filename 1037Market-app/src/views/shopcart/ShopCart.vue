@@ -121,7 +121,7 @@ export default {
 <style scoped lang="scss">
 
 .cardList{
-    margin-top: 30px;
+    margin-top: 55px;
 }
 
 .delete-button {
