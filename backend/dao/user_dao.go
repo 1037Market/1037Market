@@ -121,7 +121,6 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
-	rows.Close()
 
 	if !rows.Next() {
 		return "", NewErrorDao(ErrTypeNoSuchUser, user.StudentId+" not found")
@@ -131,6 +130,8 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return "", NewErrorDao(ErrTypeScanRows, err.Error())
 	}
+	rows.Close()
+
 	if realPsw != user.HashedPassword {
 		return "", NewErrorDao(ErrTypeWrongPassword, user.StudentId+"wrong password")
 	}
@@ -140,6 +141,7 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 	if rows.Next() { // already has a cookie in DB
 		_, err = db.Exec("update COOKIES set cookie = ? where userId = ?", cookieString, user.StudentId)
 	} else {
@@ -148,7 +150,6 @@ func Login(user ds.LoginUser) (string, error) {
 	if err != nil {
 		return cookieString, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
-	defer rows.Close()
 	return cookieString, nil
 }
 

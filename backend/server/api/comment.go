@@ -24,13 +24,17 @@ func CreateComment() gin.HandlerFunc {
 			return
 		}
 		err = dao.CreateComment(fromId, toId, content, stars)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
 		c.String(http.StatusOK, "OK")
 	}
 }
 
 func QueryCommentList() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := c.Query("userId")
+		userId := c.Query("studentId")
 		list, err := dao.QueryCommentList(userId)
 		if err != nil {
 			handleError(c, err)

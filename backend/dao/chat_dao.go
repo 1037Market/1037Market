@@ -48,6 +48,7 @@ func GetSessionIdByStudentIds(studentId1 string, studentId2 string) (sessionId i
 		if err = rows.Scan(&id); err != nil {
 			return 0, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
+		txn.Commit()
 		return id, nil
 	}
 

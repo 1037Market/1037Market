@@ -50,6 +50,7 @@ func QueryCommentList(userId string) ([]int, error) {
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 
 	list := make([]int, 0)
 	for rows.Next() {
