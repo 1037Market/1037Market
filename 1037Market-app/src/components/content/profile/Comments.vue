@@ -17,7 +17,7 @@
           />
           <span class="commenter-nickname">{{ comment.commenter.nickname }}</span>
         </div>
-        <p class="comment-text">{{ comment.text }}</p>
+        <p class="comment-text" style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">{{ comment.text }}</p>
       </div>
       <!-- "View More" Button -->
       <button
