@@ -36,8 +36,8 @@
                      @click-right-icon="saveUserInfo"
           />
           <van-field left-icon="map-marked" v-model="userInfo.address" label="地址"
-                     :right-icon="infoEditing.contact?'sign':'edit'"
-                     @update:model-value="updateContact"
+                     :right-icon="infoEditing.address?'sign':'edit'"
+                     @update:model-value="updateAddress"
                      @click-right-icon="saveUserInfo"
           />
         </van-cell-group>
@@ -104,7 +104,8 @@ export default {
         {
           nickName: false,
           contact: false,
-          avatar: false
+          avatar: false,
+          address: false
         }
     )
 
@@ -132,6 +133,10 @@ export default {
       infoEditing.avatar = true;
     }
 
+    const updateAddress = () => {
+      infoEditing.address = true;
+    }
+
     const saveUserInfo = () => {
       console.log(userInfo)
       updateUser(userInfo).then((response) => {
@@ -140,6 +145,7 @@ export default {
         } else {
           infoEditing.contact = false;
           infoEditing.nickName = false;
+          infoEditing.address = false;
           showSuccessToast('保存成功');
           fetchUserInfo();
         }
@@ -264,7 +270,8 @@ export default {
       fileList,
       clickAvatar,
       afterReadAvatar,
-      seller
+      seller,
+      updateAddress
     };
   },
 };
