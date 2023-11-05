@@ -61,7 +61,7 @@
       </div>
 
       <div style="margin: 20px">
-        <van-button round block type="success" color="#42b983">提交</van-button>
+        <van-button round block type="success" color="#42b983" @click="onSubmit">提交</van-button>
       </div>
 
 
