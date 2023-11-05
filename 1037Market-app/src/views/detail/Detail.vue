@@ -83,28 +83,13 @@ export default {
       // });
     };
 
-    onBeforeRouteLeave((to, from, next) => { // 离开前将底部tabbar恢复
-      const nav = document.getElementById('nav');
-      console.log(to)
-      if(nav && to.name !== 'Seller') {
-        nav.style.visibility = 'visible';
-      }
-      next();
-    })
 
     onMounted(() => {
-      // 进入时隐藏底部tabbar
-      const nav = document.getElementById('nav');
-      if(nav) {
-        nav.style.visibility = 'hidden';
-      }
-
       getDetail(id.value).then((res) => {
           productDetail.value = res;
       }).catch((err) => {
         console.log(err);
       });
-
     });
 
     const userInfo = () => {

@@ -104,6 +104,15 @@ router.beforeEach((to, from, next) => {
     return next('/login')
 
   } else {
+    const nav = document.getElementById('nav');
+    console.log(to)
+    if(nav) {
+      if(to.name === 'Seller' || to.name === 'Detail') { // 这些页面隐藏底部tabbar
+        nav.style.visibility = 'hidden';
+      } else {
+        nav.style.visibility = 'visible';
+      }
+    }
     next();
 
   }
