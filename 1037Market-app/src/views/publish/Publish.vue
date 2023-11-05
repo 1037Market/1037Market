@@ -5,7 +5,7 @@
 
   />
     <div class="display">
-        <van-form @submit="onSubmit">
+        <van-form @submit="onSubmit" style="width: 100%;">
           <van-field
               v-model="form.name"
               label="商品名称"
@@ -15,7 +15,7 @@
               style="margin-bottom: 10px"
           />
 
-          <van-uploader
+          <van-uploader style="margin-left: 130px;"
               v-model="form.images"
               :after-read="afterRead"
               multiple
@@ -201,5 +201,8 @@ export default {
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
+}
+div van-form{
+  width: 100%;
 }
 </style>
