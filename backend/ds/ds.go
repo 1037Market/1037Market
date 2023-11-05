@@ -57,12 +57,14 @@ type UserInfoGot struct {
 	NickName string `json:"nickName"`
 	Avatar   string `json:"avatar"`
 	Contact  string `json:"contact"`
+	Address  string `json:"address"`
 }
 
 type UserInfoUpdated struct {
 	NickName string `json:"nickName"`
 	Avatar   string `json:"avatar"`
 	Contact  string `json:"contact"`
+	Address  string `json:"address"`
 }
 
 type CommentGot struct {

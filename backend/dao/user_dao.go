@@ -172,8 +172,8 @@ func UpdateUserInfo(cookie string, userInfo ds.UserInfoUpdated) error {
 	if err = rows.Scan(&userId); err != nil {
 		return NewErrorDao(ErrTypeScanRows, err.Error())
 	}
-	_, err = db.Exec("update USER_INFOS set nickName = ?, avatar = ?, contact = ? where userId = ?",
-		userInfo.NickName, userInfo.Avatar, userInfo.Contact, userId)
+	_, err = db.Exec("update USER_INFOS set nickName = ?, avatar = ?, contact = ?, address = ? where userId = ?",
+		userInfo.NickName, userInfo.Avatar, userInfo.Contact, userInfo.Address, userId)
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
@@ -197,7 +197,7 @@ func GetUserInfo(userId string) (ds.UserInfoGot, error) {
 	}
 
 	var userInfo ds.UserInfoGot
-	if err = rows.Scan(&userInfo.UserId, &userInfo.NickName, &userInfo.Avatar, &userInfo.Contact); err != nil {
+	if err = rows.Scan(&userInfo.UserId, &userInfo.NickName, &userInfo.Avatar, &userInfo.Contact, &userInfo.Address); err != nil {
 		return ds.UserInfoGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 	return userInfo, nil

@@ -63,6 +63,7 @@ func UpdateUserInfo() gin.HandlerFunc {
 			NickName string `json:"nickName"`
 			Avatar   string `json:"avatar"`
 			Contact  string `json:"contact"`
+			Address  string `json:"address"`
 		}
 		var userInfo ds.UserInfoUpdated
 		err := c.ShouldBindJSON(&userInfo)

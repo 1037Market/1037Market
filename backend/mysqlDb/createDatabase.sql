@@ -9,6 +9,7 @@ create table USER_INFOS(
     nickName    varchar(127),
     avatar      varchar(127),
     contact     varchar(127),
+    address     varchar(127),
     foreign key(userId) references USERS(userId)
 );
 
