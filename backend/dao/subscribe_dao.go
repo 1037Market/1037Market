@@ -46,6 +46,7 @@ func GetSubscribes(userId string) ([]int, error) {
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
+	defer rows.Close()
 	lst := make([]int, 0)
 	for rows.Next() {
 		var productId int

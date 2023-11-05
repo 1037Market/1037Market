@@ -3,7 +3,6 @@ package dao
 import (
 	"1037Market/ds"
 	"1037Market/mysqlDb"
-	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -43,11 +42,7 @@ func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 	if err != nil {
 		return -1, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
-	defer func() {
-		if err := txn.Rollback(); err != nil {
-			log.Println(err)
-		}
-	}()
+	defer txn.Rollback()
 	rand.Seed(time.Now().UnixNano())
 	productId := rand.Intn(100000000)
 	result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime, status) "+
@@ -91,9 +86,7 @@ func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 		}
 	}
 
-	if err = txn.Commit(); err != nil {
-		log.Println(err)
-	}
+	txn.Commit()
 	return productId, nil
 }
 
@@ -126,7 +119,6 @@ func GetProductById(productId string) (ds.ProductGot, error) {
 	if err != nil {
 		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
-	defer rows.Close()
 
 	product.ImageURIs = make([]string, 0)
 	for rows.Next() {
@@ -143,7 +135,6 @@ func GetProductById(productId string) (ds.ProductGot, error) {
 	if err != nil {
 		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
-	defer rows.Close()
 
 	product.Categories = make([]string, 0)
 	for rows.Next() {
