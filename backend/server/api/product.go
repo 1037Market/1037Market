@@ -2,111 +2,32 @@ package api
 
 import (
 	"1037Market/dao"
-	"1037Market/mysqlDb"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
-	"math/rand"
 	"net/http"
-	"time"
 )
 
 func PublishProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		type Product struct {
-			Title      string   `json:"title"`
-			Content    string   `json:"content"`
-			Categories []string `json:"categories"`
-			ImageURIs  []string `json:"imageURIs"`
-			Price      float32  `json:"price"`
-		}
-
-		// user identity verify
 		cookie := c.Query("user")
-
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		userId, err := dao.UserIdentityVerify(cookie)
 		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-			return
-		}
-		rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
-		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-			return
-		}
-		defer rows.Close()
-		if !rows.Next() {
-			c.String(http.StatusBadRequest, "no such user")
-			return
-		}
-		var userId string
-		err = rows.Scan(&userId)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "scan error")
+			handleError(c, err)
 			return
 		}
 
-		// get product info
-		var product Product
+		var product dao.ProductPublished
 		err = c.ShouldBindJSON(&product)
 		if err != nil {
 			c.String(http.StatusBadRequest, "incorrect request format")
 			return
 		}
-
-		txn, err := db.Begin()
+		productId, err := dao.PublishProduct(userId, product)
 		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
+			handleError(c, err)
 			return
 		}
-		defer func() {
-			if err := txn.Rollback(); err != nil {
-				log.Println(err)
-			}
-		}()
-
-		rand.Seed(time.Now().UnixNano())
-		productId := rand.Intn(100000000)
-		result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime, status) values(?, ?, ? ,?, ?, ?, ?, ?)", productId, userId,
-			product.Title, product.Price, product.Content, time.Now(), time.Now(), "common")
-		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-			return
-		}
-		if rowsAffected, err := result.RowsAffected(); err != nil || rowsAffected < 1 {
-			c.String(http.StatusInternalServerError, "please try again")
-			return
-		}
-
-		for _, uri := range product.ImageURIs {
-			result, err = txn.Exec("insert into PRODUCT_IMAGES values(?, ?)", productId, uri)
-			if err != nil {
-				c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-				return
-			}
-			if rowsAffected, err := result.RowsAffected(); err != nil || rowsAffected < 1 {
-				c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-				return
-			}
-		}
-
-		for _, category := range product.Categories {
-			result, err = txn.Exec("insert into PRODUCT_CATEGORIES values(?, ?)", productId, category)
-			if err != nil {
-				c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-				return
-			}
-			if rowsAffected, err := result.RowsAffected(); err != nil || rowsAffected < 1 {
-				c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-				return
-			}
-		}
-
 		c.String(http.StatusOK, fmt.Sprintf("%d", productId))
-		if err = txn.Commit(); err != nil {
-			log.Println(err)
-		}
 	}
 }
 
@@ -114,77 +35,12 @@ func GetProductById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Query("productId")
 
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
-		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
-			return
-		}
+		product, err := dao.GetProductById(id)
 
-		rows, err := db.Query("select * from PRODUCTS where productId = ?", id)
 		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("database error: %s", err.Error()))
+			handleError(c, err)
 			return
 		}
-		type Product struct {
-			ProductId   int      `json:"productId"`
-			Title       string   `json:"title"`
-			Content     string   `json:"content"`
-			Publisher   string   `json:"publisher"`
-			Price       float32  `json:"price"`
-			PublishTime string   `json:"publishTime"`
-			UpdateTime  string   `json:"updateTime"`
-			ImageURIs   []string `json:"imageURIs"`
-			Categories  []string `json:"categories"`
-			Status      string   `json:"status"`
-		}
-		var product Product
-		if !rows.Next() {
-			c.String(http.StatusBadRequest, "no such product")
-			return
-		}
-		err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
-			&product.PublishTime, &product.UpdateTime)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "scan error: %s", err.Error())
-			return
-		}
-		rows.Close()
-		rows, err = db.Query("select imagePath from PRODUCT_IMAGES where productId = ?", id)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
-			return
-		}
-
-		product.ImageURIs = make([]string, 0)
-		for rows.Next() {
-			var uri string
-			err = rows.Scan(&uri)
-			if err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err.Error())
-				return
-			}
-			product.ImageURIs = append(product.ImageURIs, uri)
-		}
-		rows.Close()
-
-		rows, err = db.Query("select category from PRODUCT_CATEGORIES where productId = ?", id)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err.Error())
-			return
-		}
-		product.Categories = make([]string, 0)
-		for rows.Next() {
-			var category string
-			err = rows.Scan(&category)
-			if err != nil {
-				c.String(http.StatusInternalServerError, "scan error: %s", err.Error())
-				return
-			}
-			product.Categories = append(product.Categories, category)
-		}
-		rows.Close()
-
 		c.JSON(http.StatusOK, product)
 	}
 }
@@ -195,7 +51,6 @@ func GetProductListByKeyword() gin.HandlerFunc {
 
 		lst, err := dao.GetProductListByKeyword(keyword)
 		if err != nil {
-			// c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			handleError(c, err)
 			return
 		}
@@ -209,7 +64,6 @@ func GetProductListByStudentId() gin.HandlerFunc {
 
 		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
-			// c.String(http.StatusInternalServerError, "database error: %s", err.Error())
 			handleError(c, err)
 			return
 		}
@@ -222,53 +76,35 @@ func DeleteProduct() gin.HandlerFunc {
 		cookie := c.Query("user")
 		productId := c.Query("productId")
 
-		db, err := mysqlDb.GetConnection()
-		defer db.Close()
+		err := dao.DeleteProduct(cookie, productId)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		if !rows.Next() {
-			c.String(http.StatusBadRequest, "invalid cookie")
-			return
-		}
-
-		var userId string
-		if err = rows.Scan(&userId); err != nil {
-			c.String(http.StatusInternalServerError, "scan error: %s", err)
-			return
-		}
-		rows.Close()
-
-		result, err := db.Exec("delete from PRODUCTS where userId = ? and productId = ?", userId, productId)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		affected, err := result.RowsAffected()
-		if err != nil {
-			c.String(http.StatusInternalServerError, "database error: %s", err)
-			return
-		}
-		if affected < 1 {
-			c.String(http.StatusBadRequest, "invalid product id")
+			handleError(c, err)
 			return
 		}
 		c.String(http.StatusOK, "OK")
 	}
 }
 
-func GetRandomProductList() gin.HandlerFunc {
+func GetRandomProductList() gin.HandlerFunc { // Deprecated
 	return func(c *gin.Context) {
 		cnt := c.Query("count")
 		lst, err := dao.GetRandomProductList(cnt)
 		if err != nil {
-			// c.String(http.StatusInternalServerError, "database error: %s", err)
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, lst)
+	}
+}
+
+func GetRecommendProductList() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		seed := c.Query("seed")
+		startIndex := c.Query("startIndex")
+		count := c.Query("count")
+
+		lst, err := dao.GetRecommendProductList(seed, startIndex, count)
+		if err != nil {
 			handleError(c, err)
 			return
 		}
@@ -282,7 +118,6 @@ func GetProductListByCategory() gin.HandlerFunc {
 		cnt := c.Query("count")
 		lst, err := dao.GetProductListByCategory(category, cnt)
 		if err != nil {
-			// c.String(http.StatusInternalServerError, "database error: %s", err)
 			handleError(c, err)
 			return
 		}
@@ -295,7 +130,6 @@ func GetCategoryList() gin.HandlerFunc {
 		lst, err := dao.GetCategoryList()
 		if err != nil {
 			handleError(c, err)
-			// c.String(http.StatusInternalServerError, "database error: %s", err)
 			return
 		}
 		c.JSON(http.StatusOK, lst)

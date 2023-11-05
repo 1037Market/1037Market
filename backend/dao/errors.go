@@ -7,6 +7,12 @@ const (
 	ErrTypeDatabaseQuery
 	ErrTypeDatabaseScanRows
 	ErrTypeInvalidStudentId
+	ErrTypeDatabaseExec
+	ErrTypeScanRows
+	ErrTypeAffectRows
+	ErrTypeNoSuchUser
+	ErrTypeNoSuchProduct
+	ErrTypeIntParse
 )
 
 type ErrorDao struct {
