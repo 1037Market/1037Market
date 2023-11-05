@@ -3,9 +3,7 @@
     <nav-bar>
       <template v-slot:center>用户注册</template>
     </nav-bar>
-
-    <div style="margin-top: 50px">
-      <div style="text-align: center; padding-top: 50px">
+      <div style="text-align: center; padding-top: 100px">
         <van-image
           width="10rem"
           height="5rem"
@@ -13,6 +11,8 @@
           src="https://cdn2.lmonkey.com/94f152aaa94d937ccf5de78f3fcac59f/3b6e32e7bc8145a283431f260c3c1d1a.png"
         />
       </div>
+    <div style="margin-top: 50px" class="display">
+
       <van-form @submit="onSubmit">
           <van-field
               v-model="studentId"
@@ -21,7 +21,6 @@
               placeholder="学号"
               :rules="[{ required: true, message: '请填写学号' }]"
           />
-          <van-button :disabled="waitCaptcha" @click="clickCaptcha">{{captchaHint}}</van-button>
 
         <van-field
           v-model="password"
@@ -41,13 +40,14 @@
           :rules="[{ required: true, message: '请填写一致密码' }]"
         />
 
-        <van-field
+        <van-field 
           v-model="captcha"
           name="验证码"
           label="验证码"
-          placeholder="请输入HUST邮箱中的验证码,如果没有请在垃圾箱寻找"
-          :rules="[{ required: true, message: '请填写正确的验证码' }]"
+          placeholder="请输入HUST邮箱中的验证码"
+          :rules="[{ required: true, message: '如果没找到验证码请在垃圾箱寻找' }]"
         />
+          <van-button :disabled="waitCaptcha" @click="clickCaptcha" style="border-style: dotted">{{captchaHint}}</van-button>
         <div style="margin: 16px">
           <div class="link-login" @click="$router.push({ path: '/login' })">
             已有账号，立即登录
@@ -156,5 +156,15 @@ export default {
     display: inline-block;
     text-align: left;
    
+}
+.display {
+  font-family: 'Poppins', sans-serif;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
 }
 </style>

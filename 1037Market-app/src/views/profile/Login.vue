@@ -3,16 +3,17 @@
     <nav-bar>
       <template v-slot:center>用户登录</template>
     </nav-bar>
-
-    <div style="margin-top: 50px">
-      <div style="text-align: center; padding-top: 50px">
+      <div style="text-align: center; padding-top: 100px">
         <van-image
           width="10rem"
           height="5rem"
           fit="contain"
           src="https://cdn2.lmonkey.com/94f152aaa94d937ccf5de78f3fcac59f/3b6e32e7bc8145a283431f260c3c1d1a.png"
+          
         />
       </div>
+    <div style="margin-top: 50px" class="display">
+
       <van-form @submit="onSubmit">
         <van-field
           v-model="studentId"
@@ -94,6 +95,16 @@ export default {
 </script>
 
 <style scoped>
+.display {
+  font-family: 'Poppins', sans-serif;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+  line-break: anywhere;
+  text-align: left;
+}
 .link-login {
   font-size: 14px;
   margin-bottom: 20px;
