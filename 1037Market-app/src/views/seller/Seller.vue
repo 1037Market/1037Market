@@ -167,12 +167,6 @@ onMounted(() => {
   color: #ffcc00;
 }
 
-.seller-products h3 {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
 </style>
 
 <style scoped>

@@ -15,12 +15,8 @@
 </template>
 
 <script>
-import {useRouter} from "vue-router/dist/vue-router";
+import {useRouter} from "vue-router";
 
-const router = useRouter()
-const clickProduct = (productId) => {
-  router.push({path: `/detail/${productId}`})
-}
 
 export default {
   name: "ProfileProducts",
@@ -35,8 +31,15 @@ export default {
       ]
     }
   },
-  methods: {
-    clickProduct
+
+  setup() {
+    const router = useRouter()
+    const clickProduct = (productId) => {
+      router.push({path: `/detail/${productId}`})
+    }
+    return {
+      clickProduct
+    }
   }
 }
 </script>
@@ -79,5 +82,11 @@ export default {
 .product-description {
   font-size: 12px;
   color: #666;
+}
+
+.seller-products h3 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 </style>
