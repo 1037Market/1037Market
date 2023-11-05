@@ -40,9 +40,18 @@ export function updateUser(data){
   })
 }
 
-export function getUser() {
+export function getUser(studentId) {
   return request({
-    url: `/api/user/info?studentId=${window.localStorage.getItem('studentId')}`,
+    url: studentId ? `/api/user/info?studentId=${studentId}`:
+        `/api/user/info?studentId=${window.localStorage.getItem('studentId')}`,
+    method: 'get'
+  })
+}
+
+export function getUserPublishedProductIds(studentId) {
+  return request({
+    url: studentId ? `/api/product/student?studentId=${studentId}`:
+        `/api/product/student?studentId=${window.localStorage.getItem('studentId')}`,
     method: 'get'
   })
 }
