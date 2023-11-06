@@ -6,9 +6,9 @@
         <div class="cart-box">
 
             <div class="cardList">
-                <van-swipe-cell v-for="product in products">
+                <van-swipe-cell v-for="product in products" class="display">
                     <van-config-provider :theme-vars="cardTheme">
-                        <van-card
+                        <van-card style="--van-card-price-color: #FF4C0A;"
                             :key="product.productId"
                             :price="product.price"
                             :title="product.title"
@@ -147,7 +147,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px; /* Added horizontal margin */
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+}
 .cardList {
     margin-top: 10px;
 }
