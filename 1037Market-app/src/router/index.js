@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index'
 const Home = () => import('@/views/home/Home.vue');
-const Category = () => import('@/views/category/Category.vue');
 const Detail = () => import('@/views/detail/Detail.vue');
 const ShopCart = () => import('@/views/shopcart/ShopCart.vue');
 const Profile = () => import('@/views/profile/Profile.vue');
@@ -20,15 +19,8 @@ const routes = [
     component: Home,
     //添加浏览器导航栏标题
     meta: {
-      title: '1037集市'
-    }
-  },
-  {
-    path: '/category',
-    name: 'Category',
-    component: Category,
-    meta: {
-      title: '1037集市--分类'
+      title: '1037集市',
+      isAuthRequired: true
     }
   },
   {
@@ -36,7 +28,8 @@ const routes = [
     name: 'Publish',
     component: Publish,
     meta: {
-      title: '发布新商品'
+      title: '发布新商品',
+      isAuthRequired: true
     }
   },
   {
@@ -44,7 +37,8 @@ const routes = [
     name: 'Detail',
     component: Detail,
     meta: {
-      title: '商品详情'
+      title: '商品详情',
+      isAuthRequired: true
     }
   },
   {
@@ -52,7 +46,8 @@ const routes = [
     name: 'Seller',
     component: Seller,
     meta: {
-      title: '卖家详情'
+      title: '卖家详情',
+      isAuthRequired: true
     }
   },
   {
@@ -108,13 +103,12 @@ const router = createRouter({
 //导航守卫
 router.beforeEach((to, from, next) => {
   // 如果没有登录， 在这里到login
-  if (to.meta.isAuthRequired && store.state.user.isLogin == false) {
+  if (to.meta.isAuthRequired && store.state.user.isLogin === false) {
     showNotify({message:'请先登录'})
     return next('/login')
 
   } else {
     const nav = document.getElementById('nav');
-    console.log(to)
     if(nav) {
       if(to.name === 'Seller' || to.name === 'Detail') { // 这些页面隐藏底部tabbar
         nav.style.visibility = 'hidden';

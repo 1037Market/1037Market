@@ -5,31 +5,39 @@
                  placeholder
 
     />
+    <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
       <van-image
-            width="10rem"
-            height="10rem"
-            radius="5rem"
-            fit="contain"
-            :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
-            @click="clickAvatar"
+          width="10rem"
+          height="10rem"
+          radius="5rem"
+          fit="contain"
+          :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+          @click="clickAvatar"
       />
-      <div style="margin-bottom: 10px">
-        <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
-          <van-button block color="#42b983" @click="tologout">上传头像</van-button>
-        </van-uploader>
-      </div>
+      <van-icon name="photograph" id="photograph"
+                size="large"
+      />
+    </van-uploader>
 
+
+
+      <!--TODO:调整文字输入位置,还有地址的model-value-->
       <div class="display">
         <van-cell-group>
-          <van-field v-model="userInfo.nickName" label="昵称"
+          <van-field left-icon="contact" v-model="userInfo.nickName" label="昵称"
                      :right-icon="infoEditing.nickName?'sign':'edit'"
                      @update:model-value="updateNickName"
                      @click-right-icon="saveUserInfo"
           />
-          <van-field v-model="userInfo.studentId" label="学号" readonly/>
-          <van-field v-model="userInfo.contact" label="联系方式"
+          <van-field left-icon="bookmark" v-model="userInfo.studentId" label="学号" readonly/>
+          <van-field left-icon="phone" v-model="userInfo.contact" label="联系方式"
                      :right-icon="infoEditing.contact?'sign':'edit'"
                      @update:model-value="updateContact"
+                     @click-right-icon="saveUserInfo"
+          />
+          <van-field left-icon="map-marked" v-model="userInfo.address" label="地址"
+                     :right-icon="infoEditing.address?'sign':'edit'"
+                     @update:model-value="updateAddress"
                      @click-right-icon="saveUserInfo"
           />
         </van-cell-group>
@@ -88,14 +96,16 @@ export default {
       studentId: "",
       avatar: "",
       contact: "",
-      nickName: ""
+      nickName: "",
+      address: ""
     })
 
     const infoEditing = reactive(
         {
           nickName: false,
           contact: false,
-          avatar: false
+          avatar: false,
+          address: false
         }
     )
 
@@ -105,6 +115,7 @@ export default {
         userInfo.avatar = data['avatar'];
         userInfo.contact = data['contact'];
         userInfo.nickName = data['nickName'];
+        userInfo.address = data['address'];
       })
     }
 
@@ -122,6 +133,10 @@ export default {
       infoEditing.avatar = true;
     }
 
+    const updateAddress = () => {
+      infoEditing.address = true;
+    }
+
     const saveUserInfo = () => {
       console.log(userInfo)
       updateUser(userInfo).then((response) => {
@@ -130,6 +145,7 @@ export default {
         } else {
           infoEditing.contact = false;
           infoEditing.nickName = false;
+          infoEditing.address = false;
           showSuccessToast('保存成功');
           fetchUserInfo();
         }
@@ -212,6 +228,7 @@ export default {
                 seller.comments.push({
                   id: commentId,
                   text: response.content,
+                  stars: response.stars,
                   commenter: {
                     id: response.fromId,
                     nickname: response.nickName,
@@ -254,7 +271,8 @@ export default {
       fileList,
       clickAvatar,
       afterReadAvatar,
-      seller
+      seller,
+      updateAddress
     };
   },
 };
@@ -275,5 +293,9 @@ export default {
   line-break: anywhere;
   text-align: left;
 
+}
+#photograph {
+  
+  margin-left: -30px;
 }
 </style>

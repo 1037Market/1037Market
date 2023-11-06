@@ -9,10 +9,13 @@
   },
   "dependencies": {
     "@better-scroll/core": "^2.5.1",
+    "@better-scroll/pull-down": "^2.5.1",
+    "@better-scroll/pull-up": "^2.5.1",
     "@vant/compat": "^1.0.0",
     "axios": "^1.6.0",
     "better-scroll": "^2.5.1",
     "js-cookie": "^3.0.5",
+    "lodash": "^4.17.21",
     "vant": "^4.7.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5",

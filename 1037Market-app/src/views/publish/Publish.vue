@@ -5,6 +5,7 @@
 
   />
   <product-publish :dialog="dialog" :form="form" :update="false" />
+
 </template>
 
 <script>
@@ -63,4 +64,18 @@ export default {
 
 <style scoped>
 
+.display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px; /* Added horizontal margin */
+  color: #333;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+}
+div van-form{
+  width: 100%;
+}
 </style>

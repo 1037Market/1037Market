@@ -16,6 +16,13 @@
               radius="15px"
           />
           <span class="commenter-nickname">{{ comment.commenter.nickname }}</span>
+          <van-rate
+            v-model="comment.stars"
+            color="#ffd21e"
+            void-icon="star"
+            void-color="#eee"
+            readonly
+          />
         </div>
         <p class="comment-text">{{ comment.text }}</p>
       </div>
@@ -127,5 +134,13 @@ const displayedComments = computed(() => {
 
 .view-more-btn:hover, .collapse-btn:hover {
   text-decoration: underline;
+}
+
+.comment-text {
+  font-size: 16px; /* Adjusted font size */
+  line-break: anywhere; /* Ensure long words do not break the layout */
+  text-overflow: ellipsis; /* Add ellipsis for overflowed texts */
+  white-space: nowrap; /* Keep the text in a single line */
+  overflow: hidden; /* Hide overflowed texts */
 }
 </style>

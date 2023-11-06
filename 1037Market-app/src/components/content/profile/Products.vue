@@ -6,8 +6,8 @@
       <div class="product-card" v-for="product in displayedProducts" :key="product.id" @click="clickProduct(product.id)">
         <van-image :src="product.image" alt="Product Image" class="product-image" />
         <div class="product-info">
-          <h4 class="product-name">{{ product.name }}</h4>
-          <p class="product-description">{{ product.description }}</p>
+          <h4 class="product-name" style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">{{ product.name }}</h4>
+          <p class="product-description" style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">{{ product.description }}</p>
         </div>
       </div>
     </div>
