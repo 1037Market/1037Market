@@ -14,7 +14,7 @@
     <div>
 
       <price-display v-if="typeof (productDetail.title) !== 'undefined' " :name="productDetail.title" :price="productDetail.price" :categories="productDetail.categories" />
-      <product-description v-if="typeof (productDetail.content) != 'undefined'" :description="productDetail.content" />
+      <product-description v-if="typeof (productDetail.content) != 'undefined'" :description="productDetail.content" style="line-height: 25px;font-family: Arial,sans-serif;font-weight: 600;letter-spacing:0.03em;"/>
 
     </div>
 
