@@ -4,6 +4,7 @@ import (
 	"1037Market/ds"
 	"1037Market/mysqlDb"
 	"strconv"
+	"time"
 )
 
 func GetSingleSessIdByStuIds(studentId1 string, studentId2 string) (sessionId int, err error) {
@@ -85,7 +86,7 @@ func GetSessIdListBySingleStuId(studentId string) ([]int, error) {
 	return lst, nil
 }
 
-func GetTwoStuInfosBySessId(sessionId string) ([]ds.UserInfoGot, error) {
+func GetTwoStuInfosBySessId(sessionId int) ([]ds.UserInfoGot, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -99,7 +100,7 @@ func GetTwoStuInfosBySessId(sessionId string) ([]ds.UserInfoGot, error) {
 	defer rows.Close()
 
 	if !rows.Next() {
-		return nil, NewErrorDao(ErrTypeNoSuchSession, sessionId+" no such session")
+		return nil, NewErrorDao(ErrTypeNoSuchSession, strconv.Itoa(sessionId)+" no such session")
 	}
 
 	var stuId1, stuId2 string
@@ -136,7 +137,7 @@ func GetNewestMsgIdBySessId(sessionId int) (int, error) {
 	defer rows.Close()
 	// note: "-1" means there is no message in the session
 	if !rows.Next() {
-		return -1, NewErrorDao(ErrTypeNoSuchMessage, strconv.Itoa(sessionId)+" no such message")
+		return -1, nil
 	}
 	var messageId int
 	if err = rows.Scan(&messageId); err != nil {
@@ -192,7 +193,7 @@ func GetMsgInfoByMsgId(MessageId int) (ds.MsgGot, error) {
 
 	var msg ds.MsgGot
 	var isFromUser1 bool
-	err = rows.Scan(&msg.MessageId, &msg.SessionId, &msg.MsgType, &msg.SendTime, &msg.Content, &isFromUser1)
+	err = rows.Scan(&msg.MessageId, &msg.SessionId, &msg.SendTime, &msg.Content, &msg.ImageURI, &isFromUser1)
 	if err != nil {
 		return ds.MsgGot{}, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 	}
@@ -216,4 +217,76 @@ func GetMsgInfoByMsgId(MessageId int) (ds.MsgGot, error) {
 		msg.FromId = user2Id
 	}
 	return msg, nil
+}
+
+func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
+	isFromUser1, err := isUser1(studentId, msg.SessionId)
+	if err != nil {
+		return 0, err
+	}
+
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return 0, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+
+	txn, err := db.Begin()
+	if err != nil {
+		return 0, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer txn.Rollback()
+
+	result, err := txn.Exec("insert into CHAT_MESSAGES(sessionId, sendTime, content, imagePath, isFromUser1) values(?, ?, ?, ?, ?)",
+		msg.SessionId, time.Now(), msg.Content, isFromUser1)
+	if err != nil {
+		return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return 0, NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return 0, NewErrorDao(ErrTypeDatabaseExec, "insert message failed")
+	}
+
+	rows, err := db.Query("select LAST_INSERT_ID();")
+	if err != nil {
+		return 0, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return 0, NewErrorDao(ErrTypeNoSuchMessage, "no last insert id")
+	}
+	var messageId int
+	if err = rows.Scan(&messageId); err != nil {
+		return 0, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+	}
+	txn.Commit()
+	return messageId, nil
+}
+
+func isUser1(stuentId string, sessionId int) (bool, error) {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return false, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+
+	rows, err := db.Query("select user1Id from CHAT_SESSIONS where sessionId = ?", sessionId)
+	if err != nil {
+		return false, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return false, NewErrorDao(ErrTypeNoSuchSession, strconv.Itoa(sessionId)+" no such session")
+	}
+
+	var user1Id string
+	if err = rows.Scan(&user1Id); err != nil {
+		return false, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+	}
+
+	return user1Id == stuentId, nil
 }

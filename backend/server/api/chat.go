@@ -2,6 +2,8 @@ package api
 
 import (
 	"1037Market/dao"
+	"1037Market/ds"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -64,7 +66,12 @@ func GetSessIdListBySingleStuId() gin.HandlerFunc {
 
 func GetTwoStuInfosBySessId() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sessionId := c.Query("sessionId")
+		sessionIdString := c.Query("sessionId")
+		sessionId, err := strconv.Atoi(sessionIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
 		stuInfos, err := dao.GetTwoStuInfosBySessId(sessionId)
 		if err != nil {
 			handleError(c, err)
@@ -134,5 +141,23 @@ func GetMsgInfoByMsgId() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, msgInfo)
+	}
+}
+
+func SendMsg() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		studentId := c.Query("studentId")
+		var msg ds.MsgSent
+		err := c.ShouldBindJSON(&msg)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		messageId, err := dao.SendMsg(studentId, msg)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, fmt.Sprintf("%d", messageId))
 	}
 }

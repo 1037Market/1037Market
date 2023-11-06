@@ -76,10 +76,9 @@ create table CHAT_SESSIONS(
 create table CHAT_MESSAGES(
     messageId   int primary key auto_increment,
     sessionId   int not null,
-    type        char(31),
     sendTime    time not null,
     content     varchar(2047),
+    imagePath   varchar(127),
     isFromUser1   bool,
     foreign key(sessionId) references CHAT_SESSIONS(sessionId) on delete cascade
 );
-
