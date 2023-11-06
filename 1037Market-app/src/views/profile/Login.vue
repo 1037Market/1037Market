@@ -1,115 +1,114 @@
 <template>
-  <div>
-    <nav-bar>
-      <template v-slot:center>用户登录</template>
-    </nav-bar>
-      <div style="text-align: center; padding-top: 100px">
-        <van-image
-          width="10rem"
-          height="5rem"
-          fit="contain"
-          src="https://cdn2.lmonkey.com/94f152aaa94d937ccf5de78f3fcac59f/3b6e32e7bc8145a283431f260c3c1d1a.png"
-          
+    <div>
+        <van-nav-bar title="用户登录" fixed
         />
-      </div>
-    <div style="margin-top: 50px" class="display">
+        <div style="text-align: center; padding-top: 100px">
+            <van-image
+                width="10rem"
+                height="5rem"
+                fit="contain"
+                src="https://cdn2.lmonkey.com/94f152aaa94d937ccf5de78f3fcac59f/3b6e32e7bc8145a283431f260c3c1d1a.png"
 
-      <van-form @submit="onSubmit">
-        <van-field
-          v-model="studentId"
-          name="电子邮箱"
-          label="电子邮箱"
-          placeholder="请输入正确电子邮箱格式"
-          :rules="[{ required: true, message: '请填写用户名' }]"
-        />
-        <van-field
-          v-model="hashedPassword"
-          type="password"
-          name="密码"
-          label="密码"
-          placeholder="密码"
-          :rules="[{ required: true, message: '请填写密码' }]"
-        />
-
-        <div style="margin: 16px">
-          <div class="link-login" @click="$router.push({ path: '/register' })">
-            没有账号，立即注册
-          </div>
-          <van-button
-            round
-            block
-            type="info"
-            color="#44b883"
-            native-type="submit"
-            >提交</van-button
-          >
+            />
         </div>
-      </van-form>
+        <div style="margin-top: 50px" class="display">
+
+            <van-form @submit="onSubmit">
+                <van-field
+                    v-model="studentId"
+                    name="电子邮箱"
+                    label="电子邮箱"
+                    placeholder="请输入正确电子邮箱格式"
+                    :rules="[{ required: true, message: '请填写用户名' }]"
+                />
+                <van-field
+                    v-model="hashedPassword"
+                    type="password"
+                    name="密码"
+                    label="密码"
+                    placeholder="密码"
+                    :rules="[{ required: true, message: '请填写密码' }]"
+                />
+
+                <div style="margin: 16px">
+                    <div class="link-login" @click="$router.push({ path: '/register' })">
+                        没有账号，立即注册
+                    </div>
+                    <van-button
+                        round
+                        block
+                        type="info"
+                        color="#44b883"
+                        native-type="submit"
+                    >提交
+                    </van-button
+                    >
+                </div>
+            </van-form>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-import { ref, reactive, toRefs } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { login } from "@/network/user";
-import { showSuccessToast, showFailToast } from 'vant';
-import NavBar from "@/components/common/navbar/NavBar.vue";
+import {ref, reactive, toRefs} from "vue";
+import {useRouter} from "vue-router";
+import {useStore} from "vuex";
+import {login} from "@/network/user";
+import {showSuccessToast, showFailToast} from 'vant';
+
 export default {
-  components: {
-    NavBar,
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    const userinfo = reactive({
-        studentId: "",
-        hashedPassword: "",
-    });
+    components: {},
+    setup() {
+        const router = useRouter();
+        const store = useStore();
+        const userinfo = reactive({
+            studentId: "",
+            hashedPassword: "",
+        });
 
-    const onSubmit = () => {
-      login(userinfo).then((res) => {
-        //在Vuex isLogin
-        //   console.log(res)
+        const onSubmit = () => {
+            login(userinfo).then((res) => {
+                //在Vuex isLogin
+                //   console.log(res)
 
-        window.localStorage.setItem('token', res)
-        store.commit("setIsLogin", true);
-        window.localStorage.setItem('studentId', userinfo.studentId);
+                window.localStorage.setItem('token', res)
+                store.commit("setIsLogin", true);
+                window.localStorage.setItem('studentId', userinfo.studentId);
 
-        showSuccessToast("登录成功");
-        userinfo.studentId = "";
-        userinfo.hashedPassword = "";
+                showSuccessToast("登录成功");
+                userinfo.studentId = "";
+                userinfo.hashedPassword = "";
 
-        setTimeout(() => {
-          router.push({path: '/profile'});
-        }, 500);
-      });
-    };
-    return {
-      ...toRefs(userinfo),
-      onSubmit,
-    };
-  },
+                setTimeout(() => {
+                    router.push({path: '/profile'});
+                }, 500);
+            });
+        };
+        return {
+            ...toRefs(userinfo),
+            onSubmit,
+        };
+    },
 };
 </script>
 
 <style scoped>
 .display {
-  font-family: 'Poppins', sans-serif;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  color: #333;
-  line-break: anywhere;
-  text-align: left;
+    font-family: 'Poppins', sans-serif;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    color: #333;
+    line-break: anywhere;
+    text-align: left;
 }
+
 .link-login {
-  font-size: 14px;
-  margin-bottom: 20px;
-  color: #42b983;
-  display: inline-block;
-  text-align: left;
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #42b983;
+    display: inline-block;
+    text-align: left;
 }
 </style>
