@@ -4,6 +4,7 @@ import (
 	"1037Market/dao"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 /*
@@ -34,12 +35,12 @@ TODO:
 
 */
 
-// GetSingleSessionIdByStudentIds 注意命名的单复数
-func GetSingleSessionIdByStudentIds() gin.HandlerFunc {
+// GetSingleSessIdByStuIds 注意命名的单复数
+func GetSingleSessIdByStuIds() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId1 := c.Query("studentId1")
 		studentId2 := c.Query("studentId2")
-		sessionId, err := dao.GetSingleSessionIdByStudentIds(studentId1, studentId2)
+		sessionId, err := dao.GetSingleSessIdByStuIds(studentId1, studentId2)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -48,15 +49,90 @@ func GetSingleSessionIdByStudentIds() gin.HandlerFunc {
 	}
 }
 
-func GetSessionIdsBySingleStudentId() gin.HandlerFunc {
+func GetSessIdListBySingleStuId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId := c.Query("studentId")
 
-		sessionIds, err := dao.GetSessionIdsBySingleStudentId(studentId)
+		sessionIds, err := dao.GetSessIdListBySingleStuId(studentId)
 		if err != nil {
 			handleError(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, sessionIds)
+	}
+}
+
+func GetTwoStuInfosBySessId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sessionId := c.Query("sessionId")
+		stuInfos, err := dao.GetTwoStuInfosBySessId(sessionId)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, stuInfos)
+	}
+}
+
+func GetNewestMsgIdBySessId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sessionIdString := c.Query("sessionId")
+		sessionId, err := strconv.Atoi(sessionIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		messageId, err := dao.GetNewestMsgIdBySessId(sessionId)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, messageId)
+	}
+}
+
+func GetNMsgIdsFromKthLastBySessId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sessionIdString := c.Query("sessionId")
+		sessionId, err := strconv.Atoi(sessionIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		kString := c.Query("index")
+		k, err := strconv.Atoi(kString)
+		if err != nil || k < 1 {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		nString := c.Query("count")
+		n, err := strconv.Atoi(nString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		messageIds, err := dao.GetNMsgIdsFromKthLastBySessId(sessionId, k, n)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, messageIds)
+	}
+}
+
+func GetMsgInfoByMsgId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		messageIdString := c.Query("messageId")
+		messageId, err := strconv.Atoi(messageIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		msgInfo, err := dao.GetMsgInfoByMsgId(messageId)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, msgInfo)
 	}
 }

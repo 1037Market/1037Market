@@ -37,10 +37,6 @@ func Register() gin.HandlerFunc {
 
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		type LoginUser struct {
-			StudentId      string `json:"studentId"`
-			HashedPassword string `json:"hashedPassword"`
-		}
 		var user ds.LoginUser
 		if err := c.ShouldBindJSON(&user); err != nil {
 			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))

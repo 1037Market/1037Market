@@ -92,8 +92,12 @@ func (s *Server) Route() {
 	s.GET("/api/subscribe", api.GetSubscribes())
 	s.POST("/api/subscribe", api.AddSubscribe())
 	s.DELETE("/api/subscribe", api.DeleteSubscribe())
-	s.GET("/api/chat/session", api.GetSingleSessionIdByStudentIds())
-	s.GET("/api/chat/sessions", api.GetSessionIdsBySingleStudentId())
+	s.GET("/api/chat/session", api.GetSingleSessIdByStuIds())
+	s.GET("/api/chat/sessions", api.GetSessIdListBySingleStuId())
+	s.GET("/api/chat/userInfos", api.GetTwoStuInfosBySessId())
+	s.GET("/api/chat/message", api.GetNewestMsgIdBySessId())
+	s.GET("/api/chat/messages", api.GetNMsgIdsFromKthLastBySessId())
+	s.GET("/api/chat/content", api.GetMsgInfoByMsgId())
 }
 
 func cors() gin.HandlerFunc {
