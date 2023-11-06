@@ -161,6 +161,7 @@ export default {
     const afterReadAvatar = (file, detail) => {
       let formData = new FormData()
       formData.append('file', file.file)
+      console.log(file.file)
       console.log(formData)
       uploadImage(formData).then((response) => {
         userInfo.avatar = response;
