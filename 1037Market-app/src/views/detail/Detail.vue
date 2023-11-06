@@ -21,12 +21,23 @@
 
         </div>
 
-        <van-action-bar>
-            <van-icon name="manager-o" style="margin-left: 20px"/>
-            <van-action-bar-icon text="卖家信息" @click="userInfo"/>
-            <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
-            <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
-        </van-action-bar>
+    <div v-if="productDetail.publisher === studentId.current">
+      <van-action-bar>
+        <van-icon name="manager-o" style="margin-left: 20px" />
+        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
+          <van-action-bar-button type="danger" text="修改商品" @click="handleUpdate"/>
+      </van-action-bar>
+    </div>
+    <div v-else>
+      <van-action-bar>
+        <van-icon name="manager-o" style="margin-left: 20px" />
+        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
+        <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
+        <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+      </van-action-bar>
+    </div>
+
+
 
     </div>
 </template>
@@ -58,21 +69,23 @@ export default {
         const router = useRouter();
         const store = useStore();
 
-        let id = ref(route.params.id);
-        const productDetail = ref({
-            imageURIs: [],
-            categories: []
-        })
-        let active = ref(1);
-
-        const handleCart = () => {
-            addCart(id.value).then((res) => {
-                console.log(res)
-                if (res === 'ok')
-                    showSuccessToast('收藏成功')
-                else showFailToast('收藏失败')
-            });
-        };
+    let id = ref(route.params.id);
+    const productDetail = ref({
+      imageURIs: [],
+      categories: []
+    })
+    let active = ref(1);
+    let studentId = reactive({
+      current: window.localStorage.getItem('studentId')
+    })
+    const handleCart = () => {
+        addCart(id.value).then((res) => {
+            console.log(res)
+            if(res === 'ok')
+                showSuccessToast('收藏成功')
+            else showFailToast('收藏失败')
+        });
+    };
 
         const goToCart = () => {
             console.log('购物车功能未实现')
@@ -85,6 +98,9 @@ export default {
             // });
         };
 
+    const handleUpdate = () => {
+        router.push({path: `/modify/${id.value}`})
+    }
 
         onMounted(() => {
             getDetail(id.value).then((res) => {
@@ -99,15 +115,17 @@ export default {
             router.push({path: `/seller/${productDetail.value.publisher}`});
         }
 
-        return {
-            id,
-            active,
-            handleCart,
-            goToCart,
-            productDetail,
-            userInfo
-        };
-    },
+    return {
+        id,
+        active,
+        handleCart,
+        goToCart,
+        productDetail,
+        userInfo,
+        handleUpdate,
+        studentId
+    };
+  },
 };
 </script>
 
