@@ -8,7 +8,7 @@
           <div>首页</div>
       </router-link>
 
-      <router-link to="/" class="tab-bar-item">
+      <router-link to="/chat" class="tab-bar-item">
           <div class="icon">
               <van-icon name="chat-o"/>
           </div>

@@ -8,6 +8,7 @@ const Register = () => import('@/views/profile/Register.vue');
 const Login = () => import('@/views/profile/Login.vue')
 const Publish = () => import('@/views/publish/Publish.vue')
 const Seller = () => import('@/views/seller/Seller.vue');
+const Chat = () => import('@/views/chat/Chat.vue')
 const Updater = () => import('@/views/publish/Modify.vue')
 import { showNotify } from "vant";
 
@@ -82,6 +83,14 @@ const routes = [
     component: Login,
     meta: {
       title: '用户登录'
+    }
+  },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: Chat,
+    meta: {
+      title: '聊天'
     }
   },
   {
