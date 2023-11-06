@@ -8,8 +8,10 @@
     <van-barrage v-model="sellerInfo.commentContents">
       <div class="display seller-details">
         <van-image :src="seller.avatar" alt="Seller's Avatar" class="seller-avatar" radius="45px" />
-        <h2 class="seller-nickname">{{ seller.nickname }}</h2>
-        <h4>{{seller.contact}}</h4>
+        <van-field left-icon="contact" v-model="seller.nickname" label="卖家昵称" size="large" readonly/>
+        <van-field left-icon="phone" v-model="seller.contact" label="卖家电话" size="large" readonly/>
+        <!--TODO:需要卖家地址-->
+        <van-field left-icon="map-marked" v-model="seller.contact" label="卖家地址" size="large" readonly/>
         <!-- Rating could be included here if needed -->
       </div>
     </van-barrage>
@@ -180,5 +182,8 @@ onMounted(() => {
   line-break: anywhere;
   text-align: left;
 
+}
+.van-field {
+  text-align: center;
 }
 </style>
