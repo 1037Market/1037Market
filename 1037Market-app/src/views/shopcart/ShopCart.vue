@@ -1,10 +1,6 @@
 <template>
   <div>
-    <nav-bar class="nav-bar">
-      <template v-slot:center>
-        购物车
-      </template>
-    </nav-bar>
+      <van-nav-bar title="购物车" fixed placeholder/>
     <div class="cart-box">
         
         <div class="cardList">
@@ -149,7 +145,7 @@ export default {
 <style scoped lang="scss">
 
 .cardList{
-    margin-top: 55px;
+    margin-top: 10px;
 }
 
 .delete-button {
