@@ -84,90 +84,86 @@ export default {
             window.localStorage.removeItem('token')
 
             Cookies.remove('user')
-          setTimeout(() => {
-            router.push({ path: "/login" });
-        }, 500);
-    };
-    const userInfo = reactive({
-      studentId: "",
-      avatar: "",
-      contact: "",
-      nickName: "",
-      address: ""
-    })
 
-    const infoEditing = reactive(
-        {
-          nickName: false,
-          contact: false,
-          avatar: false,
-          address: false
+            setTimeout(() => {
+                router.push({path: "/login"});
+            }, 500);
+        };
+        const userInfo = reactive({
+            studentId: "",
+            avatar: "",
+            contact: "",
+            nickName: "",
+            address: ""
+        })
+
+        const infoEditing = reactive(
+            {
+                nickName: false,
+                contact: false,
+                avatar: false,
+                address: false
+            }
+        )
+
+        const fetchUserInfo = () => {
+            getUser().then((data) => {
+                userInfo.studentId = data['userId'];
+                userInfo.avatar = data['avatar'];
+                userInfo.contact = data['contact'];
+                userInfo.nickName = data['nickName'];
+                userInfo.address = data['address'];
+            })
         }
-    )
 
-    const fetchUserInfo = () => {
-      getUser().then((data) => {
-        userInfo.studentId = data['userId'];
-        userInfo.avatar = data['avatar'];
-        userInfo.contact = data['contact'];
-        userInfo.nickName = data['nickName'];
-        userInfo.address = data['address'];
-      })
-    }
+        fetchUserInfo();
 
-    fetchUserInfo();
-
-    const updateNickName = () => {
-      infoEditing.nickName = true;
-    }
-
-    const updateContact = () => {
-      infoEditing.contact = true;
-    }
-
-    const clickAvatar = () => {
-      infoEditing.avatar = true;
-    }
-
-    const updateAddress = () => {
-      infoEditing.address = true;
-    }
-
-    const saveUserInfo = () => {
-      console.log(userInfo)
-      updateUser(userInfo).then((response) => {
-        if(response !== 'OK') {
-          showFailToast('保存失败');
-        } else {
-          infoEditing.contact = false;
-          infoEditing.nickName = false;
-          infoEditing.address = false;
-          showSuccessToast('保存成功');
-          fetchUserInfo();
+        const updateNickName = () => {
+            infoEditing.nickName = true;
         }
-      })
-    }
 
-    const fileList = ref([
+        const updateContact = () => {
+            infoEditing.contact = true;
+        }
 
-    ]);
+        const clickAvatar = () => {
+            infoEditing.avatar = true;
+        }
+
+        const updateAddress = () => {
+            infoEditing.address = true;
+        }
+
+        const saveUserInfo = () => {
+            console.log(userInfo)
+            updateUser(userInfo).then((response) => {
+                if (response !== 'OK') {
+                    showFailToast('保存失败');
+                } else {
+                    infoEditing.contact = false;
+                    infoEditing.nickName = false;
+                    infoEditing.address = false;
+                    showSuccessToast('保存成功');
+                    fetchUserInfo();
+                }
+            })
+        }
+
+        const fileList = ref([]);
 
 
-
-    const afterReadAvatar = (file, detail) => {
-      let formData = new FormData()
-      formData.append('file', file.file)
-      console.log(file.file)
-      console.log(formData)
-      uploadImage(formData).then((response) => {
-        userInfo.avatar = response;
-        updateUser(userInfo).then(() => {
-          showSuccessToast('上传成功');
-          fetchUserInfo();
-          fileList.value = [];
-        }).catch((err) => {
-          showFailToast('上传失败');
-
+        const afterReadAvatar = (file, detail) => {
+            let formData = new FormData()
+            formData.append('file', file.file)
+            console.log(formData)
+            uploadImage(formData).then((response) => {
+                userInfo.avatar = response;
+                updateUser(userInfo).then(() => {
+                    showSuccessToast('上传成功');
+                    fetchUserInfo();
+                    fileList.value = [];
+                }).catch((err) => {
+                    showFailToast('上传失败');
                     console.log(err)
                 })
             }).catch((err) => {
