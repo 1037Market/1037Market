@@ -33,12 +33,15 @@
                 @refresh="pullingDownHandler"
                 success-text="刷新成功"
                 :head-height="50"
+                style="min-height: 100vh;"
             >
-                <div ref="banref"></div>
+
                 <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
                 <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
+
             </van-pull-refresh>
         </div>
+
         <back-top @goback="goback" v-show="isShowBackTop"></back-top>
     </div>
 </template>
@@ -74,8 +77,6 @@ export default {
         const isTabFixed = ref(false);
 
         const isShowBackTop = ref(false);
-
-        let banref = ref(null);
 
         //商品列表对象模型,里面三个选项卡的页码和列表
         const goods = {
@@ -179,22 +180,14 @@ export default {
 
         const pullingUpHandler = () => {
             // console.log('pulling up')
-            if(pullingUp.value)
+            if (pullingUp.value)
                 return
             pullingUp.value = true;
             // TODO: 加载更多数据的逻辑
             getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
                 goods[currentType.value].value.push(...res);
-                // console.log('pulling up finish')
-                // const bsRefreshTimer = setTimeout(() => {
-                //     clearTimeout(bsRefreshTimer)
-                // },1000)
             }).catch((error) => {
                 console.log('get more fail')
-                // const bsRefreshTimer = setTimeout(() => {
-                //
-                //     clearTimeout(bsRefreshTimer)
-                // },1000)
             })
         };
 
@@ -225,7 +218,6 @@ export default {
             showGoods,
             bscroll,
             isTabFixed,
-            banref,
             goback,
             isShowBackTop,
             searchInfo,
