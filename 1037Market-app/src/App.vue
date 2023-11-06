@@ -8,11 +8,11 @@
           <div>首页</div>
       </router-link>
 
-      <router-link to="/category" class="tab-bar-item">
+      <router-link to="/" class="tab-bar-item">
           <div class="icon">
-              <i class="iconfont icon-fenlei"></i>
+              <van-icon name="chat-o"/>
           </div>
-          <div>分类</div>
+          <div>聊天</div>
       </router-link>
 
       <router-link to="/publish" class="tab-bar-item">

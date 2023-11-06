@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index'
 const Home = () => import('@/views/home/Home.vue');
-const Category = () => import('@/views/category/Category.vue');
 const Detail = () => import('@/views/detail/Detail.vue');
 const ShopCart = () => import('@/views/shopcart/ShopCart.vue');
 const Profile = () => import('@/views/profile/Profile.vue');
@@ -20,15 +19,6 @@ const routes = [
     //添加浏览器导航栏标题
     meta: {
       title: '1037集市',
-      isAuthRequired: true
-    }
-  },
-  {
-    path: '/category',
-    name: 'Category',
-    component: Category,
-    meta: {
-      title: '1037集市--分类',
       isAuthRequired: true
     }
   },
