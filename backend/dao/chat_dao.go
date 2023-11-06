@@ -56,7 +56,7 @@ func GetSingleSessIdByStuIds(studentId1 string, studentId2 string) (sessionId in
 	}
 
 	if err = rows.Scan(&sessionId); err != nil {
-		return 0, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return 0, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
 	return sessionId, nil
@@ -105,7 +105,7 @@ func GetTwoStuInfosBySessId(sessionId int) ([]ds.UserInfoGot, error) {
 
 	var stuId1, stuId2 string
 	if err = rows.Scan(&stuId1, &stuId2); err != nil {
-		return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
 	lst := make([]ds.UserInfoGot, 0)
@@ -141,7 +141,7 @@ func GetNewestMsgIdBySessId(sessionId int) (int, error) {
 	}
 	var messageId int
 	if err = rows.Scan(&messageId); err != nil {
-		return 0, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return 0, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 	return messageId, nil
 }
@@ -164,7 +164,7 @@ func GetNMsgIdsFromKthLastBySessId(sessionId, k, n int) ([]int, error) {
 	for rows.Next() {
 		var id int
 		if err = rows.Scan(&id); err != nil {
-			return nil, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+			return nil, NewErrorDao(ErrTypeScanRows, err.Error())
 		}
 		lst = append(lst, id)
 	}
@@ -186,12 +186,11 @@ func GetMsgInfoByMsgId(MessageId int) (ds.MsgGot, error) {
 	if !rows.Next() {
 		return ds.MsgGot{}, NewErrorDao(ErrTypeNoSuchMessage, "no such message")
 	}
-
 	var msg ds.MsgGot
 	var isFromUser1 bool
 	err = rows.Scan(&msg.MessageId, &msg.SessionId, &msg.SendTime, &msg.Content, &msg.ImageURI, &isFromUser1)
 	if err != nil {
-		return ds.MsgGot{}, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return ds.MsgGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
 	rows.Close()
@@ -205,7 +204,7 @@ func GetMsgInfoByMsgId(MessageId int) (ds.MsgGot, error) {
 	var user1Id, user2Id string
 	err = rows.Scan(&user1Id, &user2Id)
 	if err != nil {
-		return ds.MsgGot{}, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return ds.MsgGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 	if isFromUser1 {
 		msg.FromId = user1Id
@@ -257,7 +256,7 @@ func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
 	}
 	var messageId int
 	if err = rows.Scan(&messageId); err != nil {
-		return 0, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return 0, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 	txn.Commit()
 	return messageId, nil
@@ -281,7 +280,7 @@ func isUser1(stuentId string, sessionId int) (bool, error) {
 
 	var user1Id string
 	if err = rows.Scan(&user1Id); err != nil {
-		return false, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
+		return false, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
 	return user1Id == stuentId, nil

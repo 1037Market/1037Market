@@ -5,10 +5,9 @@ type ErrorTypeDao int
 const (
 	ErrTypeDatabaseConnection ErrorTypeDao = iota + 1
 	ErrTypeDatabaseQuery
-	ErrTypeDatabaseScanRows
+	ErrTypeScanRows
 	ErrTypeInvalidStudentId
 	ErrTypeDatabaseExec
-	ErrTypeScanRows
 	ErrTypeAffectRows
 	ErrTypeNoSuchUser
 	ErrTypeNoSuchProduct
