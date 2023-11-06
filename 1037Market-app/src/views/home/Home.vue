@@ -155,14 +155,14 @@ export default {
                 goods[currentType.value].value = []
                 goods[currentType.value].value.push(...res);
                 // console.log('pulling down')
-                bscroll.finishPullDown();
-                bscroll.refresh();
-                pullingDown.value = false;
+                // bscroll.finishPullDown();
+                // bscroll.refresh();
+                // pullingDown.value = false;
             }).catch((error) => {
                 console.log('refresh fail')
-                bscroll.finishPullDown();
-                bscroll.refresh();
-                pullingDown.value = false;
+                // bscroll.finishPullDown();
+                // bscroll.refresh();
+                // pullingDown.value = false;
             })
         };
 
@@ -173,8 +173,9 @@ export default {
                 bscroll.finishPullDown();
                 bscroll.refresh();
                 pullingUp.value = false;
+                pullingDown.value = false;
                 clearTimeout(BSRefreshTimer)
-            }, 5)
+            }, 50)
         };
 
         const pullingUpHandler = () => {
@@ -184,8 +185,14 @@ export default {
             pullingUp.value = true;
             getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
                 goods[currentType.value].value.push(...res);
+                // bscroll.finishPullUp();
+                // bscroll.refresh();
+                // pullingUp.value = false;
             }).catch((error) => {
                 console.log('get more fail')
+                // bscroll.finishPullUp();
+                // bscroll.refresh();
+                // pullingUp.value = false;
             })
         };
         const pullingDownHint = ref('继续下拉刷新页面')
