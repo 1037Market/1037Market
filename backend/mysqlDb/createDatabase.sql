@@ -33,6 +33,7 @@ create table PRODUCTS(
 create table PRODUCT_IMAGES(
     productId   int not null,
     imagePath   varchar(127) not null,
+    unique key (productId, imagePath),
     foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 
@@ -43,6 +44,7 @@ create table CATEGORIES(
 create table PRODUCT_CATEGORIES(
     productId int not null,
     category  char(30),
+    unique key (productId, category),
     foreign key(productId) references PRODUCTS(productId) on delete cascade
 );
 

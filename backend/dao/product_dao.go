@@ -199,26 +199,12 @@ func GetProductListByStudentId(studentId string) ([]int, error) {
 	return lst, nil
 }
 
-func DeleteProduct(cookie, productId string) error {
+func DeleteProduct(userId string, productId int) error {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
-
-	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
-	if err != nil {
-		return NewErrorDao(ErrTypeDatabaseQuery, err.Error())
-	}
-	if !rows.Next() {
-		return NewErrorDao(ErrTypeNoSuchUser, err.Error())
-	}
-
-	var userId string
-	if err = rows.Scan(&userId); err != nil {
-		return NewErrorDao(ErrTypeScanRows, err.Error())
-	}
-	defer rows.Close()
 
 	result, err := db.Exec("delete from PRODUCTS where userId = ? and productId = ?", userId, productId)
 	if err != nil {
@@ -229,7 +215,7 @@ func DeleteProduct(cookie, productId string) error {
 		return NewErrorDao(ErrTypeAffectRows, err.Error())
 	}
 	if affected < 1 {
-		return NewErrorDao(ErrTypeNoSuchProduct, productId+" never published")
+		return NewErrorDao(ErrTypeNoSuchProduct, strconv.Itoa(productId)+" never published")
 	}
 	return nil
 }
@@ -360,4 +346,81 @@ func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, e
 	} else {
 		return lst[startIdxInt:], nil
 	}
+}
+
+func UpdateProduct(userId string, product ds.ProductUpdated) error {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+	txn, err := db.Begin()
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer txn.Rollback()
+
+	result, err := txn.Exec("update PRODUCTS set title = ?, price = ?, status = ?, description = ?, updateTime = ? where productId = ? and userId = ?",
+		product.Title, product.Price, product.Status, product.Content, time.Now(), product.ProductId, userId)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, userId+"update product failed")
+	}
+
+	result, err = txn.Exec("delete from PRODUCT_CATEGORIES where productId = ?", product.ProductId)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err = result.RowsAffected()
+	if err != nil {
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, userId+"update product's categories failed")
+	}
+	for _, category := range product.Categories {
+		result, err = txn.Exec("insert into PRODUCT_CATEGORIES values(?, ?)", product.ProductId, category)
+		if err != nil {
+			return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		}
+		affected, err = result.RowsAffected()
+		if err != nil {
+			return NewErrorDao(ErrTypeAffectRows, err.Error())
+		}
+		if affected < 1 {
+			return NewErrorDao(ErrTypeNoSuchProduct, userId+"update product's categories failed")
+		}
+	}
+	result, err = txn.Exec("delete from PRODUCT_IMAGES where productId = ?", product.ProductId)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err = result.RowsAffected()
+	if err != nil {
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, userId+"update product's images failed")
+	}
+	for _, imageURI := range product.ImageURIs {
+		result, err = txn.Exec("insert into PRODUCT_IMAGES values(?, ?)", product.ProductId, imageURI)
+		if err != nil {
+			return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+		}
+		affected, err = result.RowsAffected()
+		if err != nil {
+			return NewErrorDao(ErrTypeAffectRows, err.Error())
+		}
+		if affected < 1 {
+			return NewErrorDao(ErrTypeNoSuchProduct, userId+"update product's images failed")
+		}
+	}
+	txn.Commit()
+	return nil
 }

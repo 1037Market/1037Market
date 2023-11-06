@@ -47,6 +47,16 @@ type ProductPublished struct {
 	Price      float32  `json:"price"`
 }
 
+type ProductUpdated struct {
+	ProductId  int      `json:"productId"`
+	Title      string   `json:"title"`
+	Content    string   `json:"content"`
+	Categories []string `json:"categories"`
+	ImageURIs  []string `json:"imageURIs"`
+	Price      float32  `json:"price"`
+	Status     string   `json:"status"`
+}
+
 type LoginUser struct {
 	StudentId      string `json:"studentId"`
 	HashedPassword string `json:"hashedPassword"`

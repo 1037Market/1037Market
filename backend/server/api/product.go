@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func PublishProduct() gin.HandlerFunc {
@@ -75,9 +76,19 @@ func GetProductListByStudentId() gin.HandlerFunc {
 func DeleteProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie := c.Query("user")
-		productId := c.Query("productId")
+		userId, err := dao.GetUserIdByCookie(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		productIdString := c.Query("productId")
+		productId, err := strconv.Atoi(productIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeIntParse, err.Error()))
+			return
+		}
 
-		err := dao.DeleteProduct(cookie, productId)
+		err = dao.DeleteProduct(userId, productId)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -134,5 +145,27 @@ func GetCategoryList() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, lst)
+	}
+}
+
+func UpdateProduct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie := c.Query("user")
+		userId, err := dao.UserIdentityVerify(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
+		var product ds.ProductUpdated
+		if err := c.ShouldBindJSON(&product); err != nil {
+			c.String(http.StatusBadRequest, "incorrect request format")
+			return
+		}
+		if err := dao.UpdateProduct(userId, product); err != nil {
+			handleError(c, err)
+			return
+		}
+		c.String(http.StatusOK, "OK")
 	}
 }
