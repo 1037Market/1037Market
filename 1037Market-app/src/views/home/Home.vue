@@ -28,17 +28,13 @@
         </div>
 
         <div class="wrapper" @touchend="handleTouchEnd">
-            <van-pull-refresh
-                v-model="pullingDown"
-                @refresh="pullingDownHandler"
-                success-text="刷新成功"
-                :head-height="50"
-            >
-                <div ref="banref"></div>
+            <div>
+                <p style="line-height: 30px; margin-top: -30px;text-align: center;color: #646566">{{pullingDownHint}}</p>
                 <p v-if="currentType==='search' && searchFail">没有找到相关商品</p>
                 <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
-            </van-pull-refresh>
+            </div>
         </div>
+
         <back-top @goback="goback" v-show="isShowBackTop"></back-top>
     </div>
 </template>
@@ -74,8 +70,6 @@ export default {
         const isTabFixed = ref(false);
 
         const isShowBackTop = ref(false);
-
-        let banref = ref(null);
 
         //商品列表对象模型,里面三个选项卡的页码和列表
         const goods = {
@@ -154,6 +148,8 @@ export default {
         }
 
         const pullingDownHandler = () => {
+            console.log('pull down')
+            pullingDownHint.value = '加载中'
             refresh()
             getHomeGoodsData(currentType.value).then((res) => {
                 goods[currentType.value].value = []
@@ -172,31 +168,27 @@ export default {
 
         const handleTouchEnd = () => {
             // console.log('touch end')
-            bscroll.finishPullUp();
-            bscroll.refresh();
-            pullingUp.value = false;
+            const BSRefreshTimer = setTimeout(() => {
+                bscroll.finishPullUp();
+                bscroll.finishPullDown();
+                bscroll.refresh();
+                pullingUp.value = false;
+                clearTimeout(BSRefreshTimer)
+            }, 5)
         };
 
         const pullingUpHandler = () => {
-            // console.log('pulling up')
-            if(pullingUp.value)
+            if (pullingUp.value === true)
                 return
+            console.log('pulling up')
             pullingUp.value = true;
-            // TODO: 加载更多数据的逻辑
             getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
                 goods[currentType.value].value.push(...res);
-                // console.log('pulling up finish')
-                // const bsRefreshTimer = setTimeout(() => {
-                //     clearTimeout(bsRefreshTimer)
-                // },1000)
             }).catch((error) => {
                 console.log('get more fail')
-                // const bsRefreshTimer = setTimeout(() => {
-                //
-                //     clearTimeout(bsRefreshTimer)
-                // },1000)
             })
         };
+        const pullingDownHint = ref('继续下拉刷新页面')
 
         onMounted(() => {
             currentType.value = 'recommend'
@@ -206,12 +198,25 @@ export default {
             bscroll = new BetterScroll(document.querySelector(".wrapper"), {
                 probeType: 3, // 0, 1, 2, 3, 3 只要在运动就触发scroll事件
                 click: true, // 是否允许点击
-                pullUpLoad: true,
-                pullDownRefresh: true
+                pullUpLoad: {
+                    threshold: -20
+                },
+                pullDownRefresh: {
+                    threshold: 50,
+                    stop: 20
+                }
             });
 
-            // bscroll.on('pullingDown', pullingDownHandler);
+            bscroll.on('pullingDown', pullingDownHandler);
             bscroll.on('pullingUp', pullingUpHandler);
+            bscroll.on('scroll', (position) => {
+                if(pullingDownHint.value === '加载中'){
+                    if(position.y <= 0)
+                        pullingDownHint.value = '继续下拉刷新页面'
+                }else if(position.y > 30)
+                    pullingDownHint.value ='松手刷新页面'
+                else pullingDownHint.value = '继续下拉刷新页面'
+            })
         });
 
         const debug = () => {
@@ -225,7 +230,6 @@ export default {
             showGoods,
             bscroll,
             isTabFixed,
-            banref,
             goback,
             isShowBackTop,
             searchInfo,
@@ -235,8 +239,8 @@ export default {
             searched,
             searchFail,
             pullingDown,
-            pullingDownHandler,
-            handleTouchEnd
+            handleTouchEnd,
+            pullingDownHint
         };
     },
 };
