@@ -19,7 +19,8 @@ const routes = [
     component: Home,
     //添加浏览器导航栏标题
     meta: {
-      title: '1037集市'
+      title: '1037集市',
+      isAuthRequired: true
     }
   },
   {
@@ -27,7 +28,8 @@ const routes = [
     name: 'Category',
     component: Category,
     meta: {
-      title: '1037集市--分类'
+      title: '1037集市--分类',
+      isAuthRequired: true
     }
   },
   {
@@ -35,7 +37,8 @@ const routes = [
     name: 'Publish',
     component: Publish,
     meta: {
-      title: '发布新商品'
+      title: '发布新商品',
+      isAuthRequired: true
     }
   },
   {
@@ -43,7 +46,8 @@ const routes = [
     name: 'Detail',
     component: Detail,
     meta: {
-      title: '商品详情'
+      title: '商品详情',
+      isAuthRequired: true
     }
   },
   {
@@ -51,7 +55,8 @@ const routes = [
     name: 'Seller',
     component: Seller,
     meta: {
-      title: '卖家详情'
+      title: '卖家详情',
+      isAuthRequired: true
     }
   },
   {
@@ -99,7 +104,7 @@ const router = createRouter({
 //导航守卫
 router.beforeEach((to, from, next) => {
   // 如果没有登录， 在这里到login
-  if (to.meta.isAuthRequired && store.state.user.isLogin == false) {
+  if (to.meta.isAuthRequired && store.state.user.isLogin === false) {
     showNotify({message:'请先登录'})
     return next('/login')
 
