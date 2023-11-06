@@ -3,7 +3,6 @@ package api
 import (
 	"1037Market/dao"
 	"1037Market/ds"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -146,9 +145,14 @@ func GetMsgInfoByMsgId() gin.HandlerFunc {
 
 func SendMsg() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		studentId := c.Query("studentId")
+		cookie := c.Query("user")
+		studentId, err := dao.GetUserIdByCookie(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
 		var msg ds.MsgSent
-		err := c.ShouldBindJSON(&msg)
+		err = c.ShouldBindJSON(&msg)
 		if err != nil {
 			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
 			return
@@ -158,6 +162,6 @@ func SendMsg() gin.HandlerFunc {
 			handleError(c, err)
 			return
 		}
-		c.JSON(http.StatusOK, fmt.Sprintf("%d", messageId))
+		c.JSON(http.StatusOK, messageId)
 	}
 }

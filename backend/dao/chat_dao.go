@@ -238,7 +238,7 @@ func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
 	defer txn.Rollback()
 
 	result, err := txn.Exec("insert into CHAT_MESSAGES(sessionId, sendTime, content, imagePath, isFromUser1) values(?, ?, ?, ?, ?)",
-		msg.SessionId, time.Now(), msg.Content, isFromUser1)
+		msg.SessionId, time.Now(), msg.Content, msg.ImageURI, isFromUser1)
 	if err != nil {
 		return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
@@ -250,7 +250,7 @@ func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
 		return 0, NewErrorDao(ErrTypeDatabaseExec, "insert message failed")
 	}
 
-	rows, err := db.Query("select LAST_INSERT_ID();")
+	rows, err := txn.Query("select LAST_INSERT_ID();")
 	if err != nil {
 		return 0, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
