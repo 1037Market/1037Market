@@ -79,7 +79,7 @@ create table CHAT_MESSAGES(
     type        char(31),
     sendTime    time not null,
     content     varchar(2047),
-    fromUser1   bool,
+    isFromUser1   bool,
     foreign key(sessionId) references CHAT_SESSIONS(sessionId) on delete cascade
 );
 

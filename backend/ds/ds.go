@@ -74,3 +74,12 @@ type CommentGot struct {
 	Avatar   string `json:"avatar"`
 	Stars    int    `json:"stars"`
 }
+
+type MsgGot struct {
+	MessageId int    `json:"messageId"`
+	SessionId int    `json:"sessionId"`
+	MsgType   string `json:"type"`
+	SendTime  string `json:"sendTime"`
+	Content   string `json:"content"`
+	FromId    string `json:"fromId"`
+}

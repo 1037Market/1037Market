@@ -77,5 +77,11 @@ func handleError(c *gin.Context, err error) {
 	case dao.ErrTypeSysSaveFile:
 		log.Println("save file error", errorDao.Message)
 		c.String(http.StatusInternalServerError, "服务错误\ninternal error")
+	case dao.ErrTypeNoSuchSession:
+		log.Println("no such session", errorDao.Message)
+		c.String(http.StatusBadRequest, "聊天不存在\nno such session")
+	case dao.ErrTypeNoSuchMessage:
+		log.Println("no such message", errorDao.Message)
+		c.String(http.StatusBadRequest, "消息不存在\nno such message")
 	}
 }

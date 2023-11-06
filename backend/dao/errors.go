@@ -12,8 +12,10 @@ const (
 	ErrTypeAffectRows
 	ErrTypeNoSuchUser
 	ErrTypeNoSuchProduct
-	ErrTypeIntParse
 	ErrTypeNoSuchComment
+	ErrTypeNoSuchSession
+	ErrTypeNoSuchMessage
+	ErrTypeIntParse
 	ErrTypeSysOpenFile
 	ErrTypeSysReadFile
 	ErrTypeSysSaveFile
