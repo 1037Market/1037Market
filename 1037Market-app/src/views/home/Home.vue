@@ -24,13 +24,24 @@
             </van-tabs>
         </div>
 
-        <div class="wrapper" @touchend="handleTouchEnd">
-            <div>
-                <p style="line-height: 30px; margin-top: -30px;text-align: center;color: #646566">
-                    {{ pullingDownHint }}</p>
-                <p v-if="currentType==='搜索结果' && searchFail">没有找到相关商品</p>
-                <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
-            </div>
+        <div class="wrapper">
+            <van-pull-refresh
+                v-model="pullingDown"
+                success-text="加载成功"
+                @refresh="pullingDownHandler"
+            >
+                <van-list
+                    v-model="pullingUp"
+                    :finished="loadFinished"
+                    finished-text="没有更多了"
+                    @load="pullingUpHandler"
+                >
+<!--                    <p style="line-height: 30px; margin-top: -30px;text-align: center;color: #646566">{{ pullingDownHint }}</p>-->
+                    <p v-if="currentType==='搜索结果' && searchFail">没有找到相关商品</p>
+                    <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
+                </van-list>
+            </van-pull-refresh>
+
         </div>
 
         <back-top @goback="goback" v-show="isShowBackTop"></back-top>
@@ -38,17 +49,13 @@
 </template>
 
 <script setup>
-import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
+import {onMounted, ref, computed, watchEffect, nextTick, watch} from "vue";
 import {useRouter} from 'vue-router'
 import {getHomeGoodsData, getSearchData, refresh} from "@/network/home";
+import { debounce } from "lodash";
 import {getCategoryData} from "@/network/category";
 import GoodsList from "@/components/content/goods/GoodsList.vue";
 import BackTop from "@/components/common/backtop/BackTop.vue";
-import BetterScroll from "@better-scroll/core";
-import PullUp from '@better-scroll/pull-up'
-import PullDown from "@better-scroll/pull-down";
-
-BetterScroll.use(PullUp).use(PullDown)
 
 const router = useRouter()
 
@@ -73,6 +80,7 @@ const showGoods = computed(() => {
 })
 
 watch(currentType, (newValue, oldValue) => {
+    loadFinished.value = true
     if (newValue === "more") {
         nextTick(() => {
             currentType.value = oldValue
@@ -100,8 +108,6 @@ const getCategories = async () => {
     })
 }
 
-let bscroll = reactive({});
-
 const searched = ref(false)
 
 const onSearch = () => {
@@ -123,56 +129,46 @@ const onCancel = () => {
     searchInfo.value = ''
 }
 
-//监听，任何一个变量有变化
-watchEffect(() => {
-    //nextTick：Dom加载完成后
-    nextTick(() => {
-        //只要页面有变化就要调用refresh
-        bscroll && bscroll.refresh();
-    });
-});
-
 //回到顶部
 const goback = () => {
-    bscroll.scrollTo(0, 0);
+    // TODO: 实现滑至页面顶端
 };
 
 const pullingDown = ref(false)
 const pullingUp = ref(false)
+const loadFinished = ref(false)
 
-const pullingDownHandler = () => {
-    console.log('pull down')
-    pullingDownHint.value = '加载中'
+const debouncedPullingDownHandler = debounce(async () => {
     refresh()
+    loadFinished.value = false
     getHomeGoodsData(currentType.value).then((res) => {
         goods[currentType.value].value = []
         goods[currentType.value].value.push(...res);
+        pullingDown.value = false
     }).catch((error) => {
         console.log('refresh fail',error)
+        pullingDown.value = false
     })
+}, 300)
+const pullingDownHandler = () => {
+    debouncedPullingDownHandler()
 };
 
-const handleTouchEnd = () => {
-    const BSRefreshTimer = setTimeout(() => {
-        bscroll.finishPullUp();
-        bscroll.finishPullDown();
-        bscroll.refresh();
-        pullingUp.value = false;
-        pullingDown.value = false;
-        clearTimeout(BSRefreshTimer)
-    }, 50)
-};
-
-const pullingUpHandler = () => {
+const debouncedPullingUpHandler = debounce(async () => {
     if (pullingUp.value === true)
         return
-    console.log('pulling up')
-    pullingUp.value = true;
     getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
         goods[currentType.value].value.push(...res);
+        if(res.length === 0)
+            loadFinished.value = true
+        pullingUp.value = false
     }).catch((error) => {
         console.log('get more fail',error)
+        pullingUp.value = false
     })
+},300)
+const pullingUpHandler = () => {
+    debouncedPullingUpHandler()
 };
 const pullingDownHint = ref('继续下拉刷新页面')
 
@@ -181,30 +177,6 @@ onMounted(() => {
     currentType.value = "推荐"
     getCategories()
     getShowGoods()
-
-    // 创建BS对象
-    bscroll = new BetterScroll(document.querySelector(".wrapper"), {
-        probeType: 3, // 0, 1, 2, 3, 3 只要在运动就触发scroll事件
-        click: true, // 是否允许点击
-        pullUpLoad: {
-            threshold: -20
-        },
-        pullDownRefresh: {
-            threshold: 50,
-            stop: 20
-        }
-    });
-
-    bscroll.on('pullingDown', pullingDownHandler);
-    bscroll.on('pullingUp', pullingUpHandler);
-    bscroll.on('scroll', (position) => {
-        if (pullingDownHint.value === '加载中') {
-            if (position.y <= 0)
-                pullingDownHint.value = '继续下拉刷新页面'
-        } else if (position.y > 30)
-            pullingDownHint.value = '松手刷新页面'
-        else pullingDownHint.value = '继续下拉刷新页面'
-    })
 });
 </script>
 
@@ -228,7 +200,7 @@ onMounted(() => {
     top: 0;
     right: 0;
     left: 0;
-    overflow: hidden;
+    overflow: auto;
     height: calc(100vh - 200px);
 }
 </style>
