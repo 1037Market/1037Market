@@ -10,7 +10,7 @@
 
       <router-link to="/chat" class="tab-bar-item">
           <div class="icon">
-              <i class="iconfont icon-fenlei"></i>
+              <van-icon name="chat-o"/>
           </div>
           <div>聊天</div>
       </router-link>

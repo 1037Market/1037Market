@@ -18,12 +18,23 @@
 
     </div>
 
-    <van-action-bar>
-      <van-icon name="manager-o" style="margin-left: 20px" />
-      <van-action-bar-icon text="卖家信息" @click="userInfo"/>
-      <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
-      <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
-    </van-action-bar>
+    <div v-if="productDetail.publisher === studentId.current">
+      <van-action-bar>
+        <van-icon name="manager-o" style="margin-left: 20px" />
+        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
+          <van-action-bar-button type="danger" text="修改商品" @click="handleUpdate"/>
+      </van-action-bar>
+    </div>
+    <div v-else>
+      <van-action-bar>
+        <van-icon name="manager-o" style="margin-left: 20px" />
+        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
+        <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
+        <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+      </van-action-bar>
+    </div>
+
+
 
   </div>
 </template>
@@ -62,7 +73,9 @@ export default {
       categories: []
     })
     let active = ref(1);
-
+    let studentId = reactive({
+      current: window.localStorage.getItem('studentId')
+    })
     const handleCart = () => {
         addCart(id.value).then((res) => {
             console.log(res)
@@ -83,6 +96,9 @@ export default {
       // });
     };
 
+    const handleUpdate = () => {
+        router.push({path: `/modify/${id.value}`})
+    }
 
     onMounted(() => {
       getDetail(id.value).then((res) => {
@@ -103,7 +119,9 @@ export default {
         handleCart,
         goToCart,
         productDetail,
-        userInfo
+        userInfo,
+        handleUpdate,
+        studentId
     };
   },
 };

@@ -1,10 +1,6 @@
 <template>
   <div>
-    <nav-bar class="nav-bar">
-      <template v-slot:center>
-        购物车
-      </template>
-    </nav-bar>
+      <van-nav-bar title="购物车" fixed placeholder/>
     <div class="cart-box">
         
         <div class="cardList">
@@ -15,6 +11,7 @@
                         :price="product.price"
                         :title="product.title"
                         :thumb="'http://franky.pro:7301/api/image?imageURI=' + product.imageURIs[0]"
+                        @click="navigateToProduct(product.productId)"
                     >
                         <template #tags>
                             <van-tag round
@@ -148,7 +145,7 @@ export default {
 <style scoped lang="scss">
 
 .cardList{
-    margin-top: 55px;
+    margin-top: 10px;
 }
 
 .delete-button {

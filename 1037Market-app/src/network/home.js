@@ -10,8 +10,8 @@ export function getHomeAllData() {
 }
 
 //携带默认值
-export function getHomeGoodsData(type = "recommend", startIndex = 0, count = 4) {
-  if(type === 'recommend'){
+export function getHomeGoodsData(type = "推荐", startIndex = 0, count = 4) {
+  if(type === '推荐'){
     return request({
       url: `/api/product/recommend?count=${count}&seed=${seed}&startIndex=${startIndex}`
     })
