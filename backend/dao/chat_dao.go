@@ -194,7 +194,7 @@ func GetMsgInfoByMsgId(MessageId int) (ds.MsgGot, error) {
 		return ds.MsgGot{}, NewErrorDao(ErrTypeDatabaseScanRows, err.Error())
 	}
 
-	db.Close()
+	rows.Close()
 	rows, err = db.Query("select user1Id, user2Id from CHAT_SESSIONS where sessionId = ?", msg.SessionId)
 	if err != nil {
 		return ds.MsgGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
