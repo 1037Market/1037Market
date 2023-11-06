@@ -1,10 +1,8 @@
 <template>
-  <van-nav-bar title="发布商品"
-               fixed
-               placeholder
-
-  />
-  <product-publish :dialog="dialog" :form="form" :update="false" />
+    <van-nav-bar title="发布商品" fixed placeholder
+                 left-arrow @click-left="router.go(-1)"
+    />
+    <product-publish :dialog="dialog" :form="form" :update="false"/>
 
 </template>
 
@@ -20,10 +18,10 @@ import {useRouter} from "vue-router"
 import ProductPublish from "@/components/content/goods/ProductPublish.vue";
 
 export default {
-  components: {
-    ProductPublish,
-    'BackgroundSurround': PriceDisplay
-  },
+    components: {
+        ProductPublish,
+        'BackgroundSurround': PriceDisplay
+    },
 
     setup() {
         const router = useRouter()
@@ -56,8 +54,9 @@ export default {
         });
 
         return {
-          dialog,
-          form
+            dialog,
+            form,
+            router
         }
 
     },
