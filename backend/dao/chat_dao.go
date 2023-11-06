@@ -160,10 +160,6 @@ func GetNMsgIdsFromKthLastBySessId(sessionId, k, n int) ([]int, error) {
 	}
 	defer rows.Close()
 
-	if !rows.Next() {
-		return nil, NewErrorDao(ErrTypeNoSuchMessage, strconv.Itoa(sessionId)+" no such message")
-	}
-
 	lst := make([]int, 0)
 	for rows.Next() {
 		var id int
