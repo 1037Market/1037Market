@@ -60,6 +60,7 @@
                         type="info"
                         color="#44b883"
                         native-type="submit"
+
                     >提交
                     </van-button
                     >
@@ -74,6 +75,7 @@ import {ref, reactive, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import {register, getCaptcha} from "@/network/user";
 import {Notify} from "vant";
+import {showNotify} from "vant";
 import {showSuccessToast, showFailToast} from 'vant';
 
 export default {
@@ -98,9 +100,11 @@ export default {
                 captchaHint.value = remaining.toString() + 's后再次获取验证码'
                 if (remaining <= 0) {
                     clearInterval(interval)
+                    captchaHint.value = '点击获取验证码'
+                    waitCaptcha.value = false
                 }
             }, 1000)
-            captchaHint.value = '点击获取验证码'
+
         }
 
         const clickCaptcha = () => {
@@ -114,18 +118,20 @@ export default {
                 })
         }
 
+        const disableSubmit = ref(false)
         const onSubmit = () => {
             //先验证
             if (userinfo.password != userinfo.password_confirmation) {
-                Notify("两次密码不一致");
+                showNotify({message:"两次密码不一致"});
             } else {
+                disableSubmit.value = true
                 register({
                     studentId: userinfo.studentId,
                     hashedPassword: userinfo.password,
                     emailCaptcha: userinfo.captcha
                 }).then((res) => {
                     console.log(res);
-                    if (res == 'OK') {
+                    if (res === 'OK') {
                         showSuccessToast("注册成功");
 
                         setTimeout(() => {
@@ -135,7 +141,11 @@ export default {
 
                     userinfo.password = "";
                     userinfo.password_confirmation = "";
-                });
+                    userinfo.captcha = "";
+                    disableSubmit.value = false
+                }).catch(() => {
+                    disableSubmit.value = false
+                })
             }
         };
         return {

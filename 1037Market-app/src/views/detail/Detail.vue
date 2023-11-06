@@ -123,7 +123,8 @@ export default {
         productDetail,
         userInfo,
         handleUpdate,
-        studentId
+        studentId,
+        router
     };
   },
 };
