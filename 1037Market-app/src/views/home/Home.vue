@@ -1,7 +1,9 @@
 <template>
     <div id="home">
 
-        <van-nav-bar title="1037集市" fixed placeholder/>
+        <van-nav-bar title="1037集市" fixed placeholder
+                     left-arrow @click-left="router.go(-1)"
+        />
 
 
         <form action="/">
@@ -38,7 +40,7 @@
 <script setup>
 import {onMounted, ref, reactive, computed, watchEffect, nextTick, watch} from "vue";
 import {useRouter} from 'vue-router'
-import {getHomeAllData, getHomeGoodsData, getSearchData, refresh} from "@/network/home";
+import {getHomeGoodsData, getSearchData, refresh} from "@/network/home";
 import {getCategoryData} from "@/network/category";
 import GoodsList from "@/components/content/goods/GoodsList.vue";
 import BackTop from "@/components/common/backtop/BackTop.vue";
@@ -146,7 +148,7 @@ const pullingDownHandler = () => {
         goods[currentType.value].value = []
         goods[currentType.value].value.push(...res);
     }).catch((error) => {
-        console.log('refresh fail')
+        console.log('refresh fail',error)
     })
 };
 
@@ -169,7 +171,7 @@ const pullingUpHandler = () => {
     getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
         goods[currentType.value].value.push(...res);
     }).catch((error) => {
-        console.log('get more fail')
+        console.log('get more fail',error)
     })
 };
 const pullingDownHint = ref('继续下拉刷新页面')

@@ -2,10 +2,10 @@
   <div class="price-display">
     <div class="price-container">
       <span class="currency">¥</span>
-      <span class="price">{{ price }}</span>
+      <span class="price" style="color: #FF4C0A;">{{ price }}</span>
     </div>
     <div class="name-and-tags">
-      <div class="name">{{ name }}</div>
+      <div class="name" style="font-family: Arial,sans-serif; font-weight: 600;font-size: 30px;">{{ name }}</div>
       <div class="tags">
         <van-tag type="primary" size="medium"
                  v-for="category in categories"
