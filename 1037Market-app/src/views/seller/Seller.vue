@@ -10,8 +10,7 @@
         <van-image :src="seller.avatar" alt="Seller's Avatar" class="seller-avatar" radius="45px" />
         <van-field left-icon="contact" v-model="seller.nickname" label="卖家昵称" size="large" readonly/>
         <van-field left-icon="phone" v-model="seller.contact" label="卖家电话" size="large" readonly/>
-        <!--TODO:需要卖家地址-->
-        <van-field left-icon="map-marked" v-model="seller.contact" label="卖家地址" size="large" readonly/>
+        <van-field left-icon="map-marked" v-model="seller.address" label="卖家地址" size="large" readonly/>
         <!-- Rating could be included here if needed -->
       </div>
     </van-barrage>
@@ -74,6 +73,7 @@ const updateView = () => {
     seller.nickname = response.nickName;
     seller.avatar = 'http://franky.pro:7301/api/image?imageURI=' + response.avatar;
     seller.contact = response.contact;
+    seller.address = response.address;
     console.log(seller)
 
     getUserPublishedProductIds(seller.studentId).then((response) => { // 拿到该用户发布的商品id列表
@@ -99,11 +99,12 @@ const updateView = () => {
           getCommentDetail(commentId).then((response) => {
             sellerInfo.commentContents.push({
               id: commentId,
-              text: response.content
+              text: response.content,
             })
             seller.comments.push({
               id: commentId,
               text: response.content,
+              stars: response.stars,
               commenter: {
                 id: response.fromId,
                 nickname: response.nickName,
