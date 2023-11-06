@@ -75,6 +75,12 @@ type CommentGot struct {
 	Stars    int    `json:"stars"`
 }
 
+type CommentSent struct {
+	ToId    string `json:"toId"`
+	Content string `json:"content"`
+	Stars   int    `json:"stars"`
+}
+
 type MsgGot struct {
 	MessageId int    `json:"messageId"`
 	SessionId int    `json:"sessionId"`

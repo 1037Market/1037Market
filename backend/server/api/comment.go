@@ -2,9 +2,9 @@ package api
 
 import (
 	"1037Market/dao"
+	"1037Market/ds"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 func CreateComment() gin.HandlerFunc {
@@ -15,20 +15,17 @@ func CreateComment() gin.HandlerFunc {
 			handleError(c, err)
 			return
 		}
-		toId := c.Query("toStudentId")
-		content := c.Query("content")
-		starsString := c.Query("stars")
-		stars, err := strconv.Atoi(starsString) // 转换字符串为整型
-		if err != nil || stars < 0 || stars > 5 {
+		var comment ds.CommentSent
+		if err := c.ShouldBindJSON(&comment); err != nil || comment.Stars < 0 || comment.Stars > 5 {
 			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
 			return
 		}
-		err = dao.CreateComment(fromId, toId, content, stars)
+		commentId, err := dao.CreateComment(fromId, comment)
 		if err != nil {
 			handleError(c, err)
 			return
 		}
-		c.String(http.StatusOK, "OK")
+		c.String(http.StatusOK, "%d", commentId)
 	}
 }
 
