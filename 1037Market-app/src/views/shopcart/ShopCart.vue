@@ -8,7 +8,7 @@
             <div class="cardList">
                 <van-swipe-cell v-for="product in products" class="display">
                     <van-config-provider :theme-vars="cardTheme">
-                        <van-card style="--van-card-price-color: #FF4C0A;"
+                        <van-card style="--van-card-price-color: #FF4C0A;width: 100%;"
                             :key="product.productId"
                             :price="product.price"
                             :title="product.title"
@@ -16,11 +16,10 @@
                             @click="navigateToProduct(product.productId)"
                         >
                             <template #tags>
-                                <van-tag round
-                                         v-for="tag in product.categories"
-                                         plain
-                                         type="danger"
-                                         style="margin: 15px 3px;"
+                                <van-tag type="primary" size="medium"
+                                    v-for="tag in product.categories"
+                                    :key="category"
+                                    style="margin: 10px 3px"
                                 >{{ tag }}
                                 </van-tag>
                             </template>
@@ -28,8 +27,9 @@
                     </van-config-provider>
 
                     <template #right>
-                        <van-config-provider :theme-vars="buttonTheme">
-                            <van-button type="danger"
+                        <van-config-provider :theme-vars="buttonTheme" style="margin-left: 15px;">
+                            <van-button 
+                                        type="danger"
                                         size="small"
                                         @click="deleteFavorites(product.productId)"
                             >删除
@@ -148,7 +148,6 @@ export default {
 
 <style scoped lang="scss">
 .display {
-    display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
@@ -157,6 +156,7 @@ export default {
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     font-family: 'Poppins', sans-serif;
+    
 }
 .cardList {
     margin-top: 10px;
