@@ -8,7 +8,7 @@
             <div class="cardList">
                 <van-swipe-cell v-for="product in products" class="display">
                     <van-config-provider :theme-vars="cardTheme">
-                        <van-card style="--van-card-price-color: #FF4C0A;width: 100%;"
+                        <van-card style="--van-card-price-color: #FF4C0A;width: 100%;--van-card-price-integer-font-size: 24px;--van-card-price-font-size: 16px;"
                             :key="product.productId"
                             :price="product.price"
                             :title="product.title"
