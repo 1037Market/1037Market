@@ -1,7 +1,7 @@
 <template>
     <div class="goods" ref="goodsContainer">
         <!--        <button @click="debug">debug</button>-->
-        <div class="goods-item"
+        <div class="goods-item" 
              v-for="productDetail in products"
              :key="productDetail.productId"
              @click="itemClick(productDetail.productId)"
@@ -15,8 +15,8 @@
                 alt="商品"
             />
             <div class="goods-info">
-                <p style="font-size: 14px"><strong>{{ productDetail.title }}</strong></p>
-                <span class="price" style="font-size: 13px"><small>￥</small>{{ productDetail.price }}</span>
+                <p style="font-size: 14px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
+                <div style="display: inline;margin-left: -12px;">￥</div><span class="price" style="font-size: 16px;font-weight: 600;margin: 0px auto;">{{ productDetail.price }}</span>
             </div>
         </div>
     </div>
@@ -142,7 +142,7 @@ const calculatePosition = () => {
 .goods-item .goods-info {
     font-size: 12px;
     position: relative;
-    margin-top: 10px;
+    margin-top: 5px;
     bottom: 5px;
     left: 0;
     right: 0;
@@ -156,9 +156,18 @@ const calculatePosition = () => {
     white-space: nowrap;
     margin-bottom: 3px;
 }
-
+.display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px; /* Added horizontal margin */
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+}
 .goods-item .goods-info .price {
-    color: red;
-    margin-right: 20px;
+    color: #FF4C0A;
 }
 </style>
