@@ -49,3 +49,10 @@ export function sendMessage(data) {
         data
     })
 }
+
+export function getAllMsgs(sessionId) {
+    return request({
+        url: `/api/chat/session/messages?sessionId=${sessionId}`,
+        method: 'get'
+    })
+}

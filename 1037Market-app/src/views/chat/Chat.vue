@@ -7,7 +7,6 @@
         :rooms-loaded="true"
         :messages="messages"
         :messages-loaded="messagesLoaded"
-        :room-id="currentRoomId"
         @send-message="sendMessage($event.detail[0])"
         @fetch-messages="fetchMessages($event.detail[0])"
         @fetch-more-rooms="fetchMoreRooms"
@@ -23,8 +22,16 @@
 
 <script>
 import { register } from 'vue-advanced-chat'
-import {getMessageContent, getNMessages, getRoomIds, getRoomInfo, sendMessage} from "../../network/chat";
-import {nextTick} from "vue";
+import {
+  getAllMsgs,
+  getMessageContent,
+  getNewestMessageIn,
+  getNMessages,
+  getRoomIds,
+  getRoomInfo,
+  sendMessage
+} from "../../network/chat";
+import {nextTick, onUnmounted} from "vue";
 import {uploadImage} from "../../network/image";
 register()
 
@@ -54,33 +61,30 @@ export default {
   methods: {
     fetchMessages(options) {
         let room = options.room;
+        this.currentRoomId = room.roomId;
         if(options.options.reset) {
           this.msgMap[room.roomId] = [];
           this.messages = this.msgMap[room.roomId];
-          let alreadyHave = this.messages.length;
-          console.log('already heve: ', alreadyHave)
-          getNMessages(room.roomId, alreadyHave + 1, 100).then((messageIds) => {
-            messageIds.forEach((msgId) => {
-              getMessageContent(msgId).then((msgDetail) => {
-                let msg = {
-                  _id: msgDetail.messageId,
-                  indexId: msgDetail.messageId,
-                  content: msgDetail.content,
-                  senderId: msgDetail.fromId,
-                  files: msgDetail.imageURI === '' ? null : [
-                    {
-                      name: 'My File',
-                      type: 'png',
-                      audio: false,
-                      duration: 14.4,
-                      url: 'http://franky.pro:7301/api/image?imageURI=' + msgDetail.imageURI,
-                    }
-                  ],
-                  timestamp: msgDetail.sendTime,
-                  date: new Date().toDateString()
-                };
-                this.messages = [...this.messages, msg]
-              })
+          getAllMsgs(room.roomId).then((response) => {
+            response.forEach((msg) => {
+              let mes = {
+                _id: msg.messageId,
+                indexId: msg.messageId,
+                content: msg.content,
+                senderId: msg.fromId,
+                files: msg.imageURI === "" ? null : [
+                  {
+                    name: 'My File',
+                    type: 'png',
+                    audio: false,
+                    duration: 14.4,
+                    url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                  }
+                ],
+                timestamp: msg.sendTime,
+                date: new Date().toDateString()
+              }
+              this.messages = [...this.messages, mes]
             })
           }).catch((err) => {
             console.log(err);
@@ -99,11 +103,10 @@ export default {
           let formData = new FormData();
           formData.append('file', file)
           uploadImage(formData).then((response) => {
-            let imageURI = response;
             let msg = {
               sessionId: message.roomId,
               content: message.content,
-              imageURI: imageURI
+              imageURI: response
             }
             sendMessage(msg).then((response) => {
               msg = {
@@ -191,6 +194,47 @@ export default {
 
     })
 
+    let interval = setInterval(() => {
+      if(this.currentRoomId !== null) {
+        getNewestMessageIn(this.currentRoomId).then((response) => {
+          if(response !== this.messages[this.messages.length - 1]._id) {
+            let lastId = this.messages[this.messages.length - 1]._id;
+            getAllMsgs(this.currentRoomId).then((response) => {
+              response.forEach((msg) => {
+                let mes = {
+                  _id: msg.messageId,
+                  indexId: msg.messageId,
+                  content: msg.content,
+                  senderId: msg.fromId,
+                  files: msg.imageURI === "" ? null : [
+                    {
+                      name: 'My File',
+                      type: 'png',
+                      audio: false,
+                      duration: 14.4,
+                      url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                    }
+                  ],
+                  timestamp: msg.sendTime,
+                  date: new Date().toDateString()
+                }
+                if(mes._id > lastId) {
+                  this.messages = [...this.messages, mes]
+                }
+              })
+            }).catch((err) => {
+              console.log(err);
+            })
+          }
+        }).catch((err) => {
+          console.log(err);
+        })
+      }
+
+    }, 3000)
+    onUnmounted(() => {
+      clearInterval(interval);
+    })
   },
   watch: { // 永远按顺序排列
     'messages'(oldVal, newVal) {
