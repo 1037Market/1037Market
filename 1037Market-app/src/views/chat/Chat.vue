@@ -1,12 +1,19 @@
 <template>
+
+  <van-nav-bar title="联系卖家" fixed placeholder
+               left-arrow @click-left="router.go(-1)"
+               v-if="needNav"
+  />
+
   <div>
     <vue-advanced-chat
-        height="100vh"
+        :height="this.needNav ? '95vh' : '100vh'"
         :current-user-id="currentUserId"
         :rooms="rooms"
         :rooms-loaded="true"
         :messages="messages"
         :messages-loaded="messagesLoaded"
+        :single-room="needNav"
         @send-message="sendMessage($event.detail[0])"
         @fetch-messages="fetchMessages($event.detail[0])"
         @fetch-more-rooms="fetchMoreRooms"
@@ -33,6 +40,8 @@ import {
 } from "../../network/chat";
 import {nextTick, onUnmounted} from "vue";
 import {uploadImage} from "../../network/image";
+import {useRoute} from "vue-router/dist/vue-router";
+import {useRouter} from "vue-router";
 register()
 
 async function convertBlobUrlToFile(blobUrl, fileName, mimeType) {
@@ -55,7 +64,9 @@ export default {
       messages: [],
       messagesLoaded: true,
       currentRoomId: null,
-      msgMap: {}
+      msgMap: {},
+      needNav: false,
+      router: useRouter()
     }
   },
   methods: {
@@ -90,14 +101,12 @@ export default {
             console.log(err);
           })
         } else {
-          console.log('no reset')
           this.messages = this.msgMap[room.roomId];
         }
     },
 
 
     sendMessage(message) {
-      console.log(message)
       if(message.files) {
         convertBlobUrlToFile(message.files[0].localUrl, message.files[0].name, message.files[0].type).then((file) => {
           let formData = new FormData();
@@ -172,27 +181,47 @@ export default {
 
   },
   mounted() {
-    getRoomIds().then((response) => {
-      let rooms = []
-      let oldRooms = this.rooms;
-      response.forEach((roomId) => {
-        getRoomInfo(roomId).then((roomInfo) => {
-          let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
-          rooms.push({
-            roomId: roomId,
-            roomName: roomInfo[idx].nickName,
-            avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
-            users: [
-              {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
-              {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
-            ]
+    const route = useRoute();
+    let sessionId = route.params.session;
+    if(sessionId === "0") {
+      this.needNav = false;
+      getRoomIds().then((response) => {
+        let rooms = []
+        let oldRooms = this.rooms;
+        response.forEach((roomId) => {
+          getRoomInfo(roomId).then((roomInfo) => {
+            let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
+            rooms.push({
+              roomId: roomId,
+              roomName: roomInfo[idx].nickName,
+              avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+              users: [
+                {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
+                {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
+              ]
+            })
+            this.rooms = [...oldRooms, ...rooms]
           })
-          this.rooms = [...oldRooms, ...rooms]
-          console.log(this.rooms)
         })
       })
+    } else {
+      this.needNav = true;
+      const nav = document.getElementById('nav');
+      nav.style.visibility = 'hidden';
+      getRoomInfo(sessionId).then((roomInfo) => {
+        let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
+        this.rooms = [{
+          roomId: Number(sessionId),
+          roomName: roomInfo[idx].nickName,
+          avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+          users: [
+            {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
+            {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
+          ]
+        }]
+      })
+    }
 
-    })
 
     let interval = setInterval(() => {
       if(this.currentRoomId !== null) {

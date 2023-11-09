@@ -56,3 +56,10 @@ export function getAllMsgs(sessionId) {
         method: 'get'
     })
 }
+
+export function getSessionId(studentId) {
+    return request({
+        url: `/api/chat/session?studentId1=${window.localStorage.getItem('studentId')}&studentId2=${studentId}`,
+        method: 'get'
+    })
+}
