@@ -2,7 +2,7 @@
     <van-nav-bar title="卖家信息" fixed
                  left-arrow @click-left="router.go(-1)"
     />
-
+    <div style="margin-top: 45px" />
     <div class="detail-container">
         <!-- Seller Details -->
         <van-barrage v-model="sellerInfo.commentContents">

@@ -1,8 +1,7 @@
 <template>
-  <nav-bar>
-    <template v-slot:center>更新商品</template>
-  </nav-bar>
-  <div style="margin-top: 50px" />
+  <van-nav-bar title="修改商品" fixed placeholder
+               left-arrow @click-left="router.go(-1)"
+  />
   <product-publish :dialog="dialog" :form="form" :update="true" />
 </template>
 
@@ -12,20 +11,19 @@ import {getCategoryData} from "@/network/category";
 import PriceDisplay from "@/components/content/goods/PriceDisplay.vue";
 import ProductPublish from "@/components/content/goods/ProductPublish.vue";
 import {getDetail} from "@/network/detail";
-import NavBar from "@/components/common/navbar/NavBar.vue";
 import {useRoute} from "vue-router/dist/vue-router";
+import {useRouter} from "vue-router";
 
 export default {
   components: {
     ProductPublish,
     'BackgroundSurround': PriceDisplay,
-    NavBar
   },
 
   setup() {
 
     const route = useRoute();
-
+    const router = useRouter();
     const form = reactive({
       name: '',
       images: [],
@@ -71,7 +69,8 @@ export default {
 
     return {
       dialog,
-      form
+      form,
+      router
     }
 
   },
