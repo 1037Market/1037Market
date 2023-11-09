@@ -3,7 +3,6 @@ package api
 import (
 	"1037Market/dao"
 	"1037Market/ds"
-	"1037Market/mysqlDb"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -171,31 +170,10 @@ func GetMsgsInSession() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sessionId := c.Query("sessionId")
 
-		db, err := mysqlDb.GetConnection()
+		lst, err := dao.GetAllMsgInSession(sessionId)
 		if err != nil {
 			handleError(c, err)
 			return
-		}
-
-		rows, err := db.Query("select messageId from CHAT_MESSAGES where sessionId = ?", sessionId)
-		if err != nil {
-			handleError(c, err)
-		}
-
-		lst := make([]ds.MsgGot, 0)
-
-		for rows.Next() {
-			var id int
-			if err = rows.Scan(&id); err != nil {
-				handleError(c, err)
-				return
-			}
-			msg, err := dao.GetMsgInfoByMsgId(id)
-			if err != nil {
-				handleError(c, err)
-				return
-			}
-			lst = append(lst, msg)
 		}
 
 		c.JSON(http.StatusOK, lst)
