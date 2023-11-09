@@ -100,6 +100,7 @@ func (s *Server) Route() {
 	s.GET("/api/chat/messages", api.GetNMsgIdsFromKthLastBySessId())
 	s.GET("/api/chat/content", api.GetMsgInfoByMsgId())
 	s.POST("/api/chat/send", api.SendMsg())
+	s.GET("/api/chat/session/messages", api.GetMsgsInSession())
 }
 
 func cors() gin.HandlerFunc {
