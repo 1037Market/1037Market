@@ -1,5 +1,8 @@
 **/.DS_Store
 .idea/*
 *.log
-backend/market
 1037Market-app/package-lock.json
+**/.idea
+uploads/*
+**/node_modules
+backend/market
