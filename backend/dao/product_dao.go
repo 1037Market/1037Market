@@ -384,8 +384,8 @@ func UpdateProduct(userId string, product ds.ProductUpdated) error {
 	}
 	defer txn.Rollback()
 
-	result, err := txn.Exec("update PRODUCTS set title = ?, price = ?, status = ?, description = ?, updateTime = ? where productId = ? and userId = ?",
-		product.Title, product.Price, product.Status, product.Content, time.Now(), product.ProductId, userId)
+	result, err := txn.Exec("update PRODUCTS set title = ?, price = ?, isSoldOut = ?, description = ?, updateTime = ? where productId = ? and userId = ?",
+		product.Title, product.Price, product.IsSoldOut, product.Content, time.Now(), product.ProductId, userId)
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
