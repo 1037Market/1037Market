@@ -46,7 +46,7 @@ func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 	rand.Seed(time.Now().UnixNano())
 	productId := rand.Intn(100000000)
 	result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime) "+
-		"values(?, ?, ? ,?, ?, ?, ?, ?)", productId, userId, product.Title, product.Price, product.Content, time.Now(), time.Now())
+		"values(?, ?, ? ,?, ?, ?, ?)", productId, userId, product.Title, product.Price, product.Content, time.Now(), time.Now())
 	if err != nil {
 		return productId, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
@@ -276,7 +276,7 @@ func GetProductListByCategory(category string, startIndex int, count string) ([]
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? limit ?, ? and isSoldOut = 0",
+	rows, err := db.Query("select productId from PRODUCT_CATEGORIES join PRODUCTS using(productId) where category = ? and isSoldOut is false limit ?, ?",
 		category, startIndex-1, count)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
