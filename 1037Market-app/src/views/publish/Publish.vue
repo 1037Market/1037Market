@@ -1,9 +1,8 @@
 <template>
-    <van-nav-bar title="发布商品" fixed placeholder
+    <van-nav-bar  title="发布商品" fixed placeholder 
                  left-arrow @click-left="router.go(-1)"
     />
     <product-publish :dialog="dialog" :form="form" :update="false"/>
-
 </template>
 
 <script>

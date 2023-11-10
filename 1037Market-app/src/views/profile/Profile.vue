@@ -1,6 +1,8 @@
 <template>
-    <div id="profile">
-        <van-nav-bar title="个人中心" fixed placeholder
+    <div style="background-color: rgba(66, 185, 131, 0.05);">
+    <div id="profile" >
+    
+        <van-nav-bar title="个人中心" fixed placeholder style="--van-nav-bar-background: rgba(66, 185, 131, 0.9);--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                      left-arrow @click-left="router.go(-1)"
         />
         <van-uploader v-model="fileList" max-count="1" :after-read="afterReadAvatar">
@@ -50,6 +52,7 @@
         >退出登录
         </van-button
         >
+    </div>
     </div>
 </template>
 
@@ -277,7 +280,8 @@ export default {
 #profile {
     text-align: center;
 }
-
+body {
+}
 .display {
     font-family: 'Poppins', sans-serif;
     margin: 10px;
@@ -287,9 +291,7 @@ export default {
     color: #333;
     line-break: anywhere;
     text-align: left;
-
 }
-
 #photograph {
 
     margin-left: -30px;

@@ -1,13 +1,12 @@
 <template>
   <div class="display">
     <van-form @submit="onSubmit">
-      <van-field
+      <van-field style="margin-bottom: 10px"
           v-model="form.name"
           label="商品名称"
           name="name"
           placeholder="请输入商品名称"
           required
-          style="margin-bottom: 10px"
       />
 
       <van-uploader
@@ -207,5 +206,6 @@ export default {
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
+  
 }
 </style>

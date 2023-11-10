@@ -1,5 +1,5 @@
 <template>
-    <div class="goods" ref="goodsContainer">
+    <div class="goods" ref="goodsContainer" >
         <!--        <button @click="debug">debug</button>-->
         <div class="goods-item" 
              v-for="productDetail in products"
@@ -15,8 +15,20 @@
                 alt="商品"
             />
             <div class="goods-info">
-                <p style="font-size: 14px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
-                <div style="display: inline;margin-left: -12px;">￥</div><span class="price" style="font-size: 16px;font-weight: 600;margin: 0px auto;">{{ productDetail.price }}</span>
+                <p style="font-size: 20px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
+                <div style="display: inline;margin-left: 0px;">￥</div><span class="price" style="font-size: 20px;font-weight: 600;margin: 0px auto;">{{ productDetail.price }}</span>
+                
+            </div>
+            <div>
+            <van-image style="display: inline-block;margin:0 auto;"
+                    width="30px"
+                    height="30px"
+                    radius="15px"
+                    fit="cover"
+                    
+                    src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
+            />
+            <span style="display: inline;font-size: 20px;font-weight: 600;margin-top: -20px;text-align: center;">{{ productDetail.title }}</span>
             </div>
         </div>
     </div>
@@ -132,7 +144,17 @@ const calculatePosition = () => {
     height: auto;
     padding: 10px;
 }
-
+.display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px; /* Added horizontal margin */
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+}
 .goods-item van-image {
     width: 100%;
     height: auto;
@@ -146,27 +168,17 @@ const calculatePosition = () => {
     bottom: 5px;
     left: 0;
     right: 0;
-    overflow: hidden;
-    text-align: center;
+    word-wrap: anywhere;
+    word-break: keep-all;
 }
 
 .goods-item .goods-info p {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    
+    word-wrap: anywhere;
+    word-break: break-all;
     margin-bottom: 3px;
 }
-.display {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    margin: 10px; /* Added horizontal margin */
-    color: #333;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    font-family: 'Poppins', sans-serif;
-}
+
 .goods-item .goods-info .price {
     color: #FF4C0A;
 }

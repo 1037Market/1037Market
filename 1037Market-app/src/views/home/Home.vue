@@ -1,13 +1,14 @@
 <template>
+    <div style="background-color: rgba(255, 255, 255, 1);">
     <div id="home">
 
-        <van-nav-bar title="1037集市" fixed placeholder
+        <van-nav-bar title="1037集市" fixed placeholder style="--van-nav-bar-background: linear-gradient(rgba(66, 185, 131, 0.9),rgba(66,185,131,0.45));--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                      left-arrow @click-left="router.go(-1)"
         />
 
 
-        <form action="/">
-            <van-search
+        <form action="/" style="--van-search-background: linear-gradient(rgba(66, 185, 131, 0.45),rgba(66,185,131,0));margin-top: -1px;">
+            <van-search style="--van-search-content-background: linear-gradient(rgba(66, 185, 131, 0),rgba(66,185,131,0));"
                 v-model="searchInfo"
                 placeholder="请输入搜索关键词"
                 @search="onSearch"
@@ -45,6 +46,7 @@
         </div>
 
         <back-top @goback="goback" v-show="isShowBackTop"></back-top>
+    </div>
     </div>
 </template>
 
