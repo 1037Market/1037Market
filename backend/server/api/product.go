@@ -127,8 +127,14 @@ func GetRecommendProductList() gin.HandlerFunc {
 func GetProductListByCategory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		category := c.Query("category")
+		startIndexString := c.Query("startIndex")
+		startIndex, err := strconv.Atoi(startIndexString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeIntParse, err.Error()))
+			return
+		}
 		cnt := c.Query("count")
-		lst, err := dao.GetProductListByCategory(category, cnt)
+		lst, err := dao.GetProductListByCategory(category, startIndex, cnt)
 		if err != nil {
 			handleError(c, err)
 			return

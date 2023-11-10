@@ -245,15 +245,15 @@ func GetRandomProductList(count string) ([]int, error) {
 	return lst, nil
 }
 
-func GetProductListByCategory(category, count string) ([]int, error) {
+func GetProductListByCategory(category string, startIndex int, count string) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? order by rand() limit ?",
-		category, count)
+	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? limit ?, ?",
+		category, startIndex-1, count)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
