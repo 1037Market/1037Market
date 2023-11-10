@@ -302,7 +302,7 @@ func GetCategoryList() ([]string, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select categoryName from CATEGORIES where isSoldOut = 0")
+	rows, err := db.Query("select categoryName from CATEGORIES")
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
