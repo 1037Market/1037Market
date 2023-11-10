@@ -45,8 +45,8 @@ func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 	defer txn.Rollback()
 	rand.Seed(time.Now().UnixNano())
 	productId := rand.Intn(100000000)
-	result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime, status) "+
-		"values(?, ?, ? ,?, ?, ?, ?, ?)", productId, userId, product.Title, product.Price, product.Content, time.Now(), time.Now(), "common")
+	result, err := txn.Exec("insert into PRODUCTS(productId, userId, title, price, description, createTime, updateTime) "+
+		"values(?, ?, ? ,?, ?, ?, ?, ?)", productId, userId, product.Title, product.Price, product.Content, time.Now(), time.Now())
 	if err != nil {
 		return productId, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
@@ -90,7 +90,7 @@ func PublishProduct(userId string, product ds.ProductPublished) (int, error) {
 	return productId, nil
 }
 
-func GetProductById(productId string) (ds.ProductGot, error) {
+func GetProductById(userId, productId string) (ds.ProductGot, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -108,9 +108,33 @@ func GetProductById(productId string) (ds.ProductGot, error) {
 	}
 
 	var product ds.ProductGot
-	err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.Status, &product.Content,
-		&product.PublishTime, &product.UpdateTime)
+	if err = rows.Scan(&product.ProductId, &product.Publisher, &product.Title, &product.Price, &product.IsSoldOut, &product.Content,
+		&product.PublishTime, &product.UpdateTime); err != nil {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+
+	rows.Close()
+	rows, err = db.Query("select nickName, avatar from USER_INFOS where userId = ?", product.Publisher)
 	if err != nil {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	if !rows.Next() {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeNoSuchProduct, productId+" not found")
+	}
+	if err = rows.Scan(&product.NickName, &product.Avatar); err != nil {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+
+	rows.Close()
+	rows, err = db.Query("select count(*) from SUBSCRIBES where userId = ? and productId = ?", userId, productId)
+	if err != nil {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	if !rows.Next() {
+		return ds.ProductGot{}, NewErrorDao(ErrTypeNoSuchProduct, productId+" not found")
+	}
+	// count(*) must be 1 or 0
+	if err = rows.Scan(&product.IsSubscribed); err != nil {
 		return ds.ProductGot{}, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
@@ -155,7 +179,7 @@ func GetProductListByKeyword(keyword string) ([]int, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCTS where title like ? or description like ?",
+	rows, err := db.Query("select productId from PRODUCTS where (title like ? or description like ?) and isSoldOut = 0",
 		"%"+keyword+"%", "%"+keyword+"%")
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
@@ -227,7 +251,7 @@ func GetRandomProductList(count string) ([]int, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCTS order by rand() limit ?", count)
+	rows, err := db.Query("select productId from PRODUCTS where isSoldOut = 0 order by rand() limit ?", count)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
@@ -252,7 +276,7 @@ func GetProductListByCategory(category string, startIndex int, count string) ([]
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? limit ?, ?",
+	rows, err := db.Query("select productId from PRODUCT_CATEGORIES where category = ? limit ?, ? and isSoldOut = 0",
 		category, startIndex-1, count)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
@@ -278,7 +302,7 @@ func GetCategoryList() ([]string, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select categoryName from CATEGORIES")
+	rows, err := db.Query("select categoryName from CATEGORIES where isSoldOut = 0")
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
@@ -317,7 +341,7 @@ func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, e
 		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
 	}
 
-	rows, err := db.Query("select productId from PRODUCTS")
+	rows, err := db.Query("select productId from PRODUCTS where isSoldOut = 0")
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
@@ -422,5 +446,25 @@ func UpdateProduct(userId string, product ds.ProductUpdated) error {
 		}
 	}
 	txn.Commit()
+	return nil
+}
+
+func SoldProduct(userId string, productId int) error {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+	result, err := db.Exec("update PRODUCTS set isSoldOut = true where productId = ? and userId = ?", productId, userId)
+	if err != nil {
+		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return NewErrorDao(ErrTypeAffectRows, err.Error())
+	}
+	if affected < 1 {
+		return NewErrorDao(ErrTypeNoSuchProduct, userId+"sold product failed")
+	}
 	return nil
 }
