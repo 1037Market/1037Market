@@ -455,16 +455,18 @@ func SoldProduct(userId string, productId int) error {
 		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
-	result, err := db.Exec("update PRODUCTS set isSoldOut = true where productId = ? and userId = ?", productId, userId)
+	_, err = db.Exec("update PRODUCTS set isSoldOut = true where productId = ? and userId = ?", productId, userId)
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return NewErrorDao(ErrTypeAffectRows, err.Error())
-	}
-	if affected < 1 {
-		return NewErrorDao(ErrTypeNoSuchProduct, userId+"sold product failed")
-	}
+	/*
+		affected, err := result.RowsAffected()
+		if err != nil {
+			return NewErrorDao(ErrTypeAffectRows, err.Error())
+		}
+		if affected < 1 {
+			return NewErrorDao(ErrTypeNoSuchProduct, userId+"sold product failed")
+		}
+	*/
 	return nil
 }

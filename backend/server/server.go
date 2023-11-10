@@ -86,6 +86,7 @@ func (s *Server) Route() {
 	s.GET("/api/product/get", api.GetProductById())
 	s.GET("/api/product/query", api.GetProductListByKeyword())
 	s.GET("api/product/student", api.GetProductListByStudentId())
+	s.POST("/api/product/sold", api.SoldProduct())
 	s.DELETE("/api/product", api.DeleteProduct())
 	s.GET("/api/product/recommend", api.GetRecommendProductList())
 	s.GET("/api/product/category", api.GetProductListByCategory())
@@ -101,7 +102,6 @@ func (s *Server) Route() {
 	s.GET("/api/chat/content", api.GetMsgInfoByMsgId())
 	s.POST("/api/chat/send", api.SendMsg())
 	s.GET("/api/chat/session/messages", api.GetMsgsInSession())
-	s.POST("/api/product/sold", api.SoldProduct())
 }
 
 func cors() gin.HandlerFunc {
