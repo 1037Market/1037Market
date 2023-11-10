@@ -36,7 +36,9 @@
         <van-icon name="manager-o" style="margin-left: 20px" />
         <van-action-bar-icon text="卖家信息" @click="userInfo"/>
         <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px" @click="talk"/>
-        <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+        <van-action-bar-button v-if="productDetail.subscribed" type="danger" text="取消收藏" style="margin-right: 20px" @click="handleDecart"/>
+        <van-action-bar-button v-else type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+
       </van-action-bar>
     </div>
 
@@ -61,6 +63,7 @@ import ProductDescription from "@/components/content/goods/ProductDescription.vu
 import {showSuccessToast, showFailToast} from 'vant';
 import {getSessionId} from "../../network/chat";
 import {deleteProduct, sellProduct} from "../../network/publish";
+import {deleteCartItem} from "../../network/cart";
 
 export default {
     name: "Detail",
@@ -86,8 +89,10 @@ export default {
     const handleCart = () => {
         addCart(id.value).then((res) => {
             console.log(res)
-            if(res === 'ok')
-                showSuccessToast('收藏成功')
+            if(res === 'ok') {
+              showSuccessToast('收藏成功')
+              productDetail.value.subscribed = true;
+            }
             else showFailToast('收藏失败')
         });
     };
@@ -143,7 +148,16 @@ export default {
             showSuccessToast("设置成功")
           }).catch((err) => {
             console.log(err);
-            showFailToast("删除失败")
+            showFailToast("设置失败")
+          })
+        }
+
+        const handleDecart = () => {
+          deleteCartItem(productDetail.value.productId).then((response) => {
+            showSuccessToast("取消收藏成功")
+            productDetail.value.subscribed = false;
+          }).catch((err) => {
+            showFailToast("取消收藏失败")
           })
         }
 
@@ -159,7 +173,8 @@ export default {
         router,
         talk,
         handleDelete,
-        handleSold
+        handleSold,
+        handleDecart
     };
   },
 };

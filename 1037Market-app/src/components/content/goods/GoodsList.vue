@@ -13,22 +13,24 @@
                 :src="Array.isArray(productDetail.imageURIs) && productDetail.imageURIs.length > 0 ? 'http://franky.pro:7301/api/image?imageURI=' + productDetail.imageURIs[0] : ''"
                 @load="calculatePosition"
                 alt="商品"
+                style="border-radius: 10%"
+
             />
             <div class="goods-info">
                 <p style="font-size: 20px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
-                <div style="display: inline;margin-left: 0px;">￥</div><span class="price" style="font-size: 20px;font-weight: 600;margin: 0px auto;">{{ productDetail.price }}</span>
-                
+                <div style="display: inline;margin-left: 0px;">￥</div><span class="price" style="font-size: 25px;font-weight: 500;margin: 0px auto;">{{ productDetail.price }}</span>
+
             </div>
             <div>
-            <van-image style="display: inline-block;margin:0 auto;"
-                    width="30px"
-                    height="30px"
-                    radius="15px"
-                    fit="cover"
-                    
-                    src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
-            />
-            <span style="display: inline;font-size: 20px;font-weight: 600;margin-top: -20px;text-align: center;">{{ productDetail.title }}</span>
+              <van-image style="display: inline-block; vertical-align: middle"
+                      width="20px"
+                      height="20px"
+                      radius="10px"
+                      fit="cover"
+                      :src="'http://franky.pro:7301/api/image?imageURI=' + productDetail.avatar"
+              />
+              <span style="vertical-align: middle; font-weight: 400; font-size: 15px; margin-left: 10px">{{ productDetail.nickName }}</span>
+
             </div>
         </div>
     </div>
