@@ -1,13 +1,19 @@
 <template>
+
+  <van-nav-bar title="联系卖家" fixed placeholder
+               left-arrow @click-left="router.go(-1)"
+               v-if="needNav"
+  />
+
   <div>
     <vue-advanced-chat
-        height="100vh"
+        :height="this.needNav ? '95vh' : '100vh'"
         :current-user-id="currentUserId"
         :rooms="rooms"
         :rooms-loaded="true"
         :messages="messages"
         :messages-loaded="messagesLoaded"
-        :room-id="currentRoomId"
+        :single-room="needNav"
         @send-message="sendMessage($event.detail[0])"
         @fetch-messages="fetchMessages($event.detail[0])"
         @fetch-more-rooms="fetchMoreRooms"
@@ -23,9 +29,19 @@
 
 <script>
 import { register } from 'vue-advanced-chat'
-import {getMessageContent, getNMessages, getRoomIds, getRoomInfo, sendMessage} from "../../network/chat";
-import {nextTick} from "vue";
+import {
+  getAllMsgs,
+  getMessageContent,
+  getNewestMessageIn,
+  getNMessages,
+  getRoomIds,
+  getRoomInfo,
+  sendMessage
+} from "../../network/chat";
+import {nextTick, onUnmounted} from "vue";
 import {uploadImage} from "../../network/image";
+import {useRoute} from "vue-router/dist/vue-router";
+import {useRouter} from "vue-router";
 register()
 
 async function convertBlobUrlToFile(blobUrl, fileName, mimeType) {
@@ -48,62 +64,58 @@ export default {
       messages: [],
       messagesLoaded: true,
       currentRoomId: null,
-      msgMap: {}
+      msgMap: {},
+      needNav: false,
+      router: useRouter()
     }
   },
   methods: {
     fetchMessages(options) {
         let room = options.room;
+        this.currentRoomId = room.roomId;
         if(options.options.reset) {
           this.msgMap[room.roomId] = [];
           this.messages = this.msgMap[room.roomId];
-          let alreadyHave = this.messages.length;
-          console.log('already heve: ', alreadyHave)
-          getNMessages(room.roomId, alreadyHave + 1, 100).then((messageIds) => {
-            messageIds.forEach((msgId) => {
-              getMessageContent(msgId).then((msgDetail) => {
-                let msg = {
-                  _id: msgDetail.messageId,
-                  indexId: msgDetail.messageId,
-                  content: msgDetail.content,
-                  senderId: msgDetail.fromId,
-                  files: msgDetail.imageURI === '' ? null : [
-                    {
-                      name: 'My File',
-                      type: 'png',
-                      audio: false,
-                      duration: 14.4,
-                      url: 'http://franky.pro:7301/api/image?imageURI=' + msgDetail.imageURI,
-                    }
-                  ],
-                  timestamp: msgDetail.sendTime,
-                  date: new Date().toDateString()
-                };
-                this.messages = [...this.messages, msg]
-              })
+          getAllMsgs(room.roomId).then((response) => {
+            response.forEach((msg) => {
+              let mes = {
+                _id: msg.messageId,
+                indexId: msg.messageId,
+                content: msg.content,
+                senderId: msg.fromId,
+                files: msg.imageURI === "" ? null : [
+                  {
+                    name: 'My File',
+                    type: 'png',
+                    audio: false,
+                    duration: 14.4,
+                    url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                  }
+                ],
+                timestamp: msg.sendTime,
+                date: new Date().toDateString()
+              }
+              this.messages = [...this.messages, mes]
             })
           }).catch((err) => {
             console.log(err);
           })
         } else {
-          console.log('no reset')
           this.messages = this.msgMap[room.roomId];
         }
     },
 
 
     sendMessage(message) {
-      console.log(message)
       if(message.files) {
         convertBlobUrlToFile(message.files[0].localUrl, message.files[0].name, message.files[0].type).then((file) => {
           let formData = new FormData();
           formData.append('file', file)
           uploadImage(formData).then((response) => {
-            let imageURI = response;
             let msg = {
               sessionId: message.roomId,
               content: message.content,
-              imageURI: imageURI
+              imageURI: response
             }
             sendMessage(msg).then((response) => {
               msg = {
@@ -169,28 +181,89 @@ export default {
 
   },
   mounted() {
-    getRoomIds().then((response) => {
-      let rooms = []
-      let oldRooms = this.rooms;
-      response.forEach((roomId) => {
-        getRoomInfo(roomId).then((roomInfo) => {
-          let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
-          rooms.push({
-            roomId: roomId,
-            roomName: roomInfo[idx].nickName,
-            avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
-            users: [
-              {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
-              {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
-            ]
+    const route = useRoute();
+    let sessionId = route.params.session;
+    if(sessionId === "0") {
+      this.needNav = false;
+      getRoomIds().then((response) => {
+        let rooms = []
+        let oldRooms = this.rooms;
+        response.forEach((roomId) => {
+          getRoomInfo(roomId).then((roomInfo) => {
+            let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
+            rooms.push({
+              roomId: roomId,
+              roomName: roomInfo[idx].nickName,
+              avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+              users: [
+                {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
+                {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
+              ]
+            })
+            this.rooms = [...oldRooms, ...rooms]
           })
-          this.rooms = [...oldRooms, ...rooms]
-          console.log(this.rooms)
         })
       })
+    } else {
+      this.needNav = true;
+      const nav = document.getElementById('nav');
+      nav.style.visibility = 'hidden';
+      getRoomInfo(sessionId).then((roomInfo) => {
+        let idx = roomInfo[0].userId == window.localStorage.getItem('studentId') ? 1 : 0;
+        this.rooms = [{
+          roomId: Number(sessionId),
+          roomName: roomInfo[idx].nickName,
+          avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+          users: [
+            {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
+            {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
+          ]
+        }]
+      })
+    }
 
+
+    let interval = setInterval(() => {
+      if(this.currentRoomId !== null) {
+        getNewestMessageIn(this.currentRoomId).then((response) => {
+          if(response !== this.messages[this.messages.length - 1]._id) {
+            let lastId = this.messages[this.messages.length - 1]._id;
+            getAllMsgs(this.currentRoomId).then((response) => {
+              response.forEach((msg) => {
+                let mes = {
+                  _id: msg.messageId,
+                  indexId: msg.messageId,
+                  content: msg.content,
+                  senderId: msg.fromId,
+                  files: msg.imageURI === "" ? null : [
+                    {
+                      name: 'My File',
+                      type: 'png',
+                      audio: false,
+                      duration: 14.4,
+                      url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                    }
+                  ],
+                  timestamp: msg.sendTime,
+                  date: new Date().toDateString()
+                }
+                if(mes._id > lastId) {
+                  this.messages = [...this.messages, mes]
+                }
+              })
+            }).catch((err) => {
+              console.log(err);
+            })
+          }
+        }).catch((err) => {
+          console.log(err);
+        })
+      }
+
+    }, 3000)
+    onUnmounted(() => {
+      clearInterval(interval);
     })
-
   },
   watch: { // 永远按顺序排列
     'messages'(oldVal, newVal) {

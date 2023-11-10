@@ -86,7 +86,7 @@ const routes = [
     }
   },
   {
-    path: '/chat',
+    path: '/chat/:session',
     name: 'Chat',
     component: Chat,
     meta: {

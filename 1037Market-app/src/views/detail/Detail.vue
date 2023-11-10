@@ -32,7 +32,7 @@
       <van-action-bar>
         <van-icon name="manager-o" style="margin-left: 20px" />
         <van-action-bar-icon text="卖家信息" @click="userInfo"/>
-        <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px"/>
+        <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px" @click="talk"/>
         <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
       </van-action-bar>
     </div>
@@ -56,6 +56,7 @@ import {addCart} from "@/network/cart";
 import PriceDisplay from "@/components/content/goods/PriceDisplay.vue"
 import ProductDescription from "@/components/content/goods/ProductDescription.vue";
 import {showSuccessToast, showFailToast} from 'vant';
+import {getSessionId} from "../../network/chat";
 
 export default {
     name: "Detail",
@@ -115,6 +116,14 @@ export default {
             router.push({path: `/seller/${productDetail.value.publisher}`});
         }
 
+        const talk = () => {
+          getSessionId(productDetail.value.publisher).then((response) => {
+            router.push({path: `/chat/${response}`});
+          }).catch((err) => {
+            console.log(err);
+          })
+        }
+
     return {
         id,
         active,
@@ -124,7 +133,8 @@ export default {
         userInfo,
         handleUpdate,
         studentId,
-        router
+        router,
+        talk
     };
   },
 };
