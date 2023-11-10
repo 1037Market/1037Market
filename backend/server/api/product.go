@@ -68,9 +68,7 @@ func GetProductListByKeyword() gin.HandlerFunc {
 
 func GetProductListByStudentId() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Sprintf("coming")
 		studentId := c.Query("studentId")
-		fmt.Sprintf("here!!!!!!!!!!!")
 		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
 			handleError(c, err)
