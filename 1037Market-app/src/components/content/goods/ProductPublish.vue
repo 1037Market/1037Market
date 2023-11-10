@@ -145,9 +145,9 @@ export default {
           imageURIs: form.imageURIs,
           price: parseFloat(form.price)
         }).then((response) => {
-          showSuccessToast("发布成功")
+          showSuccessToast("更新成功")
         }).catch((err) => {
-          showFailToast('发布失败')
+          showFailToast('更新失败')
         })
       } else { // publish new product
         publishProduct({

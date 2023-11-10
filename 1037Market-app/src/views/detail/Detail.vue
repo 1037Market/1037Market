@@ -1,8 +1,10 @@
 <template>
     <div>
         <van-nav-bar title="商品详情" fixed placeholder
-                     left-arrow @click-left="router.go(-1)"
-        />
+                     left-arrow @click-left="router.go(-1)">
+
+          <template #right><van-icon name="ellipsis" size="20"/></template>
+        </van-nav-bar>
 
         <van-swipe :autoplay="3000" indicator-color="#44b883" style="height: 300px; margin-top: 1px;" lazy-render>
             <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri">
@@ -23,9 +25,10 @@
 
     <div v-if="productDetail.publisher === studentId.current">
       <van-action-bar>
-        <van-icon name="manager-o" style="margin-left: 20px" />
-        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
-          <van-action-bar-button type="danger" text="修改商品" @click="handleUpdate"/>
+        <van-action-bar-button type="warning" text="已经卖出" @click="handleSold"/>
+          <van-action-bar-button type="warning" text="修改商品" @click="handleUpdate"/>
+          <van-action-bar-button type="danger" text="删除商品" @click="handleDelete"/>
+
       </van-action-bar>
     </div>
     <div v-else>
@@ -57,6 +60,7 @@ import PriceDisplay from "@/components/content/goods/PriceDisplay.vue"
 import ProductDescription from "@/components/content/goods/ProductDescription.vue";
 import {showSuccessToast, showFailToast} from 'vant';
 import {getSessionId} from "../../network/chat";
+import {deleteProduct, sellProduct} from "../../network/publish";
 
 export default {
     name: "Detail",
@@ -124,6 +128,25 @@ export default {
           })
         }
 
+        const handleDelete = () => {
+          deleteProduct(productDetail.value.productId).then((response) => {
+            showSuccessToast("删除成功")
+            router.go(-1);
+          }).catch((err) => {
+            console.log(err);
+            showFailToast("删除失败")
+          })
+        }
+
+        const handleSold = () => {
+          sellProduct(productDetail.value.productId).then((response) => {
+            showSuccessToast("设置成功")
+          }).catch((err) => {
+            console.log(err);
+            showFailToast("删除失败")
+          })
+        }
+
     return {
         id,
         active,
@@ -134,7 +157,9 @@ export default {
         handleUpdate,
         studentId,
         router,
-        talk
+        talk,
+        handleDelete,
+        handleSold
     };
   },
 };

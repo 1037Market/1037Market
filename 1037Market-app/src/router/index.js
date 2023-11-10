@@ -119,7 +119,7 @@ router.beforeEach((to, from, next) => {
   } else {
     const nav = document.getElementById('nav');
     if(nav) {
-      if(to.name === 'Seller' || to.name === 'Detail') { // 这些页面隐藏底部tabbar
+      if(to.name === 'Seller' || to.name === 'Detail' || to.name === 'Modify') { // 这些页面隐藏底部tabbar
         nav.style.visibility = 'hidden';
       } else {
         nav.style.visibility = 'visible';
