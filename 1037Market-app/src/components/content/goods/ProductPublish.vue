@@ -74,6 +74,7 @@ import {nextTick, onMounted, reactive, watchEffect} from "vue";
 import {showFailToast, showSuccessToast} from "vant";
 import {uploadImage} from "../../../network/image";
 import {publishProduct, updateProduct} from "../../../network/publish";
+import {useRoute} from "vue-router/dist/vue-router";
 
 export default {
   name: "ProductPublish",
@@ -105,6 +106,9 @@ export default {
     watchEffect(() => {
       Object.assign(form, props.form);
       Object.assign(dialog, props.dialog);
+      if(props.update) {
+        form.imageURIs = [];
+      }
       // TODO: 已经存在的图片咋办？
     });
 
@@ -130,7 +134,7 @@ export default {
       // 删除指定索引的图片
       form.imageURIs.splice(index, 1);
     };
-
+    const route = useRoute();
     const onSubmit = () => {
       if (form.name === '' || form.imageURIs === [] || form.categories === [] || form.price === [] ||
           form.description === '') {
@@ -143,7 +147,8 @@ export default {
           content: form.description,
           categories: form.categories,
           imageURIs: form.imageURIs,
-          price: parseFloat(form.price)
+          price: parseFloat(form.price),
+          productId: Number(route.params.id)
         }).then((response) => {
           showSuccessToast("发布成功")
         }).catch((err) => {
