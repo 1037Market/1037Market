@@ -17,7 +17,7 @@ export function getHomeGoodsData(type = "推荐", startIndex = 0, count = 6) {
     })
   }
   return request({
-    url: `/api/product/category?category=${type}&count=${count}`
+    url: `/api/product/category?category=${type}&count=${count}&startIndex=${startIndex+1}`
   })
 }
 
