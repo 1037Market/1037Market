@@ -1,6 +1,6 @@
 <template>
   <router-view />
-  <div id="nav">
+  <div id="nav" style="z-index: 20">
       <router-link to="/" class="tab-bar-item">
           <div class="icon">
               <i class="iconfont icon-shouye"></i>
