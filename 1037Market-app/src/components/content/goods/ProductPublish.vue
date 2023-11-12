@@ -24,7 +24,7 @@
           label="商品价格"
           name="price"
           type="number"
-          placeholder="请输入商品价格"
+          placeholder="负数价格表示你想收该商品"
           required
       />
 

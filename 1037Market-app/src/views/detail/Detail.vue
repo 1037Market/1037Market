@@ -7,7 +7,8 @@
         </van-nav-bar>
 
         <van-swipe :autoplay="3000" indicator-color="#44b883" style="height: 300px; margin-top: 1px;" lazy-render>
-            <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri">
+            <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri"
+                            @click="preview(uri)">
                 <van-image :src="'http://franky.pro:7301/api/image?imageURI=' + uri" fit="contain"/>
             </van-swipe-item>
         </van-swipe>
@@ -64,6 +65,7 @@ import {showSuccessToast, showFailToast} from 'vant';
 import {getSessionId} from "../../network/chat";
 import {deleteProduct, sellProduct} from "../../network/publish";
 import {deleteCartItem} from "../../network/cart";
+import {showImagePreview} from 'vant';
 
 export default {
     name: "Detail",
@@ -161,6 +163,10 @@ export default {
           })
         }
 
+        const preview = (uri) => {
+          showImagePreview(['http://franky.pro:7301/api/image?imageURI=' + uri]);
+        }
+
     return {
         id,
         active,
@@ -174,7 +180,8 @@ export default {
         talk,
         handleDelete,
         handleSold,
-        handleDecart
+        handleDecart,
+        preview
     };
   },
 };
