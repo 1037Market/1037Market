@@ -3,7 +3,7 @@
     <h3>{{ title }}</h3>
     <div class="products-grid">
       <div class="product-card" v-for="product in displayedProducts" :key="product.id" @click="clickProduct(product.id)">
-        <div v-if="product.soldout" class="soldout-overlay">已售出</div>
+        <div v-if="product.soldout" class="soldout-overlay">{{ product.price < 0 ? '已收到' : '已卖出' }}</div>
         <van-image :src="product.image" alt="Product Image" class="product-image" />
         <div class="product-info">
           <h4 class="product-name">{{ product.name }}</h4>

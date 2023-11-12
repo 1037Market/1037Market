@@ -26,7 +26,7 @@
 
     <div v-if="productDetail.publisher === studentId.current">
       <van-action-bar>
-        <van-action-bar-button type="warning" text="已经卖出" @click="handleSold"/>
+        <van-action-bar-button type="warning" :text="productDetail.price < 0 ? '已经收到' : '已经卖出'" @click="handleSold"/>
           <van-action-bar-button type="warning" text="修改商品" @click="handleUpdate"/>
           <van-action-bar-button type="danger" text="删除商品" @click="handleDelete"/>
 
