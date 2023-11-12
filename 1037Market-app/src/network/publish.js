@@ -15,3 +15,17 @@ export function updateProduct(data) {
         data
     })
 }
+
+export function deleteProduct(productId) {
+    return request({
+        url: `/api/product?user=${window.localStorage.getItem('token')}&productId=${productId}`,
+        method: 'delete',
+    })
+}
+
+export function sellProduct(productId) {
+    return request({
+        url: `/api/product/sold?user=${window.localStorage.getItem('token')}&productId=${productId}`,
+        method: 'post',
+    })
+}

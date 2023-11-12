@@ -14,3 +14,11 @@ export function getCommentDetail(commentId) {
         method: 'get'
     })
 }
+
+export function postComment(usertoken, data) {
+    return request({
+        url: `/api/comment?user=${usertoken}`,
+        method: 'post',
+        data
+    })
+}

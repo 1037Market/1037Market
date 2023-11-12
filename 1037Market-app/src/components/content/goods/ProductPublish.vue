@@ -1,13 +1,12 @@
 <template>
   <div class="display">
     <van-form @submit="onSubmit">
-      <van-field
+      <van-field style="margin-bottom: 10px"
           v-model="form.name"
           label="商品名称"
           name="name"
           placeholder="请输入商品名称"
           required
-          style="margin-bottom: 10px"
       />
 
       <van-uploader
@@ -25,7 +24,7 @@
           label="商品价格"
           name="price"
           type="number"
-          placeholder="请输入商品价格"
+          placeholder="负数价格表示你想收该商品"
           required
       />
 
@@ -150,9 +149,9 @@ export default {
           price: parseFloat(form.price),
           productId: Number(route.params.id)
         }).then((response) => {
-          showSuccessToast("发布成功")
+          showSuccessToast("更新成功")
         }).catch((err) => {
-          showFailToast('发布失败')
+          showFailToast('更新失败')
         })
       } else { // publish new product
         publishProduct({
@@ -212,5 +211,6 @@ export default {
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
+  
 }
 </style>

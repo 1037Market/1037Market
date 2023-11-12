@@ -1,26 +1,25 @@
 <template>
-  <!-- Published Products -->
   <div class="display seller-products">
     <h3>{{ title }}</h3>
     <div class="products-grid">
       <div class="product-card" v-for="product in displayedProducts" :key="product.id" @click="clickProduct(product.id)">
+        <div v-if="product.soldout" class="soldout-overlay">已售出</div>
         <van-image :src="product.image" alt="Product Image" class="product-image" />
         <div class="product-info">
-          <h4 class="product-name" style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">{{ product.name }}</h4>
-          <p class="product-description" style="text-overflow: ellipsis; white-space: nowrap;overflow: hidden;">{{ product.description }}</p>
+          <h4 class="product-name">{{ product.name }}</h4>
+          <p class="product-description">{{ product.description }}</p>
         </div>
       </div>
     </div>
-    <!-- "查看更多"按钮 -->
     <button v-if="seller.products.length > 2 && !showAllProducts" @click="toggleDisplay" class="view-more-btn">
       查看更多
     </button>
-    <!-- "收起"按钮 -->
     <button v-if="showAllProducts" @click="toggleDisplay" class="collapse-btn">
       收起
     </button>
   </div>
 </template>
+
 
 <script setup>
 import { useRouter } from 'vue-router';
@@ -114,4 +113,27 @@ const clickProduct = (productId) => {
 .view-more-btn:hover, .collapse-btn:hover {
   text-decoration: underline;
 }
+
+.soldout-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70%; /* 与.product-image高度相同 */
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.product-card {
+  /* ...其他样式... */
+  position: relative;
+}
+
+
 </style>

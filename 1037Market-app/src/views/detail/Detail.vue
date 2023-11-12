@@ -1,11 +1,14 @@
 <template>
     <div>
         <van-nav-bar title="商品详情" fixed placeholder
-                     left-arrow @click-left="router.go(-1)"
-        />
+                     left-arrow @click-left="router.go(-1)">
+
+          <template #right><van-icon name="ellipsis" size="20"/></template>
+        </van-nav-bar>
 
         <van-swipe :autoplay="3000" indicator-color="#44b883" style="height: 300px; margin-top: 1px;" lazy-render>
-            <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri">
+            <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri"
+                            @click="preview(uri)">
                 <van-image :src="'http://franky.pro:7301/api/image?imageURI=' + uri" fit="contain"/>
             </van-swipe-item>
         </van-swipe>
@@ -23,9 +26,10 @@
 
     <div v-if="productDetail.publisher === studentId.current">
       <van-action-bar>
-        <van-icon name="manager-o" style="margin-left: 20px" />
-        <van-action-bar-icon text="卖家信息" @click="userInfo"/>
-          <van-action-bar-button type="danger" text="修改商品" @click="handleUpdate"/>
+        <van-action-bar-button type="warning" text="已经卖出" @click="handleSold"/>
+          <van-action-bar-button type="warning" text="修改商品" @click="handleUpdate"/>
+          <van-action-bar-button type="danger" text="删除商品" @click="handleDelete"/>
+
       </van-action-bar>
     </div>
     <div v-else>
@@ -33,7 +37,9 @@
         <van-icon name="manager-o" style="margin-left: 20px" />
         <van-action-bar-icon text="卖家信息" @click="userInfo"/>
         <van-action-bar-button type="warning" text="联系卖家" style="margin-left: 20px" @click="talk"/>
-        <van-action-bar-button type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+        <van-action-bar-button v-if="productDetail.subscribed" type="danger" text="取消收藏" style="margin-right: 20px" @click="handleDecart"/>
+        <van-action-bar-button v-else type="danger" text="收藏商品" style="margin-right: 20px" @click="handleCart"/>
+
       </van-action-bar>
     </div>
 
@@ -57,6 +63,9 @@ import PriceDisplay from "@/components/content/goods/PriceDisplay.vue"
 import ProductDescription from "@/components/content/goods/ProductDescription.vue";
 import {showSuccessToast, showFailToast} from 'vant';
 import {getSessionId} from "../../network/chat";
+import {deleteProduct, sellProduct} from "../../network/publish";
+import {deleteCartItem} from "../../network/cart";
+import {showImagePreview} from 'vant';
 
 export default {
     name: "Detail",
@@ -82,8 +91,10 @@ export default {
     const handleCart = () => {
         addCart(id.value).then((res) => {
             console.log(res)
-            if(res === 'ok')
-                showSuccessToast('收藏成功')
+            if(res === 'ok') {
+              showSuccessToast('收藏成功')
+              productDetail.value.subscribed = true;
+            }
             else showFailToast('收藏失败')
         });
     };
@@ -124,6 +135,38 @@ export default {
           })
         }
 
+        const handleDelete = () => {
+          deleteProduct(productDetail.value.productId).then((response) => {
+            showSuccessToast("删除成功")
+            router.go(-1);
+          }).catch((err) => {
+            console.log(err);
+            showFailToast("删除失败")
+          })
+        }
+
+        const handleSold = () => {
+          sellProduct(productDetail.value.productId).then((response) => {
+            showSuccessToast("设置成功")
+          }).catch((err) => {
+            console.log(err);
+            showFailToast("设置失败")
+          })
+        }
+
+        const handleDecart = () => {
+          deleteCartItem(productDetail.value.productId).then((response) => {
+            showSuccessToast("取消收藏成功")
+            productDetail.value.subscribed = false;
+          }).catch((err) => {
+            showFailToast("取消收藏失败")
+          })
+        }
+
+        const preview = (uri) => {
+          showImagePreview(['http://franky.pro:7301/api/image?imageURI=' + uri]);
+        }
+
     return {
         id,
         active,
@@ -134,7 +177,11 @@ export default {
         handleUpdate,
         studentId,
         router,
-        talk
+        talk,
+        handleDelete,
+        handleSold,
+        handleDecart,
+        preview
     };
   },
 };

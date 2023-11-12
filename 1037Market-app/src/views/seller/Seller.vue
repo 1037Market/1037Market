@@ -1,6 +1,7 @@
 <template>
     <van-nav-bar title="卖家信息" fixed
                  left-arrow @click-left="router.go(-1)"
+                 right-text="评论" @click-right="router.push({path:`/comment/${route.params.studentId}`})"
     />
     <div style="margin-top: 45px" />
     <div class="detail-container">
