@@ -54,6 +54,10 @@ func (s *Server) ListenAndServe() {
 	log.Println("Server Exiting")
 }
 
+func (s *Server) RegisterMiddleWare(handlerFunc gin.HandlerFunc) {
+	s.router.Use(handlerFunc)
+}
+
 func (s *Server) GET(relativePath string, handler gin.HandlerFunc) {
 	s.router.GET(relativePath, handler)
 }
