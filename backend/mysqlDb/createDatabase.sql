@@ -23,7 +23,7 @@ create table PRODUCTS(
     userId      char(10) not null,
     title       char(127) not null,
     price       decimal(10, 2) not null,
-    status      char(31),
+    isSoldOut   bool not null default 0,
     description varchar(2047) not null,
     createTime  time not null,
     updateTime  time not null,

@@ -35,9 +35,15 @@ func PublishProduct() gin.HandlerFunc {
 
 func GetProductById() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id := c.Query("productId")
+		cookie := c.Query("user")
+		userId, err := dao.GetUserIdByCookie(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		productId := c.Query("productId")
 
-		product, err := dao.GetProductById(id)
+		product, err := dao.GetProductById(userId, productId)
 
 		if err != nil {
 			handleError(c, err)
@@ -63,7 +69,6 @@ func GetProductListByKeyword() gin.HandlerFunc {
 func GetProductListByStudentId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId := c.Query("studentId")
-
 		lst, err := dao.GetProductListByStudentId(studentId)
 		if err != nil {
 			handleError(c, err)
@@ -127,8 +132,14 @@ func GetRecommendProductList() gin.HandlerFunc {
 func GetProductListByCategory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		category := c.Query("category")
+		startIndexString := c.Query("startIndex")
+		startIndex, err := strconv.Atoi(startIndexString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeIntParse, err.Error()))
+			return
+		}
 		cnt := c.Query("count")
-		lst, err := dao.GetProductListByCategory(category, cnt)
+		lst, err := dao.GetProductListByCategory(category, startIndex, cnt)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -163,6 +174,30 @@ func UpdateProduct() gin.HandlerFunc {
 			return
 		}
 		if err := dao.UpdateProduct(userId, product); err != nil {
+			handleError(c, err)
+			return
+		}
+		c.String(http.StatusOK, "OK")
+	}
+}
+
+func SoldProduct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie := c.Query("user")
+		userId, err := dao.UserIdentityVerify(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
+		productIdString := c.Query("productId")
+		productId, err := strconv.Atoi(productIdString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeIntParse, err.Error()))
+			return
+		}
+
+		if err := dao.SoldProduct(userId, productId); err != nil {
 			handleError(c, err)
 			return
 		}

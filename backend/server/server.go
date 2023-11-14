@@ -54,6 +54,10 @@ func (s *Server) ListenAndServe() {
 	log.Println("Server Exiting")
 }
 
+func (s *Server) RegisterMiddleWare(handlerFunc gin.HandlerFunc) {
+	s.router.Use(handlerFunc)
+}
+
 func (s *Server) GET(relativePath string, handler gin.HandlerFunc) {
 	s.router.GET(relativePath, handler)
 }
@@ -79,13 +83,14 @@ func (s *Server) Route() {
 	s.POST("/api/image", api.UploadImage())
 	s.GET("/api/image", api.DownloadImage())
 	s.POST("/api/product", api.PublishProduct())
-	s.POST("/api/update", api.UpdateProduct())
+	s.POST("/api/product/update", api.UpdateProduct())
 	s.POST("/api/comment", api.CreateComment())
 	s.GET("/api/comment", api.QueryCommentList())
 	s.GET("/api/comment/get", api.GetCommentById())
 	s.GET("/api/product/get", api.GetProductById())
 	s.GET("/api/product/query", api.GetProductListByKeyword())
 	s.GET("api/product/student", api.GetProductListByStudentId())
+	s.POST("/api/product/sold", api.SoldProduct())
 	s.DELETE("/api/product", api.DeleteProduct())
 	s.GET("/api/product/recommend", api.GetRecommendProductList())
 	s.GET("/api/product/category", api.GetProductListByCategory())
@@ -100,6 +105,7 @@ func (s *Server) Route() {
 	s.GET("/api/chat/messages", api.GetNMsgIdsFromKthLastBySessId())
 	s.GET("/api/chat/content", api.GetMsgInfoByMsgId())
 	s.POST("/api/chat/send", api.SendMsg())
+	s.GET("/api/chat/session/messages", api.GetMsgsInSession())
 }
 
 func cors() gin.HandlerFunc {

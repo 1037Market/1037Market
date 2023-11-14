@@ -262,7 +262,7 @@ func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
 	return messageId, nil
 }
 
-func isUser1(stuentId string, sessionId int) (bool, error) {
+func isUser1(studentId string, sessionId int) (bool, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return false, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -283,5 +283,62 @@ func isUser1(stuentId string, sessionId int) (bool, error) {
 		return false, NewErrorDao(ErrTypeScanRows, err.Error())
 	}
 
-	return user1Id == stuentId, nil
+	return user1Id == studentId, nil
+}
+
+func getUserIds(sessionId string) (string, string, error) {
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return "", "", NewErrorDao(ErrTypeDatabaseConnection, err.Error())
+	}
+	defer db.Close()
+
+	rows, err := db.Query("select user1Id, user2Id from CHAT_SESSIONS where sessionId = ?", sessionId)
+	if err != nil {
+		return "", "", NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return "", "", NewErrorDao(ErrTypeNoSuchSession, sessionId+" no such session")
+	}
+
+	var user1Id string
+	var user2Id string
+
+	if err = rows.Scan(&user1Id, &user2Id); err != nil {
+		return "", "", NewErrorDao(ErrTypeScanRows, err.Error())
+	}
+
+	return user1Id, user2Id, nil
+}
+
+func GetAllMsgInSession(sessionId string) ([]ds.MsgGot, error) {
+	user1Id, user2Id, err := getUserIds(sessionId)
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := mysqlDb.GetConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	rows, err := db.Query("select * from CHAT_MESSAGES where sessionId = ?", sessionId)
+	if err != nil {
+		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
+	}
+	defer rows.Close()
+	lst := make([]ds.MsgGot, 0)
+	for rows.Next() {
+		var msg ds.MsgGot
+		var isFromUser1 bool
+		err = rows.Scan(&msg.MessageId, &msg.SessionId, &msg.SendTime, &msg.Content, &msg.ImageURI, &isFromUser1)
+		if isFromUser1 {
+			msg.FromId = user1Id
+		} else {
+			msg.FromId = user2Id
+		}
+		lst = append(lst, msg)
+	}
+	return lst, nil
 }

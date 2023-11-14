@@ -27,16 +27,19 @@ type RegisterUser struct {
 }
 
 type ProductGot struct {
-	ProductId   int      `json:"productId"`
-	Title       string   `json:"title"`
-	Content     string   `json:"content"`
-	Publisher   string   `json:"publisher"`
-	Price       float32  `json:"price"`
-	PublishTime string   `json:"publishTime"`
-	UpdateTime  string   `json:"updateTime"`
-	ImageURIs   []string `json:"imageURIs"`
-	Categories  []string `json:"categories"`
-	Status      string   `json:"status"`
+	ProductId    int      `json:"productId"`
+	Title        string   `json:"title"`
+	Content      string   `json:"content"`
+	Publisher    string   `json:"publisher"`
+	Price        float32  `json:"price"`
+	PublishTime  string   `json:"publishTime"`
+	UpdateTime   string   `json:"updateTime"`
+	ImageURIs    []string `json:"imageURIs"`
+	Categories   []string `json:"categories"`
+	IsSoldOut    bool     `json:"soldout"`
+	IsSubscribed bool     `json:"subscribed"`
+	NickName     string   `json:"nickName"`
+	Avatar       string   `json:"avatar"`
 }
 
 type ProductPublished struct {
@@ -54,7 +57,7 @@ type ProductUpdated struct {
 	Categories []string `json:"categories"`
 	ImageURIs  []string `json:"imageURIs"`
 	Price      float32  `json:"price"`
-	Status     string   `json:"status"`
+	IsSoldOut  bool     `json:"soldout"`
 }
 
 type LoginUser struct {

@@ -53,7 +53,6 @@ func GetSingleSessIdByStuIds() gin.HandlerFunc {
 func GetSessIdListBySingleStuId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId := c.Query("studentId")
-
 		sessionIds, err := dao.GetSessIdListBySingleStuId(studentId)
 		if err != nil {
 			handleError(c, err)
@@ -163,5 +162,19 @@ func SendMsg() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, messageId)
+	}
+}
+
+func GetMsgsInSession() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sessionId := c.Query("sessionId")
+
+		lst, err := dao.GetAllMsgInSession(sessionId)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, lst)
 	}
 }
