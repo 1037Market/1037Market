@@ -153,25 +153,13 @@ func Login(user ds.LoginUser) (string, error) {
 	return cookieString, nil
 }
 
-func UpdateUserInfo(cookie string, userInfo ds.UserInfoUpdated) error {
+func UpdateUserInfo(userId string, userInfo ds.UserInfoUpdated) error {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
-	rows, err := db.Query("select userId from COOKIES where cookie = ?", cookie)
-	if err != nil {
-		return NewErrorDao(ErrTypeDatabaseQuery, err.Error())
-	}
-	defer rows.Close()
-	if !rows.Next() {
-		return NewErrorDao(ErrTypeNoSuchUser, "no such user")
-	}
 
-	var userId string
-	if err = rows.Scan(&userId); err != nil {
-		return NewErrorDao(ErrTypeScanRows, err.Error())
-	}
 	_, err = db.Exec("update USER_INFOS set nickName = ?, avatar = ?, contact = ?, address = ? where userId = ?",
 		userInfo.NickName, userInfo.Avatar, userInfo.Contact, userInfo.Address, userId)
 	if err != nil {
