@@ -13,7 +13,7 @@ func makeProduct() ds.ProductPublished {
 	uris = append(uris, "longonglonglonglonglong")
 
 	categories := make([]string, 0)
-	categories = append(categories, "category")
+	categories = append(categories, "food")
 
 	product := ds.ProductPublished{
 		Title:      "long long long title",
@@ -29,7 +29,7 @@ func TestPublishProduct(t *testing.T) {
 
 	product := makeProduct()
 
-	_, err := dao.PublishProduct("t1", product)
+	_, err := dao.PublishProduct("U202115224", product)
 	if err != nil {
 		t.Error(err)
 	}
@@ -73,7 +73,7 @@ func TestUpdateProduct(t *testing.T) {
 func TestUpdateProductInvalidCategory(t *testing.T) {
 	product := makeProduct()
 
-	productId, err := dao.PublishProduct("t1", product)
+	productId, err := dao.PublishProduct("U202115228", product)
 	if err != nil {
 		t.Error(err)
 	}
@@ -82,7 +82,7 @@ func TestUpdateProductInvalidCategory(t *testing.T) {
 	uri = append(uri, "uri")
 
 	category := make([]string, 0)
-	category = append(category, "not in categoryies")
+	category = append(category, "not in categories")
 
 	update := ds.ProductUpdated{
 		ProductId:  productId,
@@ -94,17 +94,16 @@ func TestUpdateProductInvalidCategory(t *testing.T) {
 		IsSoldOut:  true,
 	}
 
-	err = dao.UpdateProduct("t1", update)
+	err = dao.UpdateProduct("U202115228", update)
 	if err == nil {
 		t.Error("expect to fail to update, but succeeded")
 	}
-
 }
 
 func TestUpdateProductInvalidStudentId(t *testing.T) {
 	product := makeProduct()
 
-	productId, err := dao.PublishProduct("t1", product)
+	productId, err := dao.PublishProduct("U202115228", product)
 	if err != nil {
 		t.Error(err)
 	}
@@ -126,5 +125,4 @@ func TestUpdateProductInvalidStudentId(t *testing.T) {
 	if err == nil {
 		t.Error("expect to fail to update, but succeeded")
 	}
-
 }
