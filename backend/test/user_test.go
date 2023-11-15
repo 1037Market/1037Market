@@ -52,7 +52,7 @@ func TestUpdateUserInfo(t *testing.T) {
 		Contact:  "contact",
 		Address:  "address",
 	}
-	if err := dao.UpdateUserInfo(userId, update); err != nil {
+	if err = dao.UpdateUserInfo(userId, update); err != nil {
 		t.Error(err)
 	}
 	got, err := dao.GetUserInfo(userId)
