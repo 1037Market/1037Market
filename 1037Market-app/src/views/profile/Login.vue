@@ -3,10 +3,11 @@
         <van-nav-bar title="用户登录" fixed
         />
         <div style="text-align: center; padding-top: 100px">
-            <van-image
-                width="10rem"
-                height="5rem"
-                fit="contain"
+            <img style="display: block;
+                width: 250px;
+                height: 125px;
+                margin: 0 auto;
+                "
                 src="@/assets/images/logo.png"
 
             />
