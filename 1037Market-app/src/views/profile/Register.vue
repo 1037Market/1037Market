@@ -1,6 +1,6 @@
 <template>
     <div>
-        <van-nav-bar title="用户注册" fixed
+        <van-nav-bar title="用户注册" fixed style="--van-nav-bar-background: linear-gradient(rgba(66, 185, 131, 0.9),rgba(66,185,131,0.45));--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                      left-arrow @click-left="router.go(-1)"
         />
         <div style="text-align: center; padding-top: 100px">
