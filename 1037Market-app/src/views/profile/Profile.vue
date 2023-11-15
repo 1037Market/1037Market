@@ -208,7 +208,8 @@ export default {
                                 name: response.title,
                                 description: response.content,
                                 image: 'http://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0],
-                                soldout: response.soldout
+                                soldout: response.soldout,
+                                price: response.price
                             })
                         })
                     })

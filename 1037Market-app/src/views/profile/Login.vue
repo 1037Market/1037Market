@@ -7,7 +7,7 @@
                 width="10rem"
                 height="5rem"
                 fit="contain"
-                src="https://cdn2.lmonkey.com/94f152aaa94d937ccf5de78f3fcac59f/3b6e32e7bc8145a283431f260c3c1d1a.png"
+                src="@/assets/images/logo.png"
 
             />
         </div>
