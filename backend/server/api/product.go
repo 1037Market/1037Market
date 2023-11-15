@@ -56,8 +56,13 @@ func GetProductById() gin.HandlerFunc {
 func GetProductListByKeyword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		keyword := c.Query("keyword")
-
-		lst, err := dao.GetProductListByKeyword(keyword)
+		signString := c.Query("sign")
+		sign, err := strconv.ParseBool(signString)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
+		lst, err := dao.GetProductListByKeyword(keyword, sign)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -119,8 +124,14 @@ func GetRecommendProductList() gin.HandlerFunc {
 		seed := c.Query("seed")
 		startIndex := c.Query("startIndex")
 		count := c.Query("count")
+		signStr := c.Query("sign")
+		sign, err := strconv.ParseBool(signStr)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
 
-		lst, err := dao.GetRecommendProductList(seed, startIndex, count)
+		lst, err := dao.GetRecommendProductList(seed, startIndex, count, sign)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -133,13 +144,19 @@ func GetProductListByCategory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		category := c.Query("category")
 		startIndexString := c.Query("startIndex")
+		signStr := c.Query("sign")
+		sign, err := strconv.ParseBool(signStr)
+		if err != nil {
+			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
+			return
+		}
 		startIndex, err := strconv.Atoi(startIndexString)
 		if err != nil {
 			handleError(c, dao.NewErrorDao(dao.ErrTypeIntParse, err.Error()))
 			return
 		}
 		cnt := c.Query("count")
-		lst, err := dao.GetProductListByCategory(category, startIndex, cnt)
+		lst, err := dao.GetProductListByCategory(category, startIndex, cnt, sign)
 		if err != nil {
 			handleError(c, err)
 			return
