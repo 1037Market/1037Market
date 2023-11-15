@@ -1,12 +1,13 @@
 <template>
     <div>
-        <van-nav-bar title="用户登录" fixed
+        <van-nav-bar title="用户登录" fixed style="--van-nav-bar-background: linear-gradient(rgba(66, 185, 131, 0.9),rgba(66,185,131,0.45));--van-nav-bar-title-text-color: rgba(255,255,255,1);"
         />
         <div style="text-align: center; padding-top: 100px">
-            <van-image
-                width="10rem"
-                height="5rem"
-                fit="contain"
+            <img style="display: block;
+                width: 250px;
+                height: 125px;
+                margin: 0 auto;
+                "
                 src="@/assets/images/logo.png"
 
             />
@@ -53,7 +54,7 @@
 import {ref, reactive, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
-import {login} from "@/network/user";
+import {login, hashPassword} from "@/network/user";
 import {showSuccessToast, showFailToast} from 'vant';
 
 export default {
@@ -66,11 +67,19 @@ export default {
             hashedPassword: "",
         });
 
-        const onSubmit = () => {
-            login(userinfo).then((res) => {
-                //在Vuex isLogin
-                //   console.log(res)
-
+        const onSubmit = async () => {
+            let hashedUserInfo = {
+                studentId: userinfo.studentId,
+                hashedPassword: ''
+            }
+            hashedUserInfo.hashedPassword = await hashPassword(userinfo.hashedPassword)
+            console.log(userinfo)
+            console.log(hashedUserInfo)
+            login(hashedUserInfo).then((res) => {
+                if(res === undefined){
+                    showFailToast("登录失败")
+                    return
+                }
                 window.localStorage.setItem('token', res)
                 store.commit("setIsLogin", true);
                 window.localStorage.setItem('studentId', userinfo.studentId);

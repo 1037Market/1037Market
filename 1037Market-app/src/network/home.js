@@ -1,32 +1,25 @@
-import { request } from './request'
+import {request} from './request'
 
 let seed = Date.now()
 
-export function getHomeAllData() {
-  // 返回promise
-  return request({
-    url: '/api/index'
-  })
-}
-
 //携带默认值
-export function getHomeGoodsData(type = "推荐", startIndex = 0, count = 6) {
-  if(type === '推荐'){
+export function getHomeGoodsData(type = "推荐", startIndex = 0, count = 6, sign = 0) {
+    if (type === '推荐') {
+        return request({
+            url: `/api/product/recommend?count=${count}&seed=${seed}&startIndex=${startIndex}&sign=${sign}`
+        })
+    }
     return request({
-      url: `/api/product/recommend?count=${count}&seed=${seed}&startIndex=${startIndex}`
+        url: `/api/product/category?category=${type}&count=${count}&startIndex=${startIndex + 1}&sign=${sign}`
     })
-  }
-  return request({
-    url: `/api/product/category?category=${type}&count=${count}&startIndex=${startIndex+1}`
-  })
 }
 
-export function getSearchData(keyword){
-  return request({
-    url: `/api/product/query?keyword=${keyword}`
-  })
+export function getSearchData(keyword, sign) {
+    return request({
+        url: `/api/product/query?keyword=${keyword}&sign=${sign}`
+    })
 }
 
-export function refresh(){
-  seed = Date.now()
+export function refresh() {
+    seed = Date.now()
 }

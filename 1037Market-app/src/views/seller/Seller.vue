@@ -1,5 +1,5 @@
 <template>
-    <van-nav-bar title="卖家信息" fixed
+    <van-nav-bar title="卖家信息" fixed style="--van-nav-bar-background: rgba(66, 185, 131, 0.9);--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                  left-arrow @click-left="router.go(-1)"
                  right-text="评论" @click-right="router.push({path:`/comment/${route.params.studentId}`})"
     />

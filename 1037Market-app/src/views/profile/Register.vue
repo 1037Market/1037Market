@@ -1,14 +1,16 @@
 <template>
     <div>
-        <van-nav-bar title="用户注册" fixed
+        <van-nav-bar title="用户注册" fixed style="--van-nav-bar-background: linear-gradient(rgba(66, 185, 131, 0.9),rgba(66,185,131,0.45));--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                      left-arrow @click-left="router.go(-1)"
         />
         <div style="text-align: center; padding-top: 100px">
-            <van-image
-                width="10rem"
-                height="5rem"
-                fit="contain"
-                src="@/assets/images/up.png"
+            <img style="display: block;
+                width: 250px;
+                height: 125px;
+                margin: 0 auto;
+                "
+                src="@/assets/images/logo.png"
+
             />
         </div>
         <div style="margin-top: 50px" class="display">
@@ -73,7 +75,7 @@
 <script>
 import {ref, reactive, toRefs} from "vue";
 import {useRouter} from "vue-router";
-import {register, getCaptcha} from "@/network/user";
+import {register, getCaptcha, hashPassword} from "@/network/user";
 import {Notify} from "vant";
 import {showNotify} from "vant";
 import {showSuccessToast, showFailToast} from 'vant';
@@ -119,17 +121,19 @@ export default {
         }
 
         const disableSubmit = ref(false)
-        const onSubmit = () => {
+        const onSubmit = async () => {
             //先验证
             if (userinfo.password != userinfo.password_confirmation) {
                 showNotify({message:"两次密码不一致"});
             } else {
                 disableSubmit.value = true
-                register({
+                let hashedUserInfo = {
                     studentId: userinfo.studentId,
-                    hashedPassword: userinfo.password,
+                    hashedPassword: '',
                     emailCaptcha: userinfo.captcha
-                }).then((res) => {
+                }
+                hashedUserInfo.hashedPassword = await hashPassword(userinfo.password)
+                register(hashedUserInfo).then((res) => {
                     console.log(res);
                     if (res === 'OK') {
                         showSuccessToast("注册成功");

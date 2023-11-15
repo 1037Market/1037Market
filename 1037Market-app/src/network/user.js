@@ -56,3 +56,17 @@ export function getUserPublishedProductIds(studentId) {
   })
 }
 
+export async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+
+  // 使用SHA-256算法计算哈希值
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+  // 将Buffer转换为十六进制字符串
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+  return hashHex;
+}
+

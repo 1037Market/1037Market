@@ -48,6 +48,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import router from "../../../router";
 
 const props = defineProps({
   title: String,
@@ -69,7 +70,7 @@ function toggleComments() {
 }
 
 function clickComment(commenterId) {
-  // Handle click on comment
+    router.push({path: `/seller/${commenterId}`})
 }
 
 const displayedComments = computed(() => {
