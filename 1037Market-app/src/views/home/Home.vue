@@ -18,6 +18,10 @@
         </form>
 
         <div>
+            <van-tabs v-model:active="subtype" scrollspy>
+                <van-tab title="买二手" name="买二手"/>
+                <van-tab title="卖二手" name="卖二手"/>
+            </van-tabs>
             <van-tabs v-model:active="currentType" scrollspy>
                 <van-tab title="搜索结果" name="搜索结果" v-if="searched"/>
                 <van-tab title="推荐" name="推荐"/>
@@ -39,7 +43,7 @@
                 >
 <!--                    <p style="line-height: 30px; margin-top: -30px;text-align: center;color: #646566">{{ pullingDownHint }}</p>-->
                     <p v-if="currentType==='搜索结果' && searchFail">没有找到相关商品</p>
-                    <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'"></goods-list>
+                    <goods-list :showGoods="showGoods" v-if="typeof (showGoods) !== 'undefined'" :showPositive="showPositive"/>
                 </van-list>
             </van-pull-refresh>
 
@@ -74,6 +78,10 @@ const goods = {
     '搜索结果': ref([])
 };
 
+const subtype = ref('买二手')
+const showPositive = computed(() => {
+    return subtype.value === '买二手' ? 0 : 1
+})
 const currentType = ref("推荐");
 const showGoods = computed(() => {
     if(typeof (goods[currentType.value].value) === "undefined")
@@ -98,7 +106,7 @@ watch(currentType, (newValue, oldValue) => {
 const getShowGoods = async () => {
     if(typeof (goods[currentType.value]) === "undefined")
         goods[currentType.value] = ref([])
-    getHomeGoodsData(currentType.value).then((res) => {
+    getHomeGoodsData(currentType.value, 1, 10, showPositive.value).then((res) => {
         goods[currentType.value].value.push(...res);
     });
 }
@@ -114,7 +122,7 @@ const searched = ref(false)
 
 const onSearch = () => {
     // console.log("on search")
-    getSearchData(searchInfo.value).then((res) => {
+    getSearchData(searchInfo.value, showPositive).then((res) => {
         searched.value = true
         goods['搜索结果'].value.length = 0
         goods['搜索结果'].value.push(...res);

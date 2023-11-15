@@ -2,7 +2,7 @@
     <div class="goods" ref="goodsContainer" >
         <!--        <button @click="debug">debug</button>-->
         <div class="goods-item" 
-             v-for="productDetail in products"
+             v-for="productDetail in filteredProducts"
              :key="productDetail.productId"
              @click="itemClick(productDetail.productId)"
              :style="productDetail.style"
@@ -38,7 +38,7 @@
 
 <script setup>
 import {getDetail} from "@/network/detail";
-import {nextTick, ref, watch, watchEffect} from "vue";
+import {nextTick, ref, watch, watchEffect, computed} from "vue";
 import {useRouter} from "vue-router";
 import {debounce} from "lodash";
 
@@ -48,12 +48,18 @@ const debug = () => {
 }
 
 const props = defineProps({
-    showGoods: Array
+    showGoods: Array,
+    showPositive: Number
 })
 
 const productIDs = ref(props.showGoods)
 
 const products = ref([])
+const filteredProducts = computed(() => {
+    return products.value.filter((item) => {
+        return (item.price > 0) === (props.showPositive === 0)
+    })
+})
 let renderIDs = new Set()
 
 const goodsContainer = ref(null)
