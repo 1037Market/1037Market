@@ -69,8 +69,10 @@ export default {
         const onSubmit = () => {
             login(userinfo).then((res) => {
                 //在Vuex isLogin
-                //   console.log(res)
-
+                if(res === undefined){
+                    showFailToast("登录失败")
+                    return
+                }
                 window.localStorage.setItem('token', res)
                 store.commit("setIsLogin", true);
                 window.localStorage.setItem('studentId', userinfo.studentId);
