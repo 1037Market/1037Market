@@ -7,7 +7,7 @@
 
   <div>
     <vue-advanced-chat
-        :height="this.needNav ? '95vh' : '100vh'"
+        height="95vh"
         :current-user-id="currentUserId"
         :rooms="rooms"
         :rooms-loaded="true"
