@@ -54,6 +54,11 @@ func Login() gin.HandlerFunc {
 func UpdateUserInfo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie := c.Query("user")
+		userId, err := dao.GetUserIdByCookie(cookie)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
 
 		type UserInfo struct {
 			NickName string `json:"nickName"`
@@ -62,13 +67,12 @@ func UpdateUserInfo() gin.HandlerFunc {
 			Address  string `json:"address"`
 		}
 		var userInfo ds.UserInfoUpdated
-		err := c.ShouldBindJSON(&userInfo)
-		if err != nil {
+		if err = c.ShouldBindJSON(&userInfo); err != nil {
 			handleError(c, dao.NewErrorDao(dao.ErrTypeWrongRequestFormat, err.Error()))
 			return
 		}
 
-		err = dao.UpdateUserInfo(cookie, userInfo)
+		err = dao.UpdateUserInfo(userId, userInfo)
 		if err != nil {
 			handleError(c, err)
 			return

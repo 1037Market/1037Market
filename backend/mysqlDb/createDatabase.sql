@@ -15,7 +15,8 @@ create table USER_INFOS(
 
 create table COOKIES(
     userId      char(10) primary key not null,
-    cookie      char(16)
+    cookie      char(16),
+    foreign key(userId) references USERS(userId)
 );
 
 create table PRODUCTS(
@@ -45,7 +46,8 @@ create table PRODUCT_CATEGORIES(
     productId int not null,
     category  char(30),
     unique key (productId, category),
-    foreign key(productId) references PRODUCTS(productId) on delete cascade
+    foreign key(productId) references PRODUCTS(productId) on delete cascade,
+    foreign key(category) references CATEGORIES(categoryName) on delete cascade
 );
 
 create table COMMENTS(

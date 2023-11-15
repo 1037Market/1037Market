@@ -17,7 +17,7 @@ type UserInfo struct {
 	Email    string `json:"userId"`
 	NickName string `json:"nickName"`
 	Avatar   string `json:"avatar"`
-	Contact  uint64 `json:"contact"`
+	Contact  string `json:"contact"`
 }
 
 type RegisterUser struct {

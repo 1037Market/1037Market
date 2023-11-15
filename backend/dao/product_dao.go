@@ -172,15 +172,20 @@ func GetProductById(userId, productId string) (ds.ProductGot, error) {
 	return product, nil
 }
 
-func GetProductListByKeyword(keyword string) ([]int, error) {
+func GetProductListByKeyword(keyword string, sign bool) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCTS where (title like ? or description like ?) and isSoldOut = 0",
-		"%"+keyword+"%", "%"+keyword+"%")
+	query := "select productId from PRODUCTS where (title like ? or description like ?) and isSoldOut = 0"
+	if sign {
+		query += " and price < 0"
+	} else {
+		query += " and price > 0"
+	}
+	rows, err := db.Query(query, "%"+keyword+"%", "%"+keyword+"%")
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
@@ -269,15 +274,21 @@ func GetRandomProductList(count string) ([]int, error) {
 	return lst, nil
 }
 
-func GetProductListByCategory(category string, startIndex int, count string) ([]int, error) {
+func GetProductListByCategory(category string, startIndex int, count string, sign bool) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
 	}
 	defer db.Close()
 
-	rows, err := db.Query("select productId from PRODUCT_CATEGORIES join PRODUCTS using(productId) where category = ? and isSoldOut is false limit ?, ?",
-		category, startIndex-1, count)
+	query := "select productId from PRODUCT_CATEGORIES join PRODUCTS using(productId) where category = ? and isSoldOut is false"
+	if sign {
+		query += " and price < 0"
+	} else {
+		query += " and price > 0"
+	}
+	query += " limit ?, ?"
+	rows, err := db.Query(query, category, startIndex-1, count)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
@@ -319,7 +330,7 @@ func GetCategoryList() ([]string, error) {
 	return lst, nil
 }
 
-func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, error) {
+func GetRecommendProductList(seed string, startIdx string, cnt string, sign bool) ([]int, error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseConnection, err.Error())
@@ -341,7 +352,13 @@ func GetRecommendProductList(seed string, startIdx string, cnt string) ([]int, e
 		return nil, NewErrorDao(ErrTypeIntParse, err.Error())
 	}
 
-	rows, err := db.Query("select productId from PRODUCTS where isSoldOut = 0")
+	query := "select productId from PRODUCTS where isSoldOut = 0"
+	if sign {
+		query += " and price < 0"
+	} else {
+		query += " and price > 0"
+	}
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, NewErrorDao(ErrTypeDatabaseQuery, err.Error())
 	}
