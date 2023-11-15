@@ -6,11 +6,11 @@ let seed = Date.now()
 export function getHomeGoodsData(type = "推荐", startIndex = 0, count = 6, sign = 0) {
     if (type === '推荐') {
         return request({
-            url: `/api/product/recommend?count=${count}&seed=${seed}&startIndex=${startIndex}`
+            url: `/api/product/recommend?count=${count}&seed=${seed}&startIndex=${startIndex}&sign=${sign}`
         })
     }
     return request({
-        url: `/api/product/category?category=${type}&count=${count}&startIndex=${startIndex + 1}`
+        url: `/api/product/category?category=${type}&count=${count}&startIndex=${startIndex + 1}&sign=${sign}`
     })
 }
 

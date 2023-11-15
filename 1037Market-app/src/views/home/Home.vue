@@ -89,6 +89,10 @@ const showGoods = computed(() => {
     return goods[currentType.value].value
 })
 
+watch(subtype, (newVal, oldVal) => {
+    getShowGoods()
+})
+
 watch(currentType, (newValue, oldValue) => {
     loadFinished.value = true
     if (newValue === "more") {
@@ -106,7 +110,7 @@ watch(currentType, (newValue, oldValue) => {
 const getShowGoods = async () => {
     if(typeof (goods[currentType.value]) === "undefined")
         goods[currentType.value] = ref([])
-    getHomeGoodsData(currentType.value, 1, 10, showPositive.value).then((res) => {
+    getHomeGoodsData(currentType.value, 0, 10, showPositive.value).then((res) => {
         goods[currentType.value].value.push(...res);
     });
 }
@@ -151,7 +155,7 @@ const loadFinished = ref(false)
 const debouncedPullingDownHandler = debounce(async () => {
     refresh()
     loadFinished.value = false
-    getHomeGoodsData(currentType.value).then((res) => {
+    getHomeGoodsData(currentType.value,0, 10, showPositive.value).then((res) => {
         goods[currentType.value].value = []
         goods[currentType.value].value.push(...res);
         pullingDown.value = false
@@ -167,7 +171,7 @@ const pullingDownHandler = () => {
 const debouncedPullingUpHandler = debounce(async () => {
     if (pullingUp.value === true)
         return
-    getHomeGoodsData(currentType.value, goods[currentType.value].value.length).then((res) => {
+    getHomeGoodsData(currentType.value, goods[currentType.value].value.length, 5, showPositive.value).then((res) => {
         goods[currentType.value].value.push(...res);
         if(res.length === 0)
             loadFinished.value = true
