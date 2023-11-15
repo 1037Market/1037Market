@@ -6,8 +6,8 @@
         <div v-if="product.soldout" class="soldout-overlay">{{ product.price < 0 ? '已收到' : '已卖出' }}</div>
         <van-image :src="product.image" alt="Product Image" class="product-image" />
         <div class="product-info">
-          <h4 class="product-name">{{ product.name }}</h4>
-          <p class="product-description">{{ product.description }}</p>
+          <h4 class="product-name" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap">{{ product.name }}</h4>
+          <p class="product-description" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{ product.description }}</p>
         </div>
       </div>
     </div>
