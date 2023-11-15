@@ -54,7 +54,7 @@
 import {ref, reactive, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
-import {login} from "@/network/user";
+import {login, hashPassword} from "@/network/user";
 import {showSuccessToast, showFailToast} from 'vant';
 
 export default {
@@ -67,9 +67,15 @@ export default {
             hashedPassword: "",
         });
 
-        const onSubmit = () => {
-            login(userinfo).then((res) => {
-                //在Vuex isLogin
+        const onSubmit = async () => {
+            let hashedUserInfo = {
+                studentId: userinfo.studentId,
+                hashedPassword: ''
+            }
+            hashedUserInfo.hashedPassword = await hashPassword(userinfo.hashedPassword)
+            console.log(userinfo)
+            console.log(hashedUserInfo)
+            login(hashedUserInfo).then((res) => {
                 if(res === undefined){
                     showFailToast("登录失败")
                     return

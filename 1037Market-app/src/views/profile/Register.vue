@@ -75,7 +75,7 @@
 <script>
 import {ref, reactive, toRefs} from "vue";
 import {useRouter} from "vue-router";
-import {register, getCaptcha} from "@/network/user";
+import {register, getCaptcha, hashPassword} from "@/network/user";
 import {Notify} from "vant";
 import {showNotify} from "vant";
 import {showSuccessToast, showFailToast} from 'vant';
@@ -121,17 +121,19 @@ export default {
         }
 
         const disableSubmit = ref(false)
-        const onSubmit = () => {
+        const onSubmit = async () => {
             //先验证
             if (userinfo.password != userinfo.password_confirmation) {
                 showNotify({message:"两次密码不一致"});
             } else {
                 disableSubmit.value = true
-                register({
+                let hashedUserInfo = {
                     studentId: userinfo.studentId,
-                    hashedPassword: userinfo.password,
+                    hashedPassword: '',
                     emailCaptcha: userinfo.captcha
-                }).then((res) => {
+                }
+                hashedUserInfo.hashedPassword = await hashPassword(userinfo.password)
+                register(hashedUserInfo).then((res) => {
                     console.log(res);
                     if (res === 'OK') {
                         showSuccessToast("注册成功");
