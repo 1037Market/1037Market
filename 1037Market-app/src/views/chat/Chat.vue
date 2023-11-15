@@ -1,13 +1,12 @@
 <template>
 
-  <van-nav-bar title="联系卖家" fixed placeholder
+  <van-nav-bar title="联系卖家" fixed placeholder style="--van-nav-bar-background: rgba(66, 185, 131, 0.9);--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                left-arrow @click-left="router.go(-1)"
-               v-if="needNav"
   />
 
   <div>
     <vue-advanced-chat
-        height="95vh"
+        :height="needNav ? '95vh' : '89vh'"
         :current-user-id="currentUserId"
         :rooms="rooms"
         :rooms-loaded="true"

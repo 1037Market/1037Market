@@ -4,23 +4,26 @@
         <div class="goods-item" 
              v-for="productDetail in filteredProducts"
              :key="productDetail.productId"
-             @click="itemClick(productDetail.productId)"
              :style="productDetail.style"
              :data-key="productDetail.productId"
              ref="productsRef"
         >
+        <div @click="itemClick(productDetail.productId)">
             <img
                 :src="Array.isArray(productDetail.imageURIs) && productDetail.imageURIs.length > 0 ? 'http://franky.pro:7301/api/image?imageURI=' + productDetail.imageURIs[0] : ''"
                 @load="calculatePosition"
                 alt="商品"
                 style="border-radius: 10%"
+                
 
             />
             <div class="goods-info">
                 <p style="font-size: 20px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
                 <div style="display: inline;margin-left: 0px;">￥</div><span class="price" style="font-size: 25px;font-weight: 500;margin: 0px auto;">{{ productDetail.price }}</span>
-
+                
             </div>
+        </div>
+        <div @click="clickAvatar(productDetail.publisher)">
             <div>
               <van-image style="display: inline-block; vertical-align: middle"
                       width="20px"
@@ -28,10 +31,12 @@
                       radius="10px"
                       fit="cover"
                       :src="'http://franky.pro:7301/api/image?imageURI=' + productDetail.avatar"
+                      
               />
               <span style="vertical-align: middle; font-weight: 400; font-size: 15px; margin-left: 10px">{{ productDetail.nickName }}</span>
 
             </div>
+        </div>
         </div>
     </div>
 </template>
@@ -106,6 +111,10 @@ function getProductHeight(productId){
     return 0;
 }
 
+const clickAvatar = (studentId) => {
+    router.push({path: `/seller/${studentId}`});
+}
+
 const calculatePosition = () => {
     // console.log('start cal')
     if(calculating) return
@@ -128,6 +137,8 @@ const calculatePosition = () => {
     })
     calculating = false
 }
+
+
 
 </script>
 

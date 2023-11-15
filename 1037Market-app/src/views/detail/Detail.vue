@@ -1,6 +1,6 @@
 <template>
     <div>
-        <van-nav-bar title="商品详情" fixed placeholder
+        <van-nav-bar title="商品详情" fixed placeholder style="--van-nav-bar-background: rgba(66, 185, 131, 0.9);--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                      left-arrow @click-left="router.go(-1)">
 
           <template #right><van-icon name="ellipsis" size="20"/></template>

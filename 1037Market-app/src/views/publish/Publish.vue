@@ -1,5 +1,5 @@
 <template>
-    <van-nav-bar  title="发布商品" fixed placeholder 
+    <van-nav-bar  title="发布商品" fixed placeholder style="--van-nav-bar-background: rgba(66, 185, 131, 0.9);--van-nav-bar-title-text-color: rgba(255,255,255,1);"
                  left-arrow @click-left="router.go(-1)"
     />
     <product-publish :dialog="dialog" :form="form" :update="false"/>
