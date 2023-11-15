@@ -53,7 +53,6 @@ func GetSingleSessIdByStuIds() gin.HandlerFunc {
 func GetSessIdListBySingleStuId() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		studentId := c.Query("studentId")
-
 		sessionIds, err := dao.GetSessIdListBySingleStuId(studentId)
 		if err != nil {
 			handleError(c, err)
