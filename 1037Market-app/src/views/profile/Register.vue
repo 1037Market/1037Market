@@ -4,11 +4,13 @@
                      left-arrow @click-left="router.go(-1)"
         />
         <div style="text-align: center; padding-top: 100px">
-            <van-image
-                width="10rem"
-                height="5rem"
-                fit="contain"
-                src="@/assets/images/up.png"
+            <img style="display: block;
+                width: 250px;
+                height: 125px;
+                margin: 0 auto;
+                "
+                src="@/assets/images/logo.png"
+
             />
         </div>
         <div style="margin-top: 50px" class="display">

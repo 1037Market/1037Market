@@ -46,7 +46,6 @@
                  v-for="(category, idx) in form.categories"
                  closeable
                  @close="deleteCategory(idx)"
-                 style="margin-right: 5px"
         >
           {{ category }}
         </van-tag>
