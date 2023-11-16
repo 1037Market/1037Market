@@ -14,7 +14,7 @@
                 :src="Array.isArray(productDetail.imageURIs) && productDetail.imageURIs.length > 0 ? 'https://franky.pro:7301/api/image?imageURI=' + productDetail.imageURIs[0] : ''"
                 @load="calculatePosition"
                 alt="商品"
-                style="border-radius: 10%"
+                style="border-radius: 15px;"
             />
             <div class="goods-info">
                 <p style="font-size: 20px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
