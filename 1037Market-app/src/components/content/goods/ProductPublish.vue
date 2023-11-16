@@ -133,7 +133,7 @@ export default {
     };
 
     const onSubmit = () => {
-      if (form.name === '' || form.imageURIs === [] || form.categories === [] || form.price === [] ||
+      if (form.name === '' || form.imageURIs.length === 0 || form.categories.length === 0 || typeof(form.price) !== 'number' ||
           form.description === '') {
         showFailToast('请填写全部字段')
         return;

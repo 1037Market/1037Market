@@ -182,7 +182,7 @@ const debouncedPullingUpHandler = debounce(async () => {
     })
 },300)
 const pullingUpHandler = () => {
-    debouncedPullingUpHandler()
+    // debouncedPullingUpHandler()
 };
 const pullingDownHint = ref('继续下拉刷新页面')
 
