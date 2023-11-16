@@ -73,6 +73,7 @@ import {showFailToast, showSuccessToast} from "vant";
 import {uploadImage} from "../../../network/image";
 import {publishProduct, updateProduct} from "../../../network/publish";
 import {useRouter} from "vue-router";
+import {useRoute} from "vue-router/dist/vue-router";
 
 export default {
   name: "ProductPublish",
