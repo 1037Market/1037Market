@@ -186,11 +186,11 @@ func UpdateProduct() gin.HandlerFunc {
 		}
 
 		var product ds.ProductUpdated
-		if err := c.ShouldBindJSON(&product); err != nil {
+		if err = c.ShouldBindJSON(&product); err != nil {
 			c.String(http.StatusBadRequest, "incorrect request format")
 			return
 		}
-		if err := dao.UpdateProduct(userId, product); err != nil {
+		if err = dao.UpdateProduct(userId, product); err != nil {
 			handleError(c, err)
 			return
 		}
