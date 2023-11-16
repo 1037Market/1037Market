@@ -43,7 +43,7 @@ export default {
       let id = ref(route.params.id);
       getDetail(id.value).then((res) => {
         form.name = res.title;
-        form.imageURIs = res.imageURIs;
+        form.imageURIs = [];
         form.description = res.content;
         form.price = res.price;
         form.categories = res.categories;
