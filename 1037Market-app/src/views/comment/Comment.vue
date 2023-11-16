@@ -18,6 +18,7 @@ const onSubmit = () => {
         stars: score.value
     }).then(() => {
         showSuccessToast('发布成功')
+        router.go(-1)
     }).catch(() => {
         showFailToast('发布失败\n请重新尝试')
     })
