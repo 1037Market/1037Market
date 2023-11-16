@@ -74,7 +74,36 @@ watchEffect(() => {
     // debouncedHandle(productIDs.value)
 })
 
-const debouncedHandle = debounce((newIDs) => {
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        // 生成一个随机索引
+        const j = Math.floor(Math.random() * (i + 1));
+
+        // 交换元素 array[i] 和 array[j]
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+const debouncedHandleRefresh = debounce((newIDs) => {
+    products.value = products.value.filter(item => newIDs.includes(item.productId))
+    products.value = shuffleArray(products.value)
+    calculatePosition()
+    renderIDs = new Set(newIDs.filter(item => renderIDs.has(item)))
+    newIDs.forEach(function (productId) {
+        if(renderIDs.has(productId) === false){
+            renderIDs.add(productId)
+            getDetail(productId).then((resp) => {
+                products.value.unshift(resp)
+            }).catch((error) => {
+                renderIDs.delete(productId)
+                console.log("Load error:",error)
+            })
+        }
+    })
+}, 100)
+
+const debouncedHandleLoadMore = debounce((newIDs) => {
     products.value = products.value.filter(item => newIDs.includes(item.productId))
     calculatePosition()
     renderIDs = new Set(newIDs.filter(item => renderIDs.has(item)))
@@ -92,7 +121,14 @@ const debouncedHandle = debounce((newIDs) => {
 }, 100)
 
 watch(productIDs, (newIDs) => {
-    debouncedHandle(newIDs)
+    if(products.value.length !== 0 && newIDs[0] === products.value[0].productId){
+        debouncedHandleLoadMore(newIDs)
+        // console.log('load more')
+    }
+    else{
+        debouncedHandleRefresh(newIDs)
+        // console.log('refresh')
+    }
 })
 
 const itemClick = (productId) => {
