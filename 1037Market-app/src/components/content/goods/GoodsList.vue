@@ -3,6 +3,7 @@
         <!--        <button @click="debug">debug</button>-->
         <div class="goods-item" 
              v-for="productDetail in filteredProducts"
+             v-show="true"
              :key="productDetail.productId"
              :style="productDetail.style"
              :data-key="productDetail.productId"
@@ -14,8 +15,6 @@
                 @load="calculatePosition"
                 alt="商品"
                 style="border-radius: 10%"
-                
-
             />
             <div class="goods-info">
                 <p style="font-size: 20px;font-weight: 600;margin: 5px auto;">{{ productDetail.title }}</p>
@@ -62,7 +61,7 @@ const productIDs = ref(props.showGoods)
 const products = ref([])
 const filteredProducts = computed(() => {
     return products.value.filter((item) => {
-        return (item.price > 0) === (props.showPositive === 0)
+        return typeof(item) !== 'undefined' && (item.price > 0) === (props.showPositive === 0)
     })
 })
 let renderIDs = new Set()
@@ -111,6 +110,14 @@ const debouncedHandleLoadMore = debounce((newIDs) => {
         if(renderIDs.has(productId) === false){
             renderIDs.add(productId)
             getDetail(productId).then((resp) => {
+                resp.style = {
+                    position: 'absolute',
+                    left: '0',
+                    top: '0',
+                    width: '50%',
+                    height: 'auto',
+                    visibility: 'hidden'
+                }
                 products.value.push(resp)
             }).catch((error) => {
                 renderIDs.delete(productId)
@@ -144,6 +151,7 @@ function getProductHeight(productId){
             return productRef.clientHeight;
         }
     }
+    console.log('error')
     return 0;
 }
 
@@ -151,26 +159,38 @@ const clickAvatar = (studentId) => {
     router.push({path: `/seller/${studentId}`});
 }
 
-const calculatePosition = () => {
-    // console.log('start cal')
-    if(calculating) return
-    calculating = true
+const debouncedCalculation = debounce(() => {
+    console.log('calculation')
     columnHeights[0] = 0
     columnHeights[1] = 0
-    products.value.forEach((product) => {
+    for(const product of products.value){
         const column = columnHeights[0] <= columnHeights[1] ? 0 : 1
-        const height = getProductHeight(product.productId)
         // console.log(`${product.title} at ${column ? 'left' : 'right'}`)
         product.style = ref({
             position: 'absolute',
             left: `${column*50}%`,
             top: `${columnHeights[column]}px`,
             width: '50%',
-            height: 'auto'
+            height: 'auto',
+            visibility: 'visible'
         })
+        const height = getProductHeight(product.productId)
         columnHeights[column] += height
         goodsContainer.value.style.height = `${Math.max(...columnHeights)+30}px`
+    }
+},200)
+
+const calculatePosition = () => {
+    if(calculating) return
+    calculating = true
+    products.value.forEach((product) => {
+        product.style = ref({
+            width: '50%',
+            height: 'auto',
+            visibility: 'hidden'
+        })
     })
+    debouncedCalculation()
     calculating = false
 }
 
