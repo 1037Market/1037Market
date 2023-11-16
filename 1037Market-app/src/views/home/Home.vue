@@ -126,7 +126,7 @@ const searched = ref(false)
 
 const onSearch = () => {
     // console.log("on search")
-    getSearchData(searchInfo.value, showPositive).then((res) => {
+    getSearchData(searchInfo.value, showPositive.value).then((res) => {
         searched.value = true
         goods['搜索结果'].value.length = 0
         goods['搜索结果'].value.push(...res);

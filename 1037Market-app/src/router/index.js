@@ -115,7 +115,8 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/1037Market'),
+    base: '/1037Market/',
     routes
 })
 

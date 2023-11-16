@@ -10,7 +10,7 @@
         >
         <div @click="itemClick(productDetail.productId)">
             <img
-                :src="Array.isArray(productDetail.imageURIs) && productDetail.imageURIs.length > 0 ? 'http://franky.pro:7301/api/image?imageURI=' + productDetail.imageURIs[0] : ''"
+                :src="Array.isArray(productDetail.imageURIs) && productDetail.imageURIs.length > 0 ? 'https://franky.pro:7301/api/image?imageURI=' + productDetail.imageURIs[0] : ''"
                 @load="calculatePosition"
                 alt="商品"
                 style="border-radius: 10%"
@@ -30,7 +30,7 @@
                       height="20px"
                       radius="10px"
                       fit="cover"
-                      :src="'http://franky.pro:7301/api/image?imageURI=' + productDetail.avatar"
+                      :src="'https://franky.pro:7301/api/image?imageURI=' + productDetail.avatar"
                       
               />
               <span style="vertical-align: middle; font-weight: 400; font-size: 15px; margin-left: 10px">{{ productDetail.nickName }}</span>

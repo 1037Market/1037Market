@@ -12,7 +12,7 @@
                             :key="product.productId"
                             :price="product.price"
                             :title="product.title"
-                            :thumb="'http://franky.pro:7301/api/image?imageURI=' + product.imageURIs[0]"
+                            :thumb="'https://franky.pro:7301/api/image?imageURI=' + product.imageURIs[0]"
                             @click="navigateToProduct(product.productId)"
                         >
                             <template #tags>

@@ -12,6 +12,7 @@
     "@better-scroll/pull-down": "^2.5.1",
     "@better-scroll/pull-up": "^2.5.1",
     "@vant/compat": "^1.0.0",
+    "@vue/cli-service": "^5.0.8",
     "axios": "^1.6.0",
     "better-scroll": "^2.5.1",
     "js-cookie": "^3.0.5",

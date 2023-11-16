@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 export function request(config) {
     //创建一个实例
     const instance = axios.create({
-        baseURL: 'http://franky.pro:7301',
+        baseURL: 'https://franky.pro:7301',
         timeout: 5000
     })
 

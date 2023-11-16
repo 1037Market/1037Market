@@ -21,5 +21,13 @@ export default defineConfig({
     isCustomElement: tagName => {
       return tagName === 'vue-advanced-chat' || tagName === 'emoji-picker'
     }
-  }
+  },
+  publicDir: '/1037Market/',
+  publicPath: '/1037Market/',
+  outputDir: '1037Market',
+  assetsDir: 'assets',
+  base: '/1037Market/',
+  baseUrl: '/1037Market/'
+
+
 })

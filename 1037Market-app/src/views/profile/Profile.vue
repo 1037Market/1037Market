@@ -11,7 +11,7 @@
                 height="10rem"
                 radius="5rem"
                 fit="contain"
-                :src="'http://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
+                :src="'https://franky.pro:7301/api/image?imageURI=' + userInfo['avatar']"
                 @click="clickAvatar"
             />
             <van-icon name="photograph" id="photograph"
@@ -193,7 +193,7 @@ export default {
             getUser(window.localStorage.getItem('studentId')).then((response) => { // 获取用户信息
                 seller.studentId = response.userId;
                 seller.nickname = response.nickName;
-                seller.avatar = 'http://franky.pro:7301/api/image?imageURI=' + response.avatar;
+                seller.avatar = 'https://franky.pro:7301/api/image?imageURI=' + response.avatar;
                 seller.contact = response.contact;
                 console.log(seller)
 
@@ -207,7 +207,7 @@ export default {
                                 id: productId,
                                 name: response.title,
                                 description: response.content,
-                                image: 'http://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0],
+                                image: 'https://franky.pro:7301/api/image?imageURI=' + response.imageURIs[0],
                                 soldout: response.soldout,
                                 price: response.price
                             })
@@ -231,7 +231,7 @@ export default {
                                     commenter: {
                                         id: response.fromId,
                                         nickname: response.nickName,
-                                        avatar: 'http://franky.pro:7301/api/image?imageURI=' + response.avatar
+                                        avatar: 'https://franky.pro:7301/api/image?imageURI=' + response.avatar
                                     }
                                 });
                             }).catch((err) => {
