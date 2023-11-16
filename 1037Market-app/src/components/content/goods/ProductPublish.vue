@@ -96,12 +96,12 @@ export default {
         },
         update: false
     },
-    setup(props) {
+  setup(props) {
         const form = reactive({
             ...props.form
         });
         const router = useRouter();
-
+        const route = useRoute();
         const dialog = reactive({
             ...props.dialog
         });
@@ -152,7 +152,8 @@ export default {
                     content: form.description,
                     categories: form.categories,
                     imageURIs: form.imageURIs,
-                    price: parseFloat(form.price)
+                    price: parseFloat(form.price),
+                    productId: Number(route.params.id)
                 }).then((response) => {
                     showSuccessToast("更新成功")
                     router.go(-1)
