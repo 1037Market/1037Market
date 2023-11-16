@@ -140,8 +140,8 @@ const displayedComments = computed(() => {
 .comment-text {
   font-size: 16px; /* Adjusted font size */
   line-break: anywhere; /* Ensure long words do not break the layout */
-  text-overflow: ellipsis; /* Add ellipsis for overflowed texts */
-  white-space: nowrap; /* Keep the text in a single line */
-  overflow: hidden; /* Hide overflowed texts */
+  
+  
+  
 }
 </style>
