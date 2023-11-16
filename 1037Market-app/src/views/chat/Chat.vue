@@ -88,7 +88,7 @@ export default {
                     type: 'png',
                     audio: false,
                     duration: 14.4,
-                    url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                    url: 'https://franky.pro:7301/api/image?imageURI=' + msg.imageURI
                   }
                 ],
                 timestamp: msg.sendTime,
@@ -128,7 +128,7 @@ export default {
                     type: 'png',
                     audio: false,
                     duration: 14.4,
-                    url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                    url: 'https://franky.pro:7301/api/image?imageURI=' + msg.imageURI
                   }
                 ],
                 timestamp: new Date().toString().substring(16, 21),
@@ -193,7 +193,7 @@ export default {
             rooms.push({
               roomId: roomId,
               roomName: roomInfo[idx].nickName,
-              avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+              avatar: 'https://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
               users: [
                 {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
                 {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
@@ -212,7 +212,7 @@ export default {
         this.rooms = [{
           roomId: Number(sessionId),
           roomName: roomInfo[idx].nickName,
-          avatar: 'http://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
+          avatar: 'https://franky.pro:7301/api/image?imageURI=' + roomInfo[idx].avatar,
           users: [
             {_id: roomInfo[0].userId, username: roomInfo[0].nickName},
             {_id: roomInfo[1].userId, username: roomInfo[1].nickName},
@@ -240,7 +240,7 @@ export default {
                       type: 'png',
                       audio: false,
                       duration: 14.4,
-                      url: 'http://franky.pro:7301/api/image?imageURI=' + msg.imageURI
+                      url: 'https://franky.pro:7301/api/image?imageURI=' + msg.imageURI
                     }
                   ],
                   timestamp: msg.sendTime,

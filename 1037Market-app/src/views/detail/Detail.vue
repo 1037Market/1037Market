@@ -9,7 +9,7 @@
         <van-swipe :autoplay="3000" indicator-color="#44b883" style="height: 300px; margin-top: 1px;" lazy-render>
             <van-swipe-item v-for="uri in productDetail.imageURIs" :key="uri"
                             @click="preview(uri)">
-                <van-image :src="'http://franky.pro:7301/api/image?imageURI=' + uri" fit="contain"/>
+                <van-image :src="'https://franky.pro:7301/api/image?imageURI=' + uri" fit="contain"/>
             </van-swipe-item>
         </van-swipe>
 
@@ -164,7 +164,7 @@ export default {
         }
 
         const preview = (uri) => {
-          showImagePreview(['http://franky.pro:7301/api/image?imageURI=' + uri]);
+          showImagePreview(['https://franky.pro:7301/api/image?imageURI=' + uri]);
         }
 
     return {
