@@ -4,10 +4,12 @@ import (
 	"1037Market/server/api"
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -30,16 +32,30 @@ func (s *Server) Bind(port string) {
 		Handler: s.router,
 	}
 }
+func TlsHandler(port int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     ":" + strconv.Itoa(port),
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
 
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
+}
 func (s *Server) Cors() {
 	s.router.Use(cors())
+	s.router.Use(TlsHandler(7301))
 }
 
 func (s *Server) ListenAndServe() {
 	go func() {
-		if err := s.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
+		s.router.RunTLS(":"+strconv.Itoa(7301), "/etc/httpd/ssl/franky.pro.crt", "/etc/httpd/ssl/franky.pro.key")
 	}()
 
 	quit := make(chan os.Signal)
