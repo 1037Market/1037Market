@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+func getTime() string {
+	//get Beijing Time
+	time.LoadLocation("Asia/Shanghai")
+	return time.Now().Format("2006-01-02 15:04:05")
+}
+
 func GetSingleSessIdByStuIds(studentId1 string, studentId2 string) (sessionId int, err error) {
 	db, err := mysqlDb.GetConnection()
 	if err != nil {
@@ -233,7 +239,7 @@ func SendMsg(studentId string, msg ds.MsgSent) (int, error) {
 	defer txn.Rollback()
 
 	result, err := txn.Exec("insert into CHAT_MESSAGES(sessionId, sendTime, content, imagePath, isFromUser1) values(?, ?, ?, ?, ?)",
-		msg.SessionId, time.Now(), msg.Content, msg.ImageURI, isFromUser1)
+		msg.SessionId, getTime(), msg.Content, msg.ImageURI, isFromUser1)
 	if err != nil {
 		return 0, NewErrorDao(ErrTypeDatabaseExec, err.Error())
 	}
