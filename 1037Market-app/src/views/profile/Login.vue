@@ -17,9 +17,9 @@
             <van-form @submit="onSubmit">
                 <van-field
                     v-model="studentId"
-                    name="电子邮箱"
-                    label="电子邮箱"
-                    placeholder="请输入正确电子邮箱格式"
+                    name="学号"
+                    label="学号"
+                    placeholder="请输入学号"
                     :rules="[{ required: true, message: '请填写用户名' }]"
                 />
                 <van-field

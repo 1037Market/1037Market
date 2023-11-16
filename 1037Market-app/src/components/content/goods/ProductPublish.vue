@@ -72,6 +72,7 @@ import {nextTick, onMounted, reactive, watchEffect} from "vue";
 import {showFailToast, showSuccessToast} from "vant";
 import {uploadImage} from "../../../network/image";
 import {publishProduct, updateProduct} from "../../../network/publish";
+import {useRouter} from "vue-router";
 
 export default {
   name: "ProductPublish",
@@ -95,6 +96,7 @@ export default {
     const form = reactive({
       ...props.form
     });
+    const router = useRouter();
 
     const dialog = reactive({
       ...props.dialog
@@ -144,6 +146,7 @@ export default {
           price: parseFloat(form.price)
         }).then((response) => {
           showSuccessToast("更新成功")
+          router.go(-1)
         }).catch((err) => {
           showFailToast('更新失败')
         })
@@ -156,7 +159,9 @@ export default {
           price: parseFloat(form.price)
         }).then((response) => {
           showSuccessToast("发布成功")
+          router.go(-1)
         }).catch((err) => {
+          console.log(err)
           showFailToast('发布失败')
         })
       }
