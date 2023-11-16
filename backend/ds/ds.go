@@ -57,7 +57,6 @@ type ProductUpdated struct {
 	Categories []string `json:"categories"`
 	ImageURIs  []string `json:"imageURIs"`
 	Price      float32  `json:"price"`
-	IsSoldOut  bool     `json:"soldout"`
 }
 
 type LoginUser struct {
