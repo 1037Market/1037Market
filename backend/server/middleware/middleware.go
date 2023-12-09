@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"1037Market/dao"
 	"1037Market/logger"
 	"github.com/gin-gonic/gin"
 )
@@ -11,8 +12,10 @@ func UserCookieCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie := c.Query("user")
 		log.Info("user cookie: ", cookie)
-		// 这里放用户的cookie检查（看有没有这个cookie）
-		// 因为前端接口还没更新，这里什么也不做
+		_, err := dao.GetUserIdByCookie(cookie)
+		if err != nil {
+			c.Abort()
+		}
 		c.Next()
 	}
 }
